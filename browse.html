@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+
+<html lang="en-US" data-apiary-key="oq0abw4w2bkwcs0k0kws44sok4cg48w">
+
+<head>
+  <meta charset="utf-8">
+  <title>Browse</title>
+  <meta name="description" content="A group page">
+  <meta name="keywords" content="w3c,w3,w3.org,group,page">
+  <meta name="author" content="W3C">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="//www.w3.org/favicon.ico">
+</head>
+
+<body>
+
+  <h1>Browse object</h1>
+
+  <p>Choose your group from the pull-down menu below and push the "Get Your Group's Info" button:</p>
+
+  <form class='groups'>
+    <select id="grlist" data-query='groups'>
+      <option value="${id}">${name}</option>
+    </select>
+    <input type="button" value="Get Your Group's Info" onclick="putGrInfo('grlist');" />
+  </form>
+
+  <p>Here is your object:</p>
+  <section id='object'>
+  </section>
+
+  <hr />
+  <script type="module">
+    import { fetchGroup, fetchGroups, setW3CKey } from './w3c.js';
+    import query from './jsonquery.js';
+    import jsonrender from './jsonrender.js';
+    import LazyPromise from './lazypromise.js';
+
+    function renderProps(container, obj) {
+      let list = document.createElement("ul");
+
+      if (!(obj instanceof Object) || obj instanceof String) {
+        list = document.createElement("p");
+        const text = obj.toString();
+        if (text.indexOf("https://") === 0) {
+          const a = document.createElement("a");
+          a.textContent = text;
+          a.href = text;
+          list.appendChild(a);
+        } else {
+          list.textContent = text;
+        }
+      } else if (obj instanceof Element) {
+        list = obj.cloneNode(true);
+      } else {
+        for (const key of Object.keys(obj)) {
+          switch (key) {
+            case "_links":
+              break;
+            default:
+              let li = document.createElement("li");
+              renderObject(li, key, obj[key]);
+              list.appendChild(li);
+          }
+        }
+      }
+      container.appendChild(list);
+    }
+
+    function renderObject(container, name, obj, deploy) {
+      var details = document.createElement("details");
+      var summary = document.createElement("summary");
+      var more = document.createElement("div");
+      details.appendChild(summary);
+      details.open = false;
+      summary.textContent = name;
+      if (!(obj instanceof Object) || obj instanceof String) {
+        details = document.createElement("p");
+        const text = (!obj)? `${obj}` : obj.toString();
+        if (text.indexOf("https://") === 0) {
+          details.innerHTML = `<strong>${name}</strong>: <a href="${text}">${text}</a>`;
+        } else {
+          details.innerHTML = `<strong>${name}</strong>: ${text}`;
+        }
+
+      } else {
+        if (obj.title || obj.name) {
+          summary.innerHTML = `<strong>${name}</strong>: ${(obj.title) ? obj.title : obj.name}`;
+        }
+        if (obj instanceof LazyPromise) {
+          details.ontoggle = function (evt) {
+            if (!evt.target.isFilled) {
+              obj.promise.then(r => renderProps(more, r));
+              details.appendChild(more);
+              evt.target.isFilled = true;
+            }
+          }
+        } else {
+          renderProps(more, obj);
+          details.appendChild(more);
+        }
+      }
+      container.appendChild(details);
+    }
+
+    async function renderGID(gid) {
+      let obj = document.getElementById("object");
+      obj.textContent = "";
+      let group = await fetchGroup(gid);
+
+      if (group) {
+        try {
+          renderObject(obj, "group", group);
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        console.error("group is empty");
+      }
+    }
+
+    let config = {};
+
+    window.putGrInfo = function (idname) {
+      let obj = document.getElementById(idname);
+      let gid = obj.value;
+      config.gid = gid;
+      /* add gid to the URL display of the browser */
+      history.pushState(config, gid, "?gid=" + gid);
+      renderGID(gid).catch(console.error);
+    };
+
+    setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
+
+    fetchGroups().then(groups => {
+      let elts = document.querySelectorAll("*.groups");
+      for (let element of elts) {
+        jsonrender({ groups: groups }, element);
+      }
+      let gid = (new URL(document.location)).searchParams.get("gid");
+      if (!gid) {
+        renderObject(document.getElementById("object"), "groups", groups);
+      }
+      return groups;
+    }).catch(console.error);
+
+    (function () {
+      let gid = (new URL(document.location)).searchParams.get("gid");
+      if (gid) {
+        config.gid = gid;
+        renderGID(gid);
+      }
+    })();
+    // browser back and forward buttons
+    window.onpopstate = function (e) {
+      if (!e.state) return; // #fragid navigation
+      config = e.state;
+      if (config.gid) {
+        renderGID(config.gid);
+      }
+    }
+
+  </script>
+
+</body>
+
+</html>
