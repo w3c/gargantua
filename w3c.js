@@ -125,10 +125,31 @@ async function fetchCharter(url) {
   return charter;
 }
 
+function textToHTML(text) {
+  return new LazyPromise(() => {
+    try {
+      let children = (new DOMParser()).parseFromString("<div class='spec_description'>"+text+"</div>", "text/html")
+        .querySelectorAll("div.spec_description *");
+      if (children.length === 0) throw new Error("DOMParser returned nothing");
+      if (children.length === 1) return children[0];
+      let container = children[0].ownerDocument.createElement("div");
+      for (const child of children) container.appendChild(child);
+      return container;
+    } catch (e) {
+      console.error(e);
+      return text;
+    }
+  });
+}
+
 const GITHUB_TEAM = new RegExp("^https://github.com/orgs/[-A-Za-z0-9]+/teams/([-A-Za-z0-9]+)");
 
 async function ongroup(group) {
   const groupId = group.id;
+
+  if (group.description) {
+    group.description = textToHTML(group.description);
+  }
 
   // Some additional useful links
   group["details"] = `https://www.w3.org/2000/09/dbwg/details?group=${groupId}&order=org&public=1`;
@@ -248,26 +269,8 @@ async function ongroup(group) {
         spec["latest-status"] = new LazyPromise(() => spec["latest-version"].promise.then(latest => latest.status));
         spec["rec-track"] = new LazyPromise(() => spec["latest-version"].promise.then(latest => latest["rec-track"]));
         spec.history = `https://www.w3.org/standards/history/${spec.shortname}`;
+        spec.description = textToHTML(spec.description);
       })
-
-      // clean description
-      specs.forEach(spec => {
-        const description = spec.description;
-        spec.description = new LazyPromise(() => {
-          try {
-            let children = (new DOMParser()).parseFromString("<div class='spec_description'>"+description+"</div>", "text/html")
-              .querySelectorAll("div.spec_description *");
-            if (children.length === 0) throw new Error("DOMParser returned nothing");
-            if (children.length === 1) return children[0];
-            let container = children[0].ownerDocument.createElement("div");
-            for (const child of children) container.appendChild(child);
-            return container;
-          } catch (e) {
-            console.error(e);
-            return description;
-          }
-        });
-      });
 
       // deal with TR versioning
       // @@this needs to be built-in in the W3C API instead!
