@@ -113,14 +113,9 @@
       font-weight: bold;
     }
 
-    #specs dl.loading,
-    #repos dl.loading {
-      max-height: 1cm;
-      overflow: hidden;
-    }
-
     #specs dl,
-    #repos dl {
+    #repos dl,
+    #events dl {
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
@@ -136,7 +131,8 @@
     }
 
     #specs div,
-    #repos div {
+    #repos div,
+    #events div {
       flex: 1 0 35%;
       margin-bottom: 0.5cm;
       opacity: 1;
@@ -148,7 +144,8 @@
     }
 
     #specs dd,
-    #repos dd {
+    #repos dd,
+    #events dd {
       margin: 0.1cm 0 0 0;
       font-size: 0.8em;
       color: #555;
@@ -344,6 +341,18 @@
           </div>
         </dl>
         <p>Group has no repositories.</p>
+      </div>
+    </section>
+    <section id="events">
+      <h2>Face-to-face meetings</h2>
+      <div data-if="events">
+        <dl id="eventList" data-query="events">
+          <div>
+            <dt><a href="${href}">${summary}</a></dt>
+            <dd>${location} - ${start} to ${end}</dd>
+          </div>
+        </dl>
+        <p>Group has no face-to-meetings scheduled.</p>
       </div>
     </section>
     <section id="Contacts">
