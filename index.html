@@ -113,12 +113,14 @@
       font-weight: bold;
     }
 
-    #specs dl.loading, #repos dl.loading {
+    #specs dl.loading,
+    #repos dl.loading {
       max-height: 1cm;
       overflow: hidden;
     }
 
-    #specs dl, #repos dl {
+    #specs dl,
+    #repos dl {
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
@@ -128,11 +130,13 @@
       overflow: hidden;
     }
 
-    #specs .status, #repos .type {
+    #specs .status,
+    #repos .type {
       color: #333;
     }
 
-    #specs div, #repos div {
+    #specs div,
+    #repos div {
       flex: 1 0 35%;
       margin-bottom: 0.5cm;
       opacity: 1;
@@ -143,7 +147,8 @@
       animation-duration: 1s;
     }
 
-    #specs dd, #repos dd {
+    #specs dd,
+    #repos dd {
       margin: 0.1cm 0 0 0;
       font-size: 0.8em;
       color: #555;
@@ -305,7 +310,8 @@
           <a href="${active-charter.uri}">Charter</a>
         </li>
         <div data-if="services.*[type=lists]">
-          <li data-query="services.*[type=lists]"><span data-if="::self[link=Archives/Public]"><a href="${link}">Mailing list</a></span></li>
+          <li data-query="services.*[type=lists]"><span data-if="::self[link=Archives/Public]"><a href="${link}">Mailing
+                list</a></span></li>
         </div>
       </ul>
     </nav>
@@ -328,19 +334,19 @@
       </div>
     </section>
     <section id="repos">
-        <h2>Repos</h2>
-        <div data-if="repositories">
-          <dl id="repoList" data-query="repositories">
-            <div id='${owner.login}-${name}'>
-              <dt><a href="https://github.com/${owner.login}/${name}/">${owner.login}/${name}</a>
-                <span data-if='w3c.repo-type'><span class='type'>(${w3c.repo-type})</span></span></dt>
-              <dd>${description}</dd>
-            </div>
-          </dl>
-          <p>Group has no repositories.</p>
-        </div>
-      </section>
-      <section id="Contacts">
+      <h2>Repos</h2>
+      <div data-if="repositories">
+        <dl id="repoList" data-query="repositories">
+          <div id='${owner.login}-${name}'>
+            <dt><a href="https://github.com/${owner.login}/${name}/">${owner.login}/${name}</a>
+              <span data-if='w3c.repo-type'><span class='type'>(${w3c.repo-type})</span></span></dt>
+            <dd>${description}</dd>
+          </div>
+        </dl>
+        <p>Group has no repositories.</p>
+      </div>
+    </section>
+    <section id="Contacts">
       <h2>Contacts</h2>
       <dl>
         <dt>Chairs:</dt>
@@ -407,7 +413,7 @@
       if (!ngid) {
         const matches = document.location.toString().match(new RegExp("([0-9]+)", "g"));
         if (matches.length > 0) {
-          const last = matches[matches.length-1];
+          const last = matches[matches.length - 1];
           if (last.length > 4)
             ngid = last;
         }
