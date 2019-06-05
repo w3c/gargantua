@@ -126,6 +126,7 @@ async function fetchCharter(url) {
 }
 
 function textToHTML(text) {
+  if (!text) return text;
   return new LazyPromise(() => {
     try {
       let children = (new DOMParser()).parseFromString("<div class='spec_description'>"+text+"</div>", "text/html")
