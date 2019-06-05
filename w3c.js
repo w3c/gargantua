@@ -1,6 +1,7 @@
 import LazyPromise from './lazypromise.js';
 import { fetchJSON, fetchW3C, fetchHTML, setW3CKey } from "./fetch-utils.js";
 import fetchEvents from "./w3cevents.js";
+import specConfig from "./spec-config.js";
 
 // export { fetchGroup, fetchGroups, fetchJSON, setW3CKey };
 
@@ -143,6 +144,8 @@ async function ongroup(group) {
           .filter(r => (r.repo.name === repo.name && r.repo.owner === repo.owner.login))[0];
         if (issues) return issues.issues;
       });
+      // associate spec configuration with repositories
+      specConfig(repo); // this will decorate the object
     });
     return repositories.sort(sortRepositories);
   }).catch(console.error));
