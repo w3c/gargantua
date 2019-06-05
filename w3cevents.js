@@ -1,3 +1,5 @@
+import { fetchHTML } from "./fetch-utils.js";
+
 const TPAC_SCHEDULE = "https://www.w3.org/2019/09/TPAC/schedule.html";
 
 function getTPACRooms(doc, weekday, day) {

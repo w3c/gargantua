@@ -127,11 +127,15 @@ async function ongroup(group) {
         GH.hasRecTrack = GH.w3c["repo-type"].includes("rec-track");
         GH.hasNote = GH.w3c["repo-type"].includes("note");
       }
+
       return GH;
     });
-    // associate issues with their repositories
+
     if (!repositories.length) return repositories;
+
+    // let's decorate the repositories with various extra data
     repositories.forEach(repo => {
+      // associate issues with their repositories
       repo["issues"] = new LazyPromise(async() => {
         const dash = await group.dashboard.repositories.promise;
         let issues = Object.entries(dash)

@@ -320,7 +320,7 @@
     </section>
     <section id="specs">
       <h2>Specs</h2>
-      <div data-if="specifications">
+      <div data-if="specifications.*">
         <dl id="specList" data-query="specifications" data-filter='activeSpecs'>
           <div id='${shortname}'>
             <dt><a href='${shortlink}'>${title}</a> - <span class='status'>${latest-status}</span></dt>
@@ -332,7 +332,7 @@
     </section>
     <section id="repos">
       <h2>Repos</h2>
-      <div data-if="repositories">
+      <div data-if="repositories.*">
         <dl id="repoList" data-query="repositories">
           <div id='${owner.login}-${name}'>
             <dt><a href="https://github.com/${owner.login}/${name}/">${owner.login}/${name}</a>
