@@ -23,7 +23,7 @@ async function fetchCharter(url) {
   return charter;
 }
 
-function textToHTML(text) {
+function textToNodes(text) {
   if (!text || text.indexOf('<') === -1) return text;
   return new LazyPromise(() => {
     try {
@@ -47,7 +47,7 @@ async function ongroup(group) {
   const groupId = group.id;
 
   if (group.description) {
-    group.description = textToHTML(group.description);
+    group.description = textToNodes(group.description);
   }
 
   // Some additional useful links
@@ -168,7 +168,7 @@ async function ongroup(group) {
         spec["latest-status"] = new LazyPromise(() => spec["latest-version"].promise.then(latest => latest.status));
         spec["rec-track"] = new LazyPromise(() => spec["latest-version"].promise.then(latest => latest["rec-track"]));
         spec.history = `https://www.w3.org/standards/history/${spec.shortname}`;
-        spec.description = textToHTML(spec.description);
+        spec.description = textToNodes(spec.description);
       })
 
       // deal with TR versioning
