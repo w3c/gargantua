@@ -27,9 +27,9 @@ function JSONize(str) {
     // remove comments
     .replace(new RegExp("[ \t]+//[^\n]+", 'g'), "")
     // wrap keys without quote with valid double quote
-    .replace(/([\$\w]+)\s*:/g, function(_, $1){return '"'+$1+'":'})
+    .replace(/([\$\w]+)\s*:/g, function (_, $1) { return '"' + $1 + '":' })
     // replacing single quote wrapped ones to double quote
-    .replace(/'([^']+)'/g, function(_, $1){return '"'+$1+'"'})
+    .replace(/'([^']+)'/g, function (_, $1) { return '"' + $1 + '"' })
     // readjust http links
     .replace(/"http(s?)":/g, "http$1:")
     // remove extra commas
