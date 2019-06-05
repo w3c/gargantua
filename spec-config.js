@@ -7,7 +7,7 @@ import { fetchHTML } from "./fetch-utils.js";
 
 async function specConfig(repo) {
   let config;
-  if (!repo.prpreview && !repo.prpreview.type) { // some shorthands
+  if (!repo.prpreview || !repo.prpreview.type) { // some shorthands
     return; // not yet supported so give up
   }
   const type = repo.prpreview.type;
