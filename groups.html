@@ -325,6 +325,15 @@
       </dl>
     </section>
     <section class=groups>
+      <h2 id='cgs'>Business Groups</h2>
+      <dl class=groups data-query='groups.*[type=business group]'>
+        <div id="cg${id}">
+          <dt><a href='./?gid=${id}'>${name}</a></dt>
+          <dd>${description}</dd>
+        </div>
+      </dl>
+    </section>
+    <section class=groups>
       <h2 id='cgs'>Community Groups</h2>
       <dl class=groups data-query='groups.*[type=community group]'>
         <div id="cg${id}">
