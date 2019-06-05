@@ -254,7 +254,7 @@ async function ongroup(group) {
           const dash = await group.dashboard.milestones.promise;
           let milestones = Object.entries(dash)
             .filter(s => spec.shortlink === s[0]);
-          if (milestones && milestones[0]) {
+          if (milestones && milestones[0] && Object.keys(milestones[0]).length > 0) {
             return milestones[0][1];
           }
         });
