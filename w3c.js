@@ -4,7 +4,7 @@ import fetchEvents from "./w3cevents.js";
 
 // export { fetchGroup, fetchGroups, fetchJSON, setW3CKey };
 
-const NAME_CLEANUP = [["css3-", ""], ["NOTE-", ""], ["WD-", ""]];
+const NAME_CLEANUP = [["css3-", "css-"], ["NOTE-", ""], ["WD-", ""]];
 
 async function fetchCharter(url) {
   let charter = {};
