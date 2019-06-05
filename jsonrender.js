@@ -36,12 +36,16 @@ async function content(obj, text, node) {
       console.error(err);
       return "${" + query + "}";
     });
-    if (replacement instanceof Element) {
-      if (node) {
-        addValue(replacement.cloneNode(true));
+    if (replacement) {
+      if (replacement instanceof Element) {
+        if (node) {
+          addValue(replacement.cloneNode(true));
+        }
+      } else {
+        addValue(replacement.toString());
       }
     } else {
-      addValue(replacement.toString());
+      console.warn(`${query} returned nothing`);
     }
     start = me + 1;
     ms = text.indexOf('${', start);
