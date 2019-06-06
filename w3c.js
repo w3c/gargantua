@@ -24,11 +24,32 @@ async function fetchCharter(url) {
   return charter;
 }
 
+// is a user an invited expert?
+function isInvitedExpert(obj) {
+  const ieUser = async (user) =>
+    ((await user.affiliations.promise).filter(org => org.id === 36747).length != 0);
+
+  if (obj instanceof LazyPromise) {
+    return new LazyPromise(() =>
+      obj.promise.then(user => ieUser(user)).catch(err => {
+        console.error(err);
+        return false;
+      }));
+  } else {
+    try {
+      return new LazyPromise(() => ieUser(obj));
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  }
+}
+
 function textToNodes(text) {
   if (!text || text.indexOf('<') === -1) return text;
   return new LazyPromise(() => {
     try {
-      let children = (new DOMParser()).parseFromString("<div class='spec_description'>"+text+"</div>", "text/html")
+      let children = (new DOMParser()).parseFromString("<div class='spec_description'>" + text + "</div>", "text/html")
         .querySelectorAll("div.spec_description *");
       if (children.length === 0) throw new Error("DOMParser returned nothing");
       if (children.length === 1) return children[0];
@@ -137,7 +158,7 @@ async function ongroup(group) {
     // let's decorate the repositories with various extra data
     repositories.forEach(repo => {
       // associate issues with their repositories
-      repo["issues"] = new LazyPromise(async() => {
+      repo["issues"] = new LazyPromise(async () => {
         const dash = await group.dashboard.repositories.promise;
         let issues = Object.entries(dash)
           .map(r => r[1])
@@ -156,7 +177,7 @@ async function ongroup(group) {
     group["specifications"] = new LazyPromise(() => lazy_specs.promise.then(async (specs) => {
       if (!specs) return specs;
       specs.forEach(spec => {
-        spec["milestones"] = new LazyPromise(async() => {
+        spec["milestones"] = new LazyPromise(async () => {
           const dash = await group.dashboard.milestones.promise;
           let milestones = Object.entries(dash)
             .filter(s => spec.shortlink === s[0]);

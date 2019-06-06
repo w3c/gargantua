@@ -367,19 +367,18 @@
       <dl>
         <dt>Chairs:</dt>
         <dd id="chairs">
-          <span data-query="chairs">
-            <span data-if="connected-accounts.*[service=github]">
-              <a href="${connected-accounts.*[service=github].href}">${name}</a>
-              <span>${name}</span></span>,
-          </span>
+          <div data-if="chairs.*"><span data-query="chairs">
+              <span data-if="connected-accounts.*[service=github]">
+                <a href="${connected-accounts.*[service=github].href}">${name}</a>
+                <span>${name}</span></span>,
+            </span></div>
         </dd>
         <dt>Team contacts:</dt>
         <dd id="team-contacts">
-          <span data-query="team-contacts">
-            <span data-if="connected-accounts.*[service=github]">
-              <a href="${connected-accounts.*[service=github].href}">${name}</a>
-              <span>${name}</span></span>,
-          </span></td>
+          <div data-if="team-contacts.*"><span data-query="team-contacts">
+              <span data-if="connected-accounts.*[service=github]">
+                <a href="${connected-accounts.*[service=github].href}">${name}</a>
+                <span>${name}</span></span>,
         </dd>
       </dl>
     </section>
