@@ -25,7 +25,12 @@ async function fetchCharter(url) {
 }
 
 // is a user an invited expert?
-function isInvitedExpert(obj) {
+function isInvitedExpert(obj, group) {
+
+  if (group["type"] !== "working group" && group["type"] !== "interest group" ) {
+    // Not applicable, so return false
+    return false;
+  }
   const ieUser = async (user) =>
     ((await user.affiliations.promise).filter(org => org.id === 36747).length != 0);
 
@@ -91,7 +96,7 @@ async function ongroup(group) {
       for (const participant of participants) {
         if (participant.individual) {
           participant.title = participant["user-title"];
-          participant["invited-expert"] = isInvitedExpert(participant["user"]);
+          participant["invited-expert"] = isInvitedExpert(participant["user"], group);
         } else {
           participant.title = participant["organization-title"];
           participant["invited-expert"] = false;
@@ -106,7 +111,7 @@ async function ongroup(group) {
     const lazy_users = group["users"];
     group["users"] = new LazyPromise(() => lazy_users.promise.then(async (users) => {
       for (const user of users) {
-        user["invited-expert"] = isInvitedExpert(user);
+        user["invited-expert"] = isInvitedExpert(user, group);
       }
       return users;
     }));
