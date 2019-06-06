@@ -32,6 +32,7 @@ function JSONize(str) {
     .replace(/'([^']+)'/g, function (_, $1) { return '"' + $1 + '"' })
     // readjust http links
     .replace(/"http(s?)":/g, "http$1:")
+    .replace(/:[ \t]+([a-zA-Z][^,]+),/g, ": \"$1\",")
     // remove extra commas
     .replace(new RegExp(",[ \t\n]+}", 'g'), "}")
     .replace(new RegExp(",[ \t\n]+\]", 'g'), "]")
