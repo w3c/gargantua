@@ -84,18 +84,31 @@ async function ongroup(group) {
     // publications: getData(`https://w3c.github.io/spec-dashboard/pergroup/${groupId}.json`),
   }
 
-  // associate milestones and repositories with their publications
+  // enhance participations
   if (group["participations"]) {
     const lazy_participations = group["participations"];
     group["participations"] = new LazyPromise(() => lazy_participations.promise.then(async (participants) => {
       for (const participant of participants) {
-        if (participant.individual)
+        if (participant.individual) {
           participant.title = participant["user-title"];
-        else {
+          participant["invited-expert"] = isInvitedExpert(participant["user"]);
+        } else {
           participant.title = participant["organization-title"];
+          participant["invited-expert"] = false;
         }
       }
       return participants.sort(sortParticipants);
+    }));
+  }
+
+  // enhance users
+  if (group["users"]) {
+    const lazy_users = group["users"];
+    group["users"] = new LazyPromise(() => lazy_users.promise.then(async (users) => {
+      for (const user of users) {
+        user["invited-expert"] = isInvitedExpert(user);
+      }
+      return users;
     }));
   }
 

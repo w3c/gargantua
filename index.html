@@ -388,13 +388,11 @@
         <li>${title}</li>
       </ul>
     </section>
-    <div data-if="participations.*[individual=true].user.affiliations.*[id=36747]">
+    <div data-if="participations.*[invited-expert=true]">
       <section>
         <h2>Invited Experts</h2>
-        <ul id="participations" data-query="participations.*[individual=true]">
-          <div data-if="user.affiliations.*[id=36747]">
-            <li>${title}</li>
-          </div>
+        <ul id="participations" data-query="participations.*[invited-expert=true]">
+          <li>${title}</li>
         </ul>
       </section>
     </div>
