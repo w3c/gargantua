@@ -313,6 +313,12 @@
         <div data-if="services.*[type=wiki]">
           <li data-query="services.*[type=wiki]"><a href="${link}">Wiki</a></li>
         </div>
+        <div data-if="services.*[type=blog]">
+          <li data-query="services.*[type=blog]"><a href="${link}">blog</a></li>
+        </div>
+        <div data-if="services.*[type=microblog]">
+          <li data-query="services.*[type=microblog]"><a href="${link}">${shortdesc}</a></li>
+        </div>
       </ul>
     </nav>
   </header>
