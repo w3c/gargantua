@@ -310,6 +310,9 @@
           <li data-query="services.*[type=lists]"><span data-if="::self[link=Archives/Public]"><a href="${link}">Mailing
                 list</a></span></li>
         </div>
+        <div data-if="services.*[type=wiki]">
+          <li data-query="services.*[type=wiki]"><a href="${link}">Wiki</a></li>
+        </div>
       </ul>
     </nav>
   </header>
@@ -390,7 +393,9 @@
       <section>
         <h2>Invited Experts</h2>
         <ul id="participations" data-query="participations.*[individual=true]">
-          <div data-if="user.affiliations.*[id=36747]"><li>${title}</li></div>
+          <div data-if="user.affiliations.*[id=36747]">
+            <li>${title}</li>
+          </div>
         </ul>
       </section>
     </div>
