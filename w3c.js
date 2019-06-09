@@ -32,11 +32,11 @@ function isInvitedExpert(obj, group) {
     return false;
   }
   const ieUser = async (user) =>
-    ((await user.affiliations.promise).filter(org => org.id === 36747).length != 0);
+    ((await user.affiliations).filter(org => org.id === 36747).length != 0);
 
   if (obj instanceof LazyPromise) {
     return new LazyPromise(() =>
-      obj.promise.then(user => ieUser(user)).catch(err => {
+      obj.then(user => ieUser(user)).catch(err => {
         console.error(err);
         return false;
       }));
@@ -73,6 +73,10 @@ const GITHUB_TEAM = new RegExp("^https://github.com/orgs/[-A-Za-z0-9]+/teams/([-
 async function ongroup(group) {
   const groupId = group.id;
 
+  // prevent reentering... @@THIS SHOULDN'T HAPPEN BUT IT DOES
+  if (group._links.seenBefore) return group;
+  group._links.seenBefore = true;
+
   if (group.description) {
     group.description = textToNodes(group.description);
   }
@@ -92,7 +96,7 @@ async function ongroup(group) {
   // enhance participations
   if (group["participations"]) {
     const lazy_participations = group["participations"];
-    group["participations"] = new LazyPromise(() => lazy_participations.promise.then(async (participants) => {
+    group["participations"] = new LazyPromise(() => lazy_participations.then(async (participants) => {
       for (const participant of participants) {
         if (participant.individual) {
           participant.title = participant["user-title"];
@@ -109,7 +113,7 @@ async function ongroup(group) {
   // enhance users
   if (group["users"]) {
     const lazy_users = group["users"];
-    group["users"] = new LazyPromise(() => lazy_users.promise.then(async (users) => {
+    group["users"] = new LazyPromise(() => lazy_users.then(async (users) => {
       for (const user of users) {
         user["invited-expert"] = isInvitedExpert(user, group);
       }
@@ -120,7 +124,7 @@ async function ongroup(group) {
   // enhance active-charter
   if (group["active-charter"]) {
     const lazy_charter = group["active-charter"];
-    group["active-charter"] = new LazyPromise(() => lazy_charter.promise.then(async (charter) => {
+    group["active-charter"] = new LazyPromise(() => lazy_charter.then(async (charter) => {
       charter.info = new LazyPromise(() => fetchCharter(charter.uri));
       return charter;
     }));
@@ -130,7 +134,7 @@ async function ongroup(group) {
   // enhance services
   if (group["services"]) {
     const lazy_services = group["services"];
-    group["services"] = new LazyPromise(() => lazy_services.promise.then(async (services) => {
+    group["services"] = new LazyPromise(() => lazy_services.then(async (services) => {
       for (const service of services) {
         if (service.type === "lists") {
           if (service.link.indexOf("https://lists.w3.org/Archives/Public/") === 0) {
@@ -177,7 +181,7 @@ async function ongroup(group) {
     repositories.forEach(repo => {
       // associate issues with their repositories
       repo["issues"] = new LazyPromise(async () => {
-        const dash = await group.dashboard.repositories.promise;
+        const dash = await group.dashboard.repositories;
         let issues = Object.entries(dash)
           .map(r => r[1])
           .filter(r => (r.repo.name === repo.name && r.repo.owner === repo.owner.login))[0];
@@ -192,11 +196,11 @@ async function ongroup(group) {
   // associate milestones and repositories with their publications
   if (group["specifications"]) {
     const lazy_specs = group["specifications"];
-    group["specifications"] = new LazyPromise(() => lazy_specs.promise.then(async (specs) => {
+    group["specifications"] = new LazyPromise(() => lazy_specs.then(async (specs) => {
       if (!specs) return specs;
       specs.forEach(spec => {
         spec["milestones"] = new LazyPromise(async () => {
-          const dash = await group.dashboard.milestones.promise;
+          const dash = await group.dashboard.milestones;
           let milestones = Object.entries(dash)
             .filter(s => spec.shortlink === s[0]);
           if (milestones && milestones[0] && milestones[0][1] && Object.keys(milestones[0][1]).length > 0) {
@@ -211,8 +215,8 @@ async function ongroup(group) {
           console.warn("No latest-version?");
           console.warn(spec);
         }
-        spec["latest-status"] = new LazyPromise(() => spec["latest-version"].promise.then(latest => latest.status));
-        spec["rec-track"] = new LazyPromise(() => spec["latest-version"].promise.then(latest => latest["rec-track"]));
+        spec["latest-status"] = new LazyPromise(() => spec["latest-version"].then(latest => latest.status));
+        spec["rec-track"] = new LazyPromise(() => spec["latest-version"].then(latest => latest["rec-track"]));
         spec.history = `https://www.w3.org/standards/history/${spec.shortname}`;
         spec.description = textToNodes(spec.description);
       })

@@ -74,28 +74,22 @@ function parsePath(path) {
 async function getProperty(obj, token) {
   if (!obj) return obj;
   let values = [];
-  async function solve(v) {
-    if (v instanceof LazyPromise) {
-      return v.promise;
-    }
-    return v;
-  }
 
-  obj = await solve(obj);
+  obj = await obj;
 
   if (!(obj instanceof Object))
     throw ReferenceError(`Expected Object`);
 
   if (obj.hasOwnProperty(token.propname))
-    values = [await solve(obj[token.propname])];
+    values = [await obj[token.propname]];
   else if (token.propname === '::self') {
     values = [obj];
   } else if (token.propname === '*') {
     if (obj instanceof Array) {
-      for (let v of obj) values.push(await solve(v));
+      for (let v of obj) values.push(await v);
     } else {
       let keys = Object.keys(obj).filter(p => !(p instanceof Function));
-      for (let ink of keys) values.push(await solve(obj[ink]));
+      for (let ink of keys) values.push(await obj[ink]);
     }
   }
 
@@ -106,14 +100,14 @@ async function getProperty(obj, token) {
       for (let inv = 0; inv < values.length; inv++) {
         let value = values[inv];
         if (access.arrayIndex) {
-          values[inv] = (Array.isArray(value)) ? (await solve(value[access.arrayIndex])) : undefined;
+          values[inv] = (Array.isArray(value)) ? (await value[access.arrayIndex]) : undefined;
         } else {
           if (!value.hasOwnProperty(access.name)) {
             if (access.sign !== '!=')
               values[inv] = undefined;
           } else {
             if (access.value) {
-              const v = await solve(value[access.name]);
+              const v = await value[access.name];
               switch (access.sign) {
                 case "=":
                   if (!v.toString().includes(access.value))
@@ -143,8 +137,6 @@ async function getProperty(obj, token) {
  * @param {String} path
  */
 async function jsonquery(obj, path) {
-  if (obj instanceof LazyPromise)
-    obj = obj.promise;
   if (!path) return obj;
   const tokens = parsePath(path);
   let values = [obj];

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>LazyPromise and jsonquery</title>
+  <meta name="timeout" content="long">
+  <meta name="author" title="Microsoft Edge" href="https://www.microsoft.com">
+  <script src="https://w3c-test.org/resources/testharness.js"></script>
+  <script src="https://w3c-test.org/resources/testharnessreport.js"></script>
+</head>
+
+<body>
+<script id="script" type="module">
+import LazyPromise from "../lazypromise.js";
+const theObject =
+{
+ group: [
+   new LazyPromise(() => { return { title: "foo" } }),
+   new LazyPromise(() => Promise.resolve({ title: "bar" })),
+   new LazyPromise(() => Promise.resolve({ title: "foo" })),
+   new LazyPromise(() => new LazyPromise(() => { return { title: "foobar" } })),
+ ]
+}
+window.theObject = theObject</script>
+
+<pre id='scriptText'></pre>
+
+<script type="module">
+import { jqtest, referror, synerror } from './jsonquery-utils.js';
+
+jqtest("group.*[title=foo]");
+jqtest("group.*[title=foobar]");
+  </script>
+
+</body>
+
+</html>

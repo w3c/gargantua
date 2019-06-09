@@ -73,7 +73,7 @@ async function fetchHTML(url) {
 
 // W3C API follows a HAL model. This function creates promises to resolve the links
 // going deeper into the API.
-function resolveLinks(set, filters) {
+function resolveLinks(set, expanders) {
   function iter(data) {
     if (data._links) {
 //      Object.entries(data._links).filter(e => e[0] !== "self").forEach(e => {
@@ -86,7 +86,7 @@ function resolveLinks(set, filters) {
           if (k === "href") {
             if (value.indexOf(W3C_APIURL) === 0) {
               // fetch data but keep as a LazyPromise
-              data[key] = new LazyPromise(() => fetchW3C(value, filters));
+              data[key] = (API_CACHE[value])? API_CACHE[value] : new LazyPromise(() => fetchW3C(value, expanders));
             } else {
               data[key] = value;
             }
@@ -95,11 +95,12 @@ function resolveLinks(set, filters) {
           }
         });
       });
-      if (filters) {
-        for (const filter of FILTERS_REGEXP)
-          if (data._links.self.href.match(filter[0])) {
-            if (filters[filter[1]] && filters[filter[1]] instanceof Function) {
-              filters[filter[1]](data);
+      if (expanders && !data._links.self.filtered) {
+        data._links.self.filtered = true;
+        for (const expander of FILTERS_REGEXP)
+          if (data._links.self.href.match(expander[0])) {
+            if (expanders[expander[1]] && expanders[expander[1]] instanceof Function) {
+              expanders[expander[1]](data);
             }
           }
       }
@@ -121,8 +122,8 @@ let API_CACHE = {};
  * @param {String} queryPath
  * @returns {Object}
  */
-function fetchW3C(queryPath, filters) {
-  const mapper = (set) => resolveLinks(set, filters);
+function fetchW3C(queryPath, expanders) {
+  const mapper = (set) => resolveLinks(set, expanders);
   const ENTRY = queryPath.toString();
   if (API_CACHE[ENTRY]) return API_CACHE[ENTRY];
   if (!W3C_APIKEY) throw new ReferenceError("Missing W3C key. Use setKey")
@@ -132,7 +133,7 @@ function fetchW3C(queryPath, filters) {
   return API_CACHE[ENTRY] = fetchJSON(apiURL).then(data => {
     if (data.error) return data;
     if (data.pages && data.pages > 1 && data.page < data.pages) {
-      return fetchW3C(data._links.next.href, filters).then(nextData => {
+      return fetchW3C(data._links.next.href, expanders).then(nextData => {
         let key = Object.keys(data._embedded)[0];
         let value = data._embedded[key];
         return value.map(mapper).concat(nextData);

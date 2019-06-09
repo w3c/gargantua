@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>jsonquery.js tests</title>
+  <meta name="timeout" content="long">
+  <meta name="author" title="Microsoft Edge" href="https://www.microsoft.com">
+  <script src="https://w3c-test.org/resources/testharness.js"></script>
+  <script src="https://w3c-test.org/resources/testharnessreport.js"></script>
+</head>
+
+<body>
+  <script id="script">const theObject =
+{
+  firstname: "John", lastname: "Smith",
+  address: { street: "University Road", city: "Arlington", state: "MA"},
+  title: "Head of Things",
+  years: [ 1990, 1991, 1992, Promise.resolve(1993), [ 1994, 1995 ] ],
+  future: Promise.resolve({event: "Not now"}),
+  closed: true,
+  groups: [
+    {
+      type: "wg", name: "TTML", docs: [ "TTML1", "TTML2" ],
+    },
+    {
+      type: "wg", name: "DT", docs: [ "trace-context", "registry" ],
+    },
+    {
+      type: "cg", name: "ABP", docs: [ "Process" ],
+    },
+    {
+      type: "wg", name: "PE", docs: [ "PE2" ],
+    },
+  ]
+}</script>
+<pre id='scriptText'></pre>
+ <script type="module">
+      import { jqtestr, jqtest, referror, synerror } from './jsonquery-utils.js';
+
+    jqtestr("firstname", theObject.firstname);
+    jqtestr("lastname", theObject.lastname);
+    jqtestr("address", theObject.address);
+
+    referror(5);
+
+    referror("name");
+
+    jqtestr("", theObject);
+    jqtestr("address.street", theObject.address.street);
+
+    referror("address.town");
+    synerror("address..street");
+    synerror("address.");
+    synerror("address..");
+    synerror("..");
+    synerror(".street");
+
+    jqtestr("address[street]", theObject.address);
+
+    synerror("address.[street]");
+    synerror("[years]");
+    jqtestr("years", theObject.years);
+    jqtestr("years[2]", theObject.years[2]);
+    jqtestr("years[3]", 1993);
+    jqtestr("years[4][1]", theObject.years[4][1]);
+    referror("years[2].hector");
+    jqtestr("years.length", theObject.years.length);
+    synerror("years[]");
+    synerror("years[");
+    synerror("years]");
+    jqtestr("future.event", "Not now");
+    referror("address[0]");
+    jqtest("*");
+    jqtest("address.*");
+    referror("*[firstname]");
+
+    jqtest("*[street]");
+    referror("groups.type");
+    referror("groups.*[type][name]");
+    referror("groups.*[type][documents]");
+    referror("groups.*[type][docs]");
+    jqtest("groups.*[type].docs");
+    jqtest("groups.*");
+    jqtest("groups.*.type");
+    jqtest("groups.*[type]");
+    jqtest("groups.*[type=cg]");
+    jqtest("groups.*[type=wg]");
+    jqtest("groups.*[type=g]");
+    referror("groups.*[type=ig]");
+    jqtest("groups.*[type=wg].name");
+    synerror("groups.*[type=wg]/name");
+    synerror("groups.*[type=wg]name");
+    referror("groups.*[type=wg].name[3]");
+    synerror("groups.*[type=");
+
+    referror(7, "length");
+    referror("length", "4");
+    referror({ a: "length" }, "a.2");
+
+    jqtest("::self[firstname=John]");
+    referror("::self[firstname!=John]");
+    jqtest("::self[firstname!=Mike]");
+
+    jqtestr("::self[closed]", theObject);
+    jqtestr("::self", theObject);
+    jqtest("years.::self.length", theObject.years.length);
+    jqtestr("::self[closed=true]", theObject);
+    referror("::self[closed=false]");
+    jqtestr("::self[closed!=false]", theObject);
+
+  </script>
+
+</body>
+
+</html>

@@ -90,7 +90,7 @@
         if (obj instanceof LazyPromise) {
           details.ontoggle = function (evt) {
             if (!evt.target.isFilled) {
-              obj.promise.then(r => renderProps(more, r));
+              obj.then(r => renderProps(more, r));
               details.appendChild(more);
               evt.target.isFilled = true;
             }

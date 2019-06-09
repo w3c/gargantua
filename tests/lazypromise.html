@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>LazyPromise</title>
+  <meta name="timeout" content="long">
+  <meta name="author" title="Microsoft Edge" href="https://www.microsoft.com">
+  <script src="https://w3c-test.org/resources/testharness.js"></script>
+  <script src="https://w3c-test.org/resources/testharnessreport.js"></script>
+</head>
+
+<body>
+<script id="script" type="module">
+import LazyPromise from "../lazypromise.js";
+
+test(() => {
+  assert_throws(new ReferenceError(),
+   function () {
+     let lp = new LazyPromise()
+   });
+}, "LazyPromise constructor can't get an undefined value")
+
+test(() => {
+  assert_throws(new ReferenceError(),
+   function () {
+     let lp = new LazyPromise(2)
+   });
+}, "LazyPromise constructor needs a Function")
+
+{
+  const t = async_test("LazyPromise resolves Primitive type");
+  const lp = new LazyPromise(() => 2);
+  lp.then(r => {
+    t.step( () => assert_equals(r, 2))
+    t.done();
+  });
+}
+
+{
+  const t = async_test("LazyPromise resolves Promise with then");
+  const p = Promise.resolve(2);
+  const lp = new LazyPromise(() => p)
+  lp.then(r => {
+    t.step( () => assert_equals(r, 2))
+    t.done();
+  });
+}
+
+{
+  const t = async_test("LazyPromise resolves LazyPromise with then");
+  const p = new LazyPromise(() => 2);
+  const lp = new LazyPromise(() => p)
+  lp.then(r => {
+    t.step( () => assert_equals(r, 2))
+    t.done();
+  });
+}
+
+const t2 = async_test("lazy evaluation")
+
+const lp2 = new LazyPromise(() => {
+    t2.step(() => {
+      assert_unreachable("async test should not get resolved");
+      console.error("unreachable");
+    })
+  });
+
+promise_test(async () => {
+  const lp = new LazyPromise(() => 2);
+
+  let r = await lp;
+
+  assert_equals(r, 2);
+}, "LazyPromise resolves Promise with await");
+
+promise_test(async t => {
+  const lp = new LazyPromise(() => {
+    throw new SyntaxError()
+  });
+
+  return promise_rejects(t, new SyntaxError(), lp);
+}, "LazyPromise can reject");
+
+promise_test(async t => {
+  const lp = new LazyPromise(() => {
+    return Promise.reject(new SyntaxError());
+  });
+
+  return promise_rejects(t, new SyntaxError(), lp);
+}, "LazyPromise Promise can reject");
+
+promise_test(async t => {
+  const lp = new LazyPromise(() => {
+    t2.done();
+    return new LazyPromise(() => { throw SyntaxError()} );
+  });
+
+  return promise_rejects(t, new SyntaxError(), lp);
+}, "LazyPromise LazyPromise can reject");
+
+
+promise_test(async () => {
+  let counter = 0;
+  const lp = new LazyPromise(() => {
+    return ++counter;
+  });
+
+  let r = await lp;
+
+  assert_equals(r, 1);
+
+  r = await lp;
+  assert_equals(r, 1);
+}, "LazyPromise resolves once with await");
+
+
+{
+  const t = async_test("LazyPromise resolves once with then");
+  let counter = 0;
+  const lp = new LazyPromise(() => {
+    return ++counter;
+  });
+  let r1 = lp.then(r => {
+    t.step( () => assert_equals(r, 1))
+  });
+  let r2 = lp.then(r => {
+    t.step( () => assert_equals(r, 1))
+  });
+  r1.then(() => r2).then(() => t.done());
+}
+
+
+</script>
+
+</body>
+
+</html>
