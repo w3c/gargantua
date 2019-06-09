@@ -27,26 +27,34 @@ test(() => {
    });
 }, "LazyPromise constructor needs a Function")
 
-test(() => {
-  const lp = new LazyPromise(() => 2)
-  lp.then(r => assert_equals(r, 2));
-}, "LazyPromise resolves Primitive type")
+{
+  const t = async_test("LazyPromise resolves Primitive type");
+  const lp = new LazyPromise(() => 2);
+  lp.then(r => {
+    t.step( () => assert_equals(r, 2))
+    t.done();
+  });
+}
 
-test(() => {
+{
+  const t = async_test("LazyPromise resolves Promise with then");
   const p = Promise.resolve(2);
   const lp = new LazyPromise(() => p)
   lp.then(r => {
-    assert_equals(r, 2);
+    t.step( () => assert_equals(r, 2))
+    t.done();
   });
-}, "LazyPromise resolves Promise with then")
+}
 
-test(() => {
+{
+  const t = async_test("LazyPromise resolves LazyPromise with then");
   const p = new LazyPromise(() => 2);
   const lp = new LazyPromise(() => p)
   lp.then(r => {
-    assert_equals(r, 2);
+    t.step( () => assert_equals(r, 2))
+    t.done();
   });
-}, "LazyPromise resolves LazyPromise with then")
+}
 
 const t2 = async_test("lazy evaluation")
 
@@ -103,7 +111,23 @@ promise_test(async () => {
 
   r = await lp;
   assert_equals(r, 1);
-}, "LazyPromise resolves once");
+}, "LazyPromise resolves once with await");
+
+
+{
+  const t = async_test("LazyPromise resolves once with then");
+  let counter = 0;
+  const lp = new LazyPromise(() => {
+    return ++counter;
+  });
+  let r1 = lp.then(r => {
+    t.step( () => assert_equals(r, 1))
+  });
+  let r2 = lp.then(r => {
+    t.step( () => assert_equals(r, 1))
+  });
+  r1.then(() => r2).then(() => t.done());
+}
 
 
 </script>
