@@ -73,6 +73,10 @@ const GITHUB_TEAM = new RegExp("^https://github.com/orgs/[-A-Za-z0-9]+/teams/([-
 async function ongroup(group) {
   const groupId = group.id;
 
+  // prevent reentering... @@THIS SHOULDN'T HAPPEN BUT IT DOES
+  if (data._links.seenBefore) return group;
+  data._links.seenBefore = true;
+
   if (group.description) {
     group.description = textToNodes(group.description);
   }
