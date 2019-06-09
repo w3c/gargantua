@@ -17,11 +17,12 @@ class LazyPromise {
     this._state = PENDING;
   }
 
-  async _resolve() {
+  _resolve() {
     if (this._state === PENDING) {
       try {
-        this._value = await this._callback();
+        this._value = this._callback();
         this._state = FULFILLED;
+        console.log(this._value)
       } catch (err) {
         this._value = err;
         this._state = REJECTED;
@@ -29,9 +30,9 @@ class LazyPromise {
     }
 
     if (this._state === FULFILLED) {
-      return this._value;
+      return Promise.resolve(this._value);
     } else if (this._state === REJECTED) {
-      throw this._value;
+      return Promise.reject(this._value);
     }
   }
 
