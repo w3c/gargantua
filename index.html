@@ -310,6 +310,9 @@
           <li data-query="services.*[type=lists]"><span data-if="::self[link=Archives/Public]"><a href="${link}">Mailing
                 list</a></span></li>
         </div>
+        <div data-if="services.*[type=chat]">
+          <li data-query="services.*[type=chat]"><a href="${link}">${shortdesc}</a></li>
+        </div>
         <div data-if="services.*[type=wiki]">
           <li data-query="services.*[type=wiki]"><a href="${link}">Wiki</a></li>
         </div>
