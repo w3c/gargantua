@@ -306,6 +306,9 @@
         <li>
           <a href="${active-charter.uri}">Charter</a>
         </li>
+        <div data-if="services.*[type=repository]">
+          <li data-query="services.*[type=repository]"><a href="${link}">${shortdesc}</a></li>
+        </div>
         <div data-if="services.*[type=lists]">
           <li data-query="services.*[type=lists]"><span data-if="::self[link=Archives/Public]"><a href="${link}">Mailing
                 list</a></span></li>
