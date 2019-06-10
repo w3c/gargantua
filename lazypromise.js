@@ -22,7 +22,6 @@ class LazyPromise {
       try {
         this._value = this._callback();
         this._state = FULFILLED;
-        console.log(this._value)
       } catch (err) {
         this._value = err;
         this._state = REJECTED;
