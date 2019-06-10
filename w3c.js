@@ -143,6 +143,8 @@ async function ongroup(group) {
         if (service.type === "lists") {
           if (service.link.indexOf("https://lists.w3.org/Archives/Public/") === 0) {
             service.notify = `https://github.com/w3c/github-notify-ml-config/blob/master/mls.json`;
+            service.stats = new LazyPromise(() =>
+                fetchJSON("https://lists.w3.org/Archives/Public/00stats.json").then(mls => mls[service.shortdesc]).catch(console.error));
             service["notify-ml-config"] =
               new LazyPromise(() =>
                 fetchJSON("https://w3c.github.io/github-notify-ml-config/mls.json").then(mls => mls[`${service.shortdesc}@w3.org`]
