@@ -2,6 +2,7 @@ import LazyPromise from './lazypromise.js';
 import { fetchJSON, fetchW3C, fetchHTML, setW3CKey } from "./fetch-utils.js";
 import fetchEvents from "./w3cevents.js";
 import specConfig from "./spec-config.js";
+import mlsConfig from "./mls-config.js";
 
 // export { fetchGroup, fetchGroups, fetchJSON, setW3CKey };
 
@@ -130,6 +131,9 @@ async function ongroup(group) {
     }));
   }
 
+  group["mailing-lists"] = {
+    public: mlsConfig("https://lists.w3.org/Archives/Public/00stats.json", groupId)
+  }
 
   // enhance services
   if (group["services"]) {
