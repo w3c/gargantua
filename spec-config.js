@@ -5,7 +5,7 @@ import { fetchHTML } from "./fetch-utils.js";
  * Gather editor's draft configuration, if any
  */
 
-async function specConfig(repo) {
+function specConfig(repo) {
   let config;
   if (!repo.prpreview || !repo.prpreview.type) { // some shorthands
     return; // not yet supported so give up
