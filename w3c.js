@@ -195,6 +195,11 @@ async function ongroup(group) {
       });
       // associate spec configuration with repositories
       specConfig(repo); // this will decorate the object
+      repo["wpt"] = {
+        specs: new LazyPromise(() => fetchJSON("https://foolip.github.io/day-to-day/data.json")
+        .then(data =>
+          data.specs.filter(s => (s.specrepo === repo.fullName))))
+        }
     });
     return repositories.sort(sortRepositories);
   }).catch(console.error));
