@@ -19,13 +19,13 @@
   <p>Choose your group from the pull-down menu below and push the "Get Your Group's Info" button:</p>
 
   <form class='groups'>
-    <select id="grlist" data-query='groups'>
-      <option value="${id}">${name}</option>
+    <select id="grlist" data-query='groups' onfocus='onfocusing()' onchange="selectGr()">
+      <option id="g${id}" value="${id}">${name}</option>
     </select>
     <input type="button" value="Get Your Group's Info" onclick="putGrInfo('grlist');" />
   </form>
-
-  <p>Here is your object:</p>
+  <p>Query: <input id='query' type='text' onchange='onchanging()'></p>
+  <p>Object:</p>
   <section id='object'>
   </section>
 
@@ -103,31 +103,78 @@
       container.appendChild(details);
     }
 
-    async function renderGID(gid) {
+    function renderObjects(container, name, objects) {
+      const ul = document.createElement("ul");
+      for (const obj of objects) {
+        const li = document.createElement("li");
+        renderObject(li, name, obj, true);
+        ul.appendChild(li);
+      }
+      container.appendChild(ul);
+    }
+
+    window.onchanging = function(e) {
+      config.query = document.getElementById("query").value;
+    }
+
+    window.onfocusing = function(e) {
+      let elt = document.getElementById("g" + config.gid);
+      if (elt) elt.selected = true;
+      else console.warn("empty g" + gid)
+    }
+
+    function getQuery() {
+      return config.query;
+    }
+
+    async function renderGID() {
+      let gid = config.gid;
       let obj = document.getElementById("object");
       obj.textContent = "";
       let group = await fetchGroup(gid);
-
-      if (group) {
+      let squery = getQuery();
+      let objects = group;
+      let name = "group";
+      if (squery) {
+        name = squery;
         try {
-          renderObject(obj, "group", group);
+          objects = await query(group, squery);
         } catch (e) {
           console.error(e);
+          objects = null;
+        }
+      }
+      if (objects) {
+        if (objects instanceof Array) {
+          renderObjects(obj, name, objects);
+        } else {
+          try {
+            renderObject(obj, name, objects, true);
+          } catch (e) {
+            console.error(e);
+          }
         }
       } else {
-        console.error("group is empty");
+        obj.textContent = "No object(s) returned";
       }
     }
 
     let config = {};
 
-    window.putGrInfo = function (idname) {
-      let obj = document.getElementById(idname);
-      let gid = obj.value;
-      config.gid = gid;
+    window.selectGr = function () {
       /* add gid to the URL display of the browser */
-      history.pushState(config, gid, "?gid=" + gid);
-      renderGID(gid).catch(console.error);
+      config.gid = document.getElementById('grlist').value;
+      var elt = document.getElementById("g" + config.gid);
+      if (elt) {
+        elt.selected = true;
+      }
+      putGrInfo();
+    };
+
+    window.putGrInfo = function () {
+      /* add gid to the URL display of the browser */
+      history.pushState(config, config.gid, "?gid=" + config.gid + ((config.query)? "&query="+config.query : ""));
+      renderGID().catch(console.error);
     };
 
     setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
@@ -137,18 +184,23 @@
       for (let element of elts) {
         jsonrender({ groups: groups }, element);
       }
-      let gid = (new URL(document.location)).searchParams.get("gid");
-      if (!gid) {
+      if (!config.gid) {
         renderObject(document.getElementById("object"), "groups", groups);
       }
       return groups;
     }).catch(console.error);
 
     (function () {
-      let gid = (new URL(document.location)).searchParams.get("gid");
+      let params = (new URL(document.location)).searchParams;
+      let gid = params.get("gid");
+      let q = params.get("query");
+      if (q) {
+        config.query = q;
+        document.getElementById("query").value = q;
+      }
       if (gid) {
         config.gid = gid;
-        renderGID(gid);
+        renderGID();
       }
     })();
     // browser back and forward buttons
