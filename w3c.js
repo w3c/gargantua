@@ -28,7 +28,7 @@ async function fetchCharter(url) {
 // is a user an invited expert?
 function isInvitedExpert(obj, group) {
 
-  if (group["type"] !== "working group" && group["type"] !== "interest group" ) {
+  if (group["type"] !== "working group" && group["type"] !== "interest group") {
     // Not applicable, so return false
     return false;
   }
@@ -144,7 +144,7 @@ async function ongroup(group) {
           if (service.link.indexOf("https://lists.w3.org/Archives/Public/") === 0) {
             service.notify = `https://github.com/w3c/github-notify-ml-config/blob/master/mls.json`;
             service.stats = new LazyPromise(() =>
-                fetchJSON("https://lists.w3.org/Archives/Public/00stats.json").then(mls => mls[service.shortdesc]).catch(console.error));
+              fetchJSON("https://lists.w3.org/Archives/Public/00stats.json").then(mls => mls[service.shortdesc]).catch(console.error));
             service["notify-ml-config"] =
               new LazyPromise(() =>
                 fetchJSON("https://w3c.github.io/github-notify-ml-config/mls.json").then(mls => mls[`${service.shortdesc}@w3.org`]
@@ -197,9 +197,9 @@ async function ongroup(group) {
       specConfig(repo); // this will decorate the object
       repo["wpt"] = {
         specs: new LazyPromise(() => fetchJSON("https://foolip.github.io/day-to-day/data.json")
-        .then(data =>
-          data.specs.filter(s => (s.specrepo === repo.fullName))))
-        }
+          .then(data =>
+            data.specs.filter(s => (s.specrepo === repo.fullName))))
+      }
     });
     return repositories.sort(sortRepositories);
   }).catch(console.error));
@@ -220,7 +220,7 @@ async function ongroup(group) {
         });
       });
 
-      // bring the
+      // enhance specifications information
       specs.forEach(spec => {
         if (!spec["latest-version"]) {
           console.warn("No latest-version?");
@@ -230,7 +230,19 @@ async function ongroup(group) {
         spec["rec-track"] = new LazyPromise(() => spec["latest-version"].then(latest => latest["rec-track"]));
         spec.history = `https://www.w3.org/standards/history/${spec.shortname}`;
         spec.description = textToNodes(spec.description);
-      })
+        spec.wpt = new LazyPromise(() => fetchJSON("https://foolip.github.io/day-to-day/specs.json")
+          .then(data =>
+            data.filter(s => (s.href === spec["editor-draft"])))
+          .then(data => (data.length)? data[0] : undefined)
+          .then(data => {
+            if (data) {
+              data.path = data.testpath || data.id;
+              data.icons = ["chrome", "edge", "firefox", "safari"].map(product =>
+                `https://wpt-badge.glitch.me/?product=${product}&prefix=/` + data.path);
+            }
+            return data;
+          }))
+      });
 
       // deal with TR versioning
       // @@this needs to be built-in in the W3C API instead!
