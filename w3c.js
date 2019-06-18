@@ -267,6 +267,26 @@ async function ongroup(group) {
     }).catch(console.error));
   }
 
+  group["spec-groups"] = new LazyPromise(() => group["specifications"].then(specs => {
+    let uniq = {};
+    specs.forEach(spec => {
+      let obj = uniq[spec.version.name];
+      if (!obj) {
+        uniq[spec.version.name] = obj = {};
+        obj.specifications = [];
+        obj.name = spec.version.name;
+        obj.icons = ["chrome", "edge", "firefox", "safari"].map(product => {
+          return {
+            product: product,
+            href: `https://wpt-badge.glitch.me/?product=${product}&prefix=/` + spec.version.name
+          };
+        });
+      }
+      obj.specifications.push(spec);
+    });
+    return uniq;
+  }));
+
   return group;
 } // END fetchGroup
 
