@@ -8,6 +8,16 @@ import mlsConfig from "./mls-config.js";
 
 const NAME_CLEANUP = [["css3-", "css-"], ["NOTE-", ""], ["WD-", ""]];
 
+function titleCleanup(title) {
+  // from https://github.com/foolip/day-to-day/blob/master/build/specs.js#L180
+  return title.replace(/ \([^)]+\)$/, '')
+  .replace(/ Level \d+$/, '')
+  .replace(/ Module$/, '')
+  .replace(/ \d+(\.\d+)?$/, '')
+
+  .replace(/ Specification$/, '');
+}
+
 async function fetchCharter(url) {
   let charter = {};
   let doc = await fetchHTML(url);
@@ -275,6 +285,7 @@ async function ongroup(group) {
         uniq[spec.version.name] = obj = {};
         obj.specifications = [];
         obj.name = spec.version.name;
+        obj.title = titleCleanup(spec.title);
         obj.icons = ["chrome", "edge", "firefox", "safari"].map(product => {
           return {
             product: product,
