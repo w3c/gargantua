@@ -237,8 +237,12 @@ async function ongroup(group) {
           .then(data => {
             if (data) {
               data.path = data.testpath || data.id;
-              data.icons = ["chrome", "edge", "firefox", "safari"].map(product =>
-                `https://wpt-badge.glitch.me/?product=${product}&prefix=/` + data.path);
+              data.icons = ["chrome", "edge", "firefox", "safari"].map(product => {
+                return {
+                  product: product,
+                  href: `https://wpt-badge.glitch.me/?product=${product}&prefix=/` + data.path
+                };
+              });
             }
             return data;
           }))
