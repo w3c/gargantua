@@ -284,7 +284,7 @@ async function ongroup(group) {
       }
       obj.specifications.push(spec);
     });
-    return uniq;
+    return Object.entries(uniq).map(e => e[1]);
   }));
 
   return group;
