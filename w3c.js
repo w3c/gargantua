@@ -275,6 +275,17 @@ async function ongroup(group) {
       });
       return specs;
     }).catch(console.error));
+
+    group["active-specifications"] = new LazyPromise(() => group["specifications"].then(async (specs) => {
+      let active = [];
+      for (const spec of specs) {
+        const status = await spec["latest-status"];
+        if (status !== "Retired") {
+          active.push(spec);
+        }
+      }
+      return active;
+    }));
   }
 
   group["spec-groups"] = new LazyPromise(() => group["specifications"].then(specs => {
