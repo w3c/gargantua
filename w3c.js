@@ -288,7 +288,7 @@ async function ongroup(group) {
     }));
   }
 
-  group["spec-groups"] = new LazyPromise(() => group["specifications"].then(specs => {
+  group["spec-groups"] = new LazyPromise(() => group["active-specifications"].then(specs => {
     let uniq = {};
     specs.forEach(spec => {
       let obj = uniq[spec.version.name];
