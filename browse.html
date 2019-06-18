@@ -118,9 +118,11 @@
     }
 
     window.onfocusing = function(e) {
-      let elt = document.getElementById("g" + config.gid);
-      if (elt) elt.selected = true;
-      else console.warn("empty g" + gid)
+      if (config.gid !== undefined) {
+        let elt = document.getElementById("g" + config.gid);
+        if (elt) elt.selected = true;
+        else console.warn("empty g" + config.gid);
+      }
     }
 
     function getQuery() {
