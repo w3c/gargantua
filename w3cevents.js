@@ -74,6 +74,8 @@ async function fetchEvents() {
     return EVENT_CACHE = events.sort(sortEvents);
   }).catch(console.error).then(() => fetchHTML(TPAC_SCHEDULE))
     .then(doc => {
+      if (!doc) return EVENT_CACHE;
+
       let monday = getTPACRooms(doc, "Monday", "2020-10-26");
       let tuesday = getTPACRooms(doc, "Tuesday", "2020-10-27");
       let thursday = getTPACRooms(doc, "Thursday", "2020-10-29");
