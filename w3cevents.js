@@ -1,6 +1,6 @@
 import { fetchHTML } from "./fetch-utils.js";
 
-const TPAC_SCHEDULE = "https://www.w3.org/2019/09/TPAC/schedule.html";
+const TPAC_SCHEDULE = "https://www.w3.org/2020/10/TPAC/schedule.html";
 
 function getTPACRooms(doc, weekday, day) {
   let tds = doc.getElementById(weekday).querySelectorAll("table.rooms tr td:first-child");
@@ -74,10 +74,10 @@ async function fetchEvents() {
     return EVENT_CACHE = events.sort(sortEvents);
   }).catch(console.error).then(() => fetchHTML(TPAC_SCHEDULE))
     .then(doc => {
-      let monday = getTPACRooms(doc, "Monday", "2019-09-16");
-      let tuesday = getTPACRooms(doc, "Tuesday", "2019-09-17");
-      let thursday = getTPACRooms(doc, "Thursday", "2019-09-19");
-      let friday = getTPACRooms(doc, "Friday", "2019-09-20");
+      let monday = getTPACRooms(doc, "Monday", "2020-10-26");
+      let tuesday = getTPACRooms(doc, "Tuesday", "2020-10-27");
+      let thursday = getTPACRooms(doc, "Thursday", "2020-10-29");
+      let friday = getTPACRooms(doc, "Friday", "2020-10-30");
       let events = (EVENT_CACHE) ? EVENT_CACHE : [];
       let tpacevents = [].concat(monday).concat(tuesday).concat(thursday).concat(friday);
       let trimmed_events = [];
@@ -100,7 +100,7 @@ async function fetchEvents() {
       events = events.concat(trimmed_events);
 
       return EVENT_CACHE = events.sort(sortEvents);
-    }).catch(console.error)
+    }).catch(console.error).then(() => EVENT_CACHE);
 }
 
 export default fetchEvents;
