@@ -93,17 +93,6 @@ async function ongroup(group) {
     }));
   }
 
-  // enhance users
-  if (group["users"]) {
-    const lazy_users = group["users"];
-    group["users"] = new LazyPromise(() => lazy_users.then(async (users) => {
-      for (const user of users) {
-        user["invited-expert"] = isInvitedExpert(user, group);
-      }
-      return users;
-    }));
-  }
-
   // enhance active-charter
   if (group["active-charter"]) {
     const lazy_charter = group["active-charter"];
