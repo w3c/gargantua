@@ -171,6 +171,9 @@ async function ongroup(group) {
           .then(data =>
             data.specs.filter(s => (s.specrepo === repo.fullName))))
       }
+      if (repo.labels && repo.labels.edges) {
+        repo.labels = repo.labels.edges; // validate-repos workout
+      }
     });
     return repositories.sort(sortRepositories);
   }).catch(console.error));
