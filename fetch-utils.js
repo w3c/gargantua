@@ -25,10 +25,10 @@ let JSON_CACHE = {};
  *
  * @param {String} url
  */
-async function fetchJSON(url) {
+function fetchJSON(url) {
   const ENTRY = url.toString();
   if (JSON_CACHE[ENTRY]) return JSON_CACHE[ENTRY];
-  return JSON_CACHE[ENTRY] = await fetch(url)
+  return JSON_CACHE[ENTRY] = fetch(url)
     .then(r => {
       if (!r.ok) {
         throw new Error(`GET ${r.url} ${r.status}`);
@@ -64,10 +64,10 @@ let HTML_CACHE = {};
  *
  * @param {String} url
  */
-async function fetchHTML(url) {
+function fetchHTML(url) {
   const ENTRY = url.toString();
   if (HTML_CACHE[ENTRY]) return HTML_CACHE[ENTRY];
-  return HTML_CACHE[ENTRY] = await fetch(url)
+  return HTML_CACHE[ENTRY] = fetch(url)
     .then(async (r) => (new DOMParser()).parseFromString((await r.text()), "text/html"));
 }
 
