@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html lang="en-US" data-apiary-key="esj1ar4rl3scks04kg8kkwo4kwc8ow4">
+
+<head>
+  <meta charset="utf-8">
+  <title>Team Dashboard</title>
+  <meta name="description" content="A group page">
+  <meta name="keywords" content="w3c,w3,w3.org,group,page">
+  <meta name="author" content="W3C">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="//www.w3.org/favicon.ico">
+  <style>
+    table {
+      border-collapse: collapse
+    }
+
+    tr {
+      border-bottom: 1px solid black;
+      border-top: 1px solid black;
+    }
+
+    th {
+      border-right: 1px solid black;
+      vertical-align: top;
+    }
+
+    td {
+      padding: 1ex;
+    }
+
+    .warning {
+      color: black;
+      font-weight: bold;
+      background-color: yellow;
+      border-radius: 1.5ex;
+      padding: 0.25ex;
+    }
+    .impls, .impl-shipped, .impl-indevelopment, .impl-consideration {
+      padding: 0.5ex; border-radius: 0.4ex;
+    }
+    .impls {
+      color: white; background-color: dimgrey; font-size: 90%;
+    }
+    .impl-shipped {
+      font-weight: bold; background-color: green;
+    }
+    .impl-indevelopment {
+      background-color: rosybrown;
+    }
+    .impl-consideration {
+      background-color: lightcoral;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Chair Dashboard</h1>
+
+  <!--
+  <p>Choose your group from the pull-down menu below and push the "Get Your Group's Info" button:</p>
+
+  <form class='groups'>
+    <select id="grlist" data-query='groups'>
+      <option value="${id}">${name}</option>
+    </select>
+    <input type="button" value="Get Your Group's Info" onclick="putGrInfo('grlist');" />
+    <p>You may filter the lists of groups in the pull-down menu to <a href="?gtype=working">working groups</a>, <a href="?gtype=interest">interest groups</a>, or <a href="?gtype=community">community groups</a></p>
+  </form>
+-->
+
+  <p id='user'>
+    <span data-if='user[github!=true]'>
+      <a class='warning' href="https://www.w3.org/users/${user.id}/connectedaccounts">Connect your W3C and your GitHub
+        accounts</a>
+    </span>
+  </p>
+
+  <hr />
+  <section class='group' data-query='group'>
+    <h2>${name}</h2>
+
+    <p>${description}</p>
+
+    <p><a href='${edit}'>edit group</a>, <a href="browse.html?gid=${id}">browse data</a>, <a
+        href='/PM/Groups/?gid=${id}'>public page</a></p>
+    <table>
+      <tr>
+        <th>Homepage</th>
+        <td><a href='${homepage}'>${homepage}</a></td>
+      </tr>
+
+      <tr>
+        <th>Charter</th>
+        <td><span data-query="active-charter"><a href="${uri}">from ${start} to ${end}</a></span>
+          (<span data-if="::self[closed=true]"><span>closed</span><span>open</span></span>)</td>
+      </tr>
+
+      <tr>
+        <th>Chair(s)<br>(<a href="https://www.w3.org/2000/09/dbwg/details?group=${id}">edit</a>)</th>
+        <td><span data-query="chairs">
+            <span data-if="connected-accounts.*[service=github]">
+              <a href="${connected-accounts.*[service=github].href}">${name}</a>
+              <span>${name}</span></span> (<span data-if="::self[invited-expert=true]"><span>W3C Invited
+                Expert</span><span data-query="affiliations.*"><a
+                  href="https://www.w3.org/groups/organizations/${id}">${name}</a></span></span>),
+          </span>
+        </td>
+      </tr>
+
+      <tr>
+        <th>Team contact(s)<br>(<a href="https://www.w3.org/2000/09/dbwg/details?group=${id}">edit</a>)</th>
+        <td><span data-query="team-contacts">
+            <span data-if="connected-accounts.*[service=github]">
+              <a href="${connected-accounts.*[service=github].href}">${name}</a>
+              <span>${name}</span></span>,
+          </span></td>
+      </tr>
+      <tr>
+        <th>Service(s)<br>(<a href="${edit-services}">edit</a>)</th>
+        <td>
+          <dl data-query="services">
+            <dt><a href='${link}'>${shortdesc}</a> (<span>${type}</span>)</dt>
+            <dd><span data-if="::self[longdesc]"><span>${longdesc}</span></span>
+              <ul>
+                <span data-if='edit'>
+                  <li><a href='${edit}'>manage</a></li>
+                </span>
+                <span data-if='repositories'>
+                  <li><a href='${repositories}'>repositories</a></li>
+                </span>
+                <span data-if='stats.mpm'>
+                  <li>${stats.mpm} messages per month averaged over the last 6 months</li>
+                </span>
+                <span data-if='notify'>
+                  <li><span data-if='notify-ml-config'>
+                      <span>notify-ml-config: <a href='${notify}' data-query='notify-ml-config'
+                          data-filter='mlConfig'>${}</a></span>
+                      <a class='warning' title='No mailing list configuration detected. Consider adding one.'
+                        href='${notify}'>no notify-ml-config</a>
+                    </span></li>
+                </span>
+              </ul>
+          </dl>
+        </td>
+      </tr>
+
+      <tr>
+        <th>Participating organization(s)</th>
+        <td><span data-query="participations.*[individual=false]">
+            <a href="https://www.w3.org/groups/organizations/${organization.id}">${title}</a><span
+              data-if="organization[is-member!=true]"><span> <span class='warning'>(not a member)</span></span></span>,
+          </span></td>
+      </tr>
+
+      <tr>
+        <th>Individual(s)</th>
+        <td><span data-query="users">
+            <span data-if="connected-accounts.*[service=github]">
+              <a href="${connected-accounts.*[service=github].href}">${name}</a>
+              <span>${name}</span></span>,
+          </span></td>
+      </tr>
+
+      <tr>
+        <th>Invited Expert(s)<br>(<a href="${invited-experts.href}/pendingapps">edit</a>)</th>
+        <td>
+          <p><span data-if="participations.*[invited-expert=true]"><span>Current: <span
+                  data-query="participations.*[invited-expert=true]">
+                  <span><a href="https://www.w3.org/users/${user.id}">${title}</a>
+                    <span data-if="user.affiliations.*[id!=36747]"><span>(<span
+                          data-query="user.affiliations.*[id!=36747]"><a
+                            href="https://www.w3.org/groups/organizations/${id}">${name}</a></span>)</span></span>,
+                  </span>
+                </span></span></p>
+        </td>
+      </tr>
+
+      <tr>
+        <th>Upcoming Group meetings
+          <br>(<a href="https://www.w3.org/Web/Tools/Events/">edit</a>)
+        </th>
+        <td>
+          <span data-if="events.*">
+            <span data-query="events">
+              <dl>
+                <dt><a href="${href}">${summary}</a></dt>
+                <dd>In ${location}, from ${start} to ${end}</dd>
+              </dl>
+            </span>
+            <span>None found</span>
+          </span>
+        </td>
+      </tr>
+
+      <tr>
+        <th>GitHub repo(s)<br>(<a href="https://labs.w3.org/repo-manager/repo/new">create</a>)
+          <br>(<a href='https://w3c.github.io/w3c.json.html'>w3c.json doc</a>)
+          <br>(<a href='https://github.com/tobie/pr-preview'>prpreview doc</a>)</th>
+        <td>
+          <div data-if='repositories.*'>
+            <dl data-query='repositories'>
+              <dt><a href="https://github.com/${owner.login}/${name}/">${owner.login}/${name}</a>
+                (<span data-if='w3c'><span>${w3c.repo-type}</span><span class='warning'>No w3c.json</span></span>)</dt>
+              <dd>
+                <span data-if='homepageUrl'>
+                  <a href='${homepageUrl}'>
+                    <span data-if='description'>
+                      <span>${description}</span>
+                      <span>homepage</span>
+                    </span>
+                  </a>
+                  <span data-if='description'>
+                    <span>${description}</span>
+                    <span>${owner.login}/${name}</span>
+                  </span>
+                </span>
+                <span data-if='issues.*'>
+                  <span><br>
+                    (<a data-query='issues' data-filter='filterOpenIssues'
+                      href="https://github.com/${owner.login}/${name}/issues">${length} issues</a>,
+                    <a data-query='issues' data-filter='filterOpenPRs'
+                      href="https://github.com/${owner.login}/${name}/pulls">${length} PRs</a>)
+                  </span>
+                </span>
+                <br><a href="https://github.com/${owner.login}/${name}/settings">settings</a>,
+                <a href="https://github.com/${owner.login}/${name}/settings/collaboration">collaboration</a>,
+                <a href="https://github.com/${owner.login}/${name}/settings/hooks">hooks</a>
+                <br>default branch: <a
+                  href="https://github.com/${owner.login}/${name}/tree/${defaultBranch.name}">${defaultBranch.name}</a>
+                <br>Protections: <span data-if="branchProtectionRules.nodes.*">
+                  <span data-query="branchProtectionRules.nodes">${pattern},</span>
+                  <span><a class='warning' href='https://github.com/${owner.login}/${name}/settings/branches'>No branch
+                      protections</a></span>
+                </span>
+                <br>Tools:
+                <span data-if="w3c[repo-type=rec-track]">
+                  <span data-if="prpreview">
+                    <span><a
+                        href='https://github.com/${owner.login}/${name}/blob/${defaultBranch.name}/.pr-preview.json'>prpreview
+                        ${prpreview.type}</a>,</span>
+                    <span><a class='warning' href='https://tobie.github.io/pr-preview/config.html'>No
+                        .pr-preview.json</a></span>
+                  </span>
+                  <span data-if="prpreview">
+                    <span><a
+                        href='https://github.com/${owner.login}/${name}/blob/${defaultBranch.name}/.pr-preview.json'>prpreview
+                        ${prpreview.type}</a>,</span>
+                  </span>
+                </span>
+              </dd>
+            </dl>
+            <p>No repositories found</p>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th>Specification(s)
+          <br>(<a href="https://www.w3.org/Guide/transitions">transition requirements</a>)</th>
+        <td>
+          <div data-if="active-specifications.*">
+            <dl data-query="active-specifications">
+              <dt><a href='${latest-version.shortlink}'>${title}</a></dt>
+              <dd>Status: ${latest-version.status}<br>Last update: ${latest-version.date}
+                <span data-if='milestones.*'>
+                  <span><br>Milestones:
+                    <span data-query='milestones' data-filter='milestones'>${}, </span>
+                  </span>
+                </span>
+                <span data-if='editor-draft'>
+                  <span><br><a href="${editor-draft}">Editor's draft</a></span>
+                </span>
+                <br><a href="https://www.w3.org/standards/history/${shortname}">history</a>, <a
+                  href="https://www.w3.org/TR/${version.name}/all/">all</a></span>
+              </dd>
+            </dl>
+            <p>No specifications found</p>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th>Milestones
+          <br>(<a href="${dashboard.edit}">Edit</a>)
+          <br>(<a href="https://w3c.github.io/spec-releases/milestones/">Calculate</a>)</th>
+        </th>
+        <td>
+          <div data-if="specifications.*.milestones.*">
+            <dl data-query="specifications" data-filter='activeSpecs'>
+              <div data-if="milestones">
+                <div>
+                  <dt><a href='${latest-version.shortlink}'>${title}</a></dt>
+                  <dd>Milestones:
+                    <span data-query='milestones' data-filter='milestones'>${}, </span>
+
+                    <br><a href="https://www.w3.org/standards/history/${shortname}">history</a>, <a
+                      href="https://www.w3.org/TR/${version.name}/all/">all</a></span>
+                  </dd>
+                </div>
+              </div>
+            </dl>
+            <p>No milestones</p>
+          </div>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <th><a href='${pp-status}'>IPP</a></th>
+        <td>
+          <span data-if="spec-groups-@@">
+            <span data-query="spec-groups">
+              <span><a href="https://www.w3.org/TR/${name}/all/">${name}</a></span>,
+            </span>
+            <span>@@TODO</span>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <th>Specification Cover Page(s)</th>
+        <td>
+          <span data-if="spec-groups.*">
+            <dl data-query="spec-groups">
+              <dt><a href="https://www.w3.org/TR/${name}/all/">${title}</a></dt>
+              <dd>
+                Versions:
+                <span data-query='specifications'><a href='{$shortlink}'>
+                    <span data-if='version.level'><span>${version.level}</span><span>1?</span></span>
+                    <span>(${latest-status})</span>
+                  </a>,</span>
+                <span data-if='icons.*'>
+                  <span><br><a href='${wpt-fyi}'>WPT</a>:
+                    <span data-query='icons'><img src='${href}' alt='WPT ${product} badge'></span>
+                  </span>
+                </span>
+                <span data-if='implementations.implementations.*'>
+                  <span><br>Browser status:
+                    <span data-query='implementations.implementations'>
+                      <a class='impls' href='${href}'>${source} | ${ua} <span class='impl-${status}'>${status}</span></a>,
+                    </span>
+                  </span>
+                </span>
+              </dd>
+            </dl>
+            <span>@@TODO</span>
+          </span>
+        </td>
+      </tr>
+
+    </table>
+
+    </div>
+
+  </section>
+
+  <hr />
+  <script type="module">
+    import { fetchGroup, fetchGroups, fetchUser, setW3CKey } from './w3c.js';
+    import query from './jsonquery.js';
+    import jsonrender from './jsonrender.js';
+    import LazyPromise from './lazypromise.js';
+
+    const functions =
+    {
+      filterOpenIssues: function (issues) {
+        let openIssues = issues.filter(i => i.state === "open" && !i.isPullRequest);
+        return { length: openIssues.length };
+      },
+      filterOpenPRs: function (issues) {
+        let openPRs = issues.filter(i => i.state === "open" && i.isPullRequest);
+        return { length: openPRs.length };
+      },
+      activeSpecs: async function (specs) {
+        return (await Promise.all(specs.map(spec =>
+          spec["latest-status"].then(s => (s !== "Retired") ? spec : undefined)))).filter(spec => spec);
+      },
+      milestones: function (milestones) {
+        return Object.entries(milestones).map(s => s[0] + " " + s[1]);
+      },
+      mlConfig: function (confs) {
+        return Object.keys(confs).map(c => " " + c);
+      },
+    };
+
+    setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
+
+    let gid = document.documentElement.getAttribute("data-gid");
+
+    (function () {
+      let ngid = (new URL(document.location)).searchParams.get("gid");
+      if (!ngid) {
+        const matches = document.location.toString().match(new RegExp("([0-9]+)", "g"));
+        if (matches.length > 0) {
+          const last = matches[matches.length - 1];
+          if (last.length > 4)
+            ngid = last;
+        }
+      }
+      if (ngid) gid = ngid;
+      fetchGroup(gid).then(group => {
+        console.log(group);
+        let elts = document.querySelectorAll("*.group-data");
+        for (let element of elts) jsonrender({ group: group }, element);
+      });
+    })();
+
+    fetchUser().then(user => {
+      jsonrender({ user: user }, window.document.getElementById("user"));
+    }).catch(console.error);
+
+  </script>
+
+</body>
+
+</html>
