@@ -75,8 +75,8 @@
 
     <p>${description}</p>
 
-    <p><a href='${edit}'>edit group</a>, <a href="browse.html?gid=${id}">browse data</a>, <a
-        href='/PM/Groups/?gid=${id}'>public page</a></p>
+    <p><a href="browse.html?gid=${id}">browse data</a>, <a
+        href='/PM/Groups/?gid=${id}'>public generated page</a></p>
     <table>
       <tr>
         <th>Homepage</th>
@@ -90,7 +90,7 @@
       </tr>
 
       <tr>
-        <th>Chair(s)<br>(<a href="https://www.w3.org/2000/09/dbwg/details?group=${id}">edit</a>)</th>
+        <th>Chair(s)</th>
         <td><span data-query="chairs">
             <span data-if="connected-accounts.*[service=github]">
               <a href="${connected-accounts.*[service=github].href}">${name}</a>
@@ -102,7 +102,7 @@
       </tr>
 
       <tr>
-        <th>Team contact(s)<br>(<a href="https://www.w3.org/2000/09/dbwg/details?group=${id}">edit</a>)</th>
+        <th>Team contact(s)</th>
         <td><span data-query="team-contacts">
             <span data-if="connected-accounts.*[service=github]">
               <a href="${connected-accounts.*[service=github].href}">${name}</a>
@@ -110,7 +110,7 @@
           </span></td>
       </tr>
       <tr>
-        <th>Service(s)<br>(<a href="${edit-services}">edit</a>)</th>
+        <th>Service(s)</th>
         <td>
           <dl data-query="services">
             <dt><a href='${link}'>${shortdesc}</a> (<span>${type}</span>)</dt>
@@ -156,7 +156,7 @@
       </tr>
 
       <tr>
-        <th>Invited Expert(s)<br>(<a href="${invited-experts.href}/pendingapps">edit</a>)</th>
+        <th>Invited Expert(s)</th>
         <td>
           <p><span data-if="participations.*[invited-expert=true]"><span>Current: <span
                   data-query="participations.*[invited-expert=true]">
@@ -171,7 +171,7 @@
 
       <tr>
         <th>Upcoming Group meetings
-          <br>(<a href="https://www.w3.org/Web/Tools/Events/">edit</a>)
+          <br>(<a href="https://www.w3.org/Web/Tools/Events/">edit W3C Calendar</a>)
         </th>
         <td>
           <span data-if="events.*">
@@ -187,7 +187,7 @@
       </tr>
 
       <tr>
-        <th>GitHub repo(s)<br>(<a href="https://labs.w3.org/repo-manager/repo/new">create</a>)
+        <th>GitHub repo(s)
           <br>(<a href='https://w3c.github.io/w3c.json.html'>w3c.json doc</a>)
           <br>(<a href='https://github.com/tobie/pr-preview'>prpreview doc</a>)</th>
         <td>
@@ -273,7 +273,6 @@
       </tr>
       <tr>
         <th>Milestones
-          <br>(<a href="${dashboard.edit}">Edit</a>)
           <br>(<a href="https://w3c.github.io/spec-releases/milestones/">Calculate</a>)</th>
         </th>
         <td>
