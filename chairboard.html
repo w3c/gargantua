@@ -390,7 +390,7 @@
       fetchGroup(gid).then(group => {
         console.log(group);
         let elts = document.querySelectorAll("*.group-data");
-        for (let element of elts) jsonrender({ group: group }, element);
+        for (let element of elts) jsonrender({ group: group }, element, functions);
       });
     })();
 
