@@ -220,6 +220,8 @@ async function ongroup(group) {
             }
             return data;
           }))
+          spec.implementations = new LazyPromise(() => fetchJSON("https://w3c.github.io/web-roadmaps/data/impl.json")
+          .then(data => data[spec["shortname"]]));
       });
 
       // deal with TR versioning
