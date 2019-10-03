@@ -269,9 +269,9 @@ async function ongroup(group) {
             href: `https://wpt-badge.glitch.me/?product=${product}&prefix=/` + spec.version.name
           };
         });
+        obj["wpt-fyi"] = "https://wpt.fyi/results/" + spec.shortname;
         obj.implementations = new LazyPromise(() => fetchJSON("https://w3c.github.io/web-roadmaps/data/impl.json")
-        .then(data => data[spec["shortname"]]));
-
+        .then(data => data[spec.shortname]));
       }
       obj.specifications.push(spec);
     });
