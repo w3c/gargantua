@@ -144,7 +144,7 @@ async function ongroup(group) {
     const repositories = data.groups[groupId].repos.map(repo => {
       let GH = data.repos.filter(r => (r.name === repo.name && r.owner.login === repo.fullName.split('/')[0]))[0];
       GH.fullName = repo.fullName;
-      GH.retrieved = timestamp;
+      GH.retrievedAt = timestamp;
       if (GH.w3c && GH.w3c["repo-type"]) { // some shorthands
         GH.hasRecTrack = GH.w3c["repo-type"].includes("rec-track");
         GH.hasNote = GH.w3c["repo-type"].includes("note");
