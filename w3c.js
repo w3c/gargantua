@@ -160,9 +160,11 @@ async function ongroup(group) {
       // associate issues with their repositories
       repo["issues"] = new LazyPromise(async () => {
         const dash = await group.dashboard.repositories;
+        const name = repo.name.toLowerCase();
+        const owner = repo.owner.login.toLowerCase();
         let issues = Object.entries(dash)
           .map(r => r[1])
-          .filter(r => (r.repo.name === repo.name && r.repo.owner === repo.owner.login))[0];
+          .filter(r => (r.repo.name.toLowerCase() === name && r.repo.owner.toLowerCase() === owner))[0];
         if (issues) return issues.issues;
       });
       // associate spec configuration with repositories
