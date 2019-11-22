@@ -84,7 +84,8 @@
       </tr>
 
       <tr>
-        <th>Charter</th>
+        <th>Charter<br>
+          (<a href='https://w3c.github.io/charter-drafts/charter-template.html?group=${id}'>new template</a>)</th>
         <td><span data-query="active-charter"><a href="${uri}">from ${start} to ${end}</a></span>
           (<span data-if="::self[closed=true]"><span>closed</span><span>open</span></span>)</td>
       </tr>
@@ -139,7 +140,8 @@
       </tr>
 
       <tr>
-        <th>Participating organization(s)</th>
+        <th>Participating organization(s)<br>
+          (<a href='${pp-status}'>IPP</a>)</th>
         <td><span data-query="participations.*[individual=false]">
             <a href="https://www.w3.org/groups/organizations/${organization.id}">${title}</a><span
               data-if="organization[is-member!=true]"><span> <span class='warning'>(not a member)</span></span></span>,
@@ -147,7 +149,8 @@
       </tr>
 
       <tr>
-        <th>Individual(s)</th>
+        <th>Individual(s)<br>
+          (<a href='https://www.w3.org/2000/09/dbwg/details?group=${id}'>DBWG</a>)</th>
         <td><span data-query="users">
             <span data-if="connected-accounts.*[service=github]">
               <a href="${connected-accounts.*[service=github].href}">${name}</a>
