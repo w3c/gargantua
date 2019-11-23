@@ -214,7 +214,7 @@ async function ongroup(group) {
           .then(data => {
             if (data) {
               data.path = data.testpath || data.id;
-              data.icons = ["chrome", "edge", "firefox", "safari"].map(product => {
+              data.icons = ["chrome", "firefox", "safari"].map(product => {
                 return {
                   product: product,
                   href: `https://wpt-badge.glitch.me/?product=${product}&prefix=/` + data.path
