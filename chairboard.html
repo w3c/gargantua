@@ -231,17 +231,24 @@
                 </span>
                 <br>Tools:
                 <span data-if="w3c[repo-type=rec-track]">
-                  <span data-if="prpreview">
-                    <span><a
+                  <span>
+                    <span data-if="prpreview">
+                      <span><a
                         href='https://github.com/${owner.login}/${name}/blob/${defaultBranch.name}/.pr-preview.json'>prpreview
                         ${prpreview.type}</a>,</span>
-                    <span><a class='warning' href='https://tobie.github.io/pr-preview/config.html'>No
+                      <span><a class='warning' href='https://tobie.github.io/pr-preview/config.html'>No
                         .pr-preview.json</a></span>
-                  </span>
-                  <span data-if="prpreview">
-                    <span><a
-                        href='https://github.com/${owner.login}/${name}/blob/${defaultBranch.name}/.pr-preview.json'>prpreview
-                        ${prpreview.type}</a>,</span>
+                    </span>
+                    <span data-if="labels.*[name=i18n-tracker]">
+                      <span></span>
+                      <span><a class='warning'
+                          href='https://w3c.github.io/issue-metadata.html'>No i18n-tracker</a>,</span>
+                    </span>
+                    <span data-if="labels.*[name=i18n-needs-resolution]">
+                      <span></span>
+                      <span><a class='warning'
+                          href='https://w3c.github.io/issue-metadata.html'>No i18n-needs-resolution</a>,</span>
+                    </span>
                   </span>
                 </span>
               </dd>
