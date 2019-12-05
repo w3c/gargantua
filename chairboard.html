@@ -86,8 +86,8 @@
       <tr>
         <th>Charter<br>
           (<a href='https://w3c.github.io/charter-drafts/charter-template.html?group=${id}'>new template</a>)</th>
-        <td><span data-query="active-charter"><a href="${uri}">from ${start} to ${end}</a></span>
-          (<span data-if="::self[closed=true]"><span>closed</span><span>open</span></span>)</td>
+        <td><span data-if="active-charter"><span><span data-query="active-charter"><a href="${uri}">from ${start} to ${end}</a></span>
+          (<span data-if="::self[closed=true]"><span>closed</span><span>open</span></span></span>)</span></td>
       </tr>
 
       <tr>
@@ -101,15 +101,19 @@
           </span>
         </td>
       </tr>
-
       <tr>
         <th>Team contact(s)</th>
-        <td><span data-query="team-contacts">
+        <td><span data-if="team-contacts.*">
+          <span data-query="team-contacts">
             <span data-if="connected-accounts.*[service=github]">
               <a href="${connected-accounts.*[service=github].href}">${name}</a>
               <span>${name}</span></span>,
-          </span></td>
+          </span>
+          <span>None</span>
+          </span>
+        </td>
       </tr>
+      </span>
       <tr>
         <th>Service(s)</th>
         <td>
@@ -186,6 +190,7 @@
             </span>
             <span>None found</span>
           </span>
+          <p><strong>Note: </strong> W3C doesn't <a href="https://github.com/w3c/modern-tooling/issues/68">support a calendar system</a> yet for Groups. Use an entry "calendar" in the services section in the meantime :(</p>
         </td>
       </tr>
 
