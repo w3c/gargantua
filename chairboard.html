@@ -216,11 +216,11 @@
                     <span>${owner.login}/${name}</span>
                   </span>
                 </span>
-                <span data-if='issues.*'>
+                <span data-if='open_issues.*'>
                   <span><br>
                     (<a data-query='issues' data-filter='filterOpenIssues'
                       href="https://github.com/${owner.login}/${name}/issues">${length} issues</a>,
-                    <a data-query='issues' data-filter='filterOpenPRs'
+                    <a data-query='open_issues' data-filter='filterOpenPRs'
                       href="https://github.com/${owner.login}/${name}/pulls">${length} PRs</a>)
                   </span>
                 </span>
@@ -371,11 +371,11 @@
     const functions =
     {
       filterOpenIssues: function (issues) {
-        let openIssues = issues.filter(i => i.state === "open" && !i.isPullRequest);
+        let openIssues = issues.filter(i => i.state === "open" && !i.pull_request);
         return { length: openIssues.length };
       },
       filterOpenPRs: function (issues) {
-        let openPRs = issues.filter(i => i.state === "open" && i.isPullRequest);
+        let openPRs = issues.filter(i => i.state === "open" && i.pull_request);
         return { length: openPRs.length };
       },
       activeSpecs: async function (specs) {
