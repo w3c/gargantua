@@ -168,7 +168,7 @@ async function ongroup(group) {
         if (issues) return issues.issues;
       });
       repo["open_issues"] = new LazyPromise(async () => {
-        return fetch(`https://labs.w3.org/github-cache/v3/repos/${repo.owner.login}/${repo.name}/issues`);
+        return fetchJSON(`https://labs.w3.org/github-cache/v3/repos/${repo.owner.login}/${repo.name}/issues`);
       });
       // associate spec configuration with repositories
       specConfig(repo); // this will decorate the object
