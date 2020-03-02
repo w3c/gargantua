@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html lang="en-US" data-gid='45211' data-apiary-key="esj1ar4rl3scks04kg8kkwo4kwc8ow4">
+
+<head>
+  <meta charset="utf-8">
+  <title>Issue Dashboard</title>
+  <meta name="description" content="A group page">
+  <meta name="keywords" content="w3c,w3,w3.org,group,page">
+  <meta name="author" content="W3C">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="//www.w3.org/favicon.ico">
+  <script src='moment.min.js'></script>
+  <style>
+    body {
+      position: relative;
+      font-family: 'Roboto Condensed',Helvetica,Arial,sans-serif;
+      font-weight: 300;
+      background-color: #fff;
+      box-sizing: border-box;
+      min-height: 100%;
+    }
+    body > section {
+      margin: auto;
+      max-width: 50em;
+      padding: 60px 16px 16px;
+      min-height: 100%;
+    }
+    .app-bar {
+      display: block;
+      width: 100%;
+      background-color: #4285f4;
+      color: #fefefe;
+      overflow: hidden;
+      padding: 1em;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 42px;
+    font-weight: 300;
+    line-height: 1.2381em;
+    padding-top: .619em;
+    padding-bottom: 0;
+    }
+    .color--green {
+      font-weight: bold; color: green;
+    }
+    .color--red {
+      font-weight: bold; color: lightcoral;
+    }
+    h1, h2, h3, h4, h5, p {
+      margin: 0;
+    }
+    p.description {
+      margin: 1em;
+    }
+    h4 {
+      padding-top: .3em;
+    }
+    .medium, h4 {
+      font-size: 20px;
+      font-weight: 300;
+      line-height: 1.3em;
+      padding-bottom: 0;
+    }
+  </style>
+</head>
+
+<body class='group-data' data-query='group'>
+  <header class='app-bar'>
+    <h1>${name}</h1>
+  </header>
+    <p class='description'>${description}</p>
+
+    <section data-query='shownRepositories'>
+      <span data-if='shownIssues.*'>
+        <div>
+        <h2>${owner.login}/${name}</h2>
+        <div data-query='open_issues.*'>
+          <h4><a href="${html_url}">${title}</a></h4>
+          <div style="font-style: italic">
+            <span data-if='pull_request'>
+              <span><strong>pull request</strong> -</span>
+            </span>
+            <span data-query='comments' data-filter='prettyComments'>
+              <span class='${className}'>${text}</span>
+            </span>
+            -
+            <span data-query='updated_at' data-filter='prettyDate'>last update: <i class="${className}">${text}</i></span>
+            -
+            <span>assignee:
+              <span data-if='assignee'>
+                <i class="color--green">${assignee.login}</i>
+                <i class="color--red">none</i>
+              </span>
+            </span>
+            <span data-if='milestone'>
+              <span>- ${milestone.title}</span>
+            </span>
+            <span data-if='labels.*'>
+              <span> -
+                <span data-query='labels'>
+                  <span style="color: #${color}">${name}</span>
+                </span>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <section>
+       <h2>${name}</h2>
+       <p class='color--green'><strong>no open issues or pull requests</p>
+      </section>
+    </span>
+  </section>
+
+
+  </section>
+
+
+  <script type="module">
+    import { fetchGroup, setW3CKey } from './w3c.js';
+    import jsonrender from './jsonrender.js';
+
+    setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
+
+    function dateFormat(time) {
+      return moment(time).fromNow()
+    }
+
+    function dateColor(arg_time) {
+      const time = new Date(Date.parse(arg_time)),
+          now = new Date();
+
+      if (((now-time)/1000)/(60*60*24) > 14) {
+         return "color--red"
+      } else {
+        return "color--green"
+      }
+    };
+    const functions =
+    {
+      filterRepositories: (repositories) => {
+        let trackedRepositories = repositories.filter(i => i.state === "open" && !i.pull_request);
+        return { trackedRepositories };
+      },
+      prettyComments: (comments) => {
+        if (comments > 0) {
+          return { className: 'color--green', text: comments + " comment" + ((comments>1)?"s":"") }
+        } else {
+          return { className: 'color--red', text: "no comment" }
+        }
+      },
+      prettyDate: (time) => {
+        return { className: dateColor(time), text: dateFormat(time) }
+      },
+    };
+
+    function goodRepoType(type) {
+      const good =["rec-track", "note", "cg-report", "tests", "article"];
+      return good.includes(type);
+    }
+
+    function sortIssues(a, b) {
+      let now = new Date(),
+          aDate = new Date(Date.parse(a.updated_at)),
+          bDate = new Date(Date.parse(b.updated_at)),
+          aScore = 0,
+          bScore = 0;
+
+      // flag bugs with long idle time
+      aScore = ((now-aDate)/1000)/(60*60*24),
+      bScore = ((now-bDate)/1000)/(60*60*24);
+
+      // push bugs with less activity to the top
+      aScore += b.comments - a.comments,
+      bScore += a.comments - b.comments;
+
+      // push enhancements down on priority list
+      a.labels.forEach(function(label){
+        if (label.name == 'enhancement') { aScore -= 100 }
+      })
+      b.labels.forEach(function(label){
+        if (label.name == 'enhancement') { bScore -= 100 }
+      })
+
+      if (aScore < bScore)
+        return 1;
+      if (aScore > bScore)
+        return -1;
+      return 0;
+    }
+
+    let gid = document.documentElement.getAttribute("data-gid");
+
+    (function () {
+      let ngid = (new URL(document.location)).searchParams.get("gid");
+      if (!ngid) {
+        const matches = document.location.toString().match(new RegExp("([0-9]+)", "g"));
+        if (matches.length > 0) {
+          const last = matches[matches.length - 1];
+          if (last.length > 4)
+            ngid = last;
+        }
+      }
+      if (ngid) gid = ngid;
+      fetchGroup(gid).then(async (group) => {
+        const shownRepositories = [];
+        const repos = await group.repositories;
+        for (const repo of repos) {
+          const type = repo.w3c["repo-type"];
+          if (goodRepoType(type)
+            || (Array.isArray(type) && type.reduce((a, c) => a || goodRepoType(c), false))) {
+            shownRepositories.push(repo);
+            repo.shownIssues = repo.open_issues.then(issues => {
+              return issues.sort(sortIssues);
+            }).catch(err => err);
+          }
+        }
+        group.shownRepositories = shownRepositories;
+        return group;
+      }).then(group => {
+        console.log(group);
+        const elts = document.querySelectorAll("*.group-data");
+        for (const element of elts) jsonrender({ group: group }, element, functions);
+      });
+    })();
+
+  </script>
+
+</body>
+
+</html>
