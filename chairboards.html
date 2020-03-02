@@ -4,7 +4,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>LIst of boards for Chairs</title>
+  <title>Board for Chairs</title>
   <meta name="description" content="A group page">
   <meta name="keywords" content="w3c,w3,w3.org,group,page">
   <meta name="author" content="W3C">
@@ -20,6 +20,13 @@
       <li><a href='./chairboard.html?gid=${id}'>${name}</a></li>
     </ol>
   </section>
+
+  <p>
+    Groups: <a href="?gtype=working">working</a>
+    - <a href="?gtype=interest">interest</a>
+    - <a href="?gtype=community">community</a>
+    <!--  <a href="?gtype=business">business</a> -->
+  </p>
 
 <script type="module">
     import { fetchGroups, setW3CKey } from './w3c.js';
