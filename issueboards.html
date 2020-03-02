@@ -26,10 +26,8 @@
     <!--  <a href="?gtype=business">business</a> -->
   </p>
 <script type="module">
-    import { fetchGroups, setW3CKey } from 'https://w3c.github.io/gargantua/w3c.js';
-    import query from 'https://w3c.github.io/gargantua/jsonquery.js';
-    import jsonrender from 'https://w3c.github.io/gargantua/jsonrender.js';
-    import LazyPromise from 'https://w3c.github.io/gargantua/lazypromise.js';
+    import { fetchGroups, setW3CKey } from './w3c.js';
+    import jsonrender from './jsonrender.js';
 
     setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
 
