@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en-US" data-apiary-key="esj1ar4rl3scks04kg8kkwo4kwc8ow4">
+<head>
+  <meta charset="utf-8">
+  <title>Issue board</title>
+  <meta name="description" content="A group page">
+  <meta name="keywords" content="w3c,w3,w3.org,group,page">
+  <meta name="author" content="W3C">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="//www.w3.org/favicon.ico">
+</head>
+
+<body>
+
+  <h1>Issue Board for <span id='gtype'></span></h1>
+  <section class='groups'>
+    <ol id="grlist" data-query='groups'>
+      <li><a href='./issueboard.html?gid=${id}'>${name}</a></li>
+    </ol>
+  </section>
+
+<script type="module">
+    import { fetchGroups, setW3CKey } from 'https://w3c.github.io/gargantua/w3c.js';
+    import query from 'https://w3c.github.io/gargantua/jsonquery.js';
+    import jsonrender from 'https://w3c.github.io/gargantua/jsonrender.js';
+    import LazyPromise from 'https://w3c.github.io/gargantua/lazypromise.js';
+
+    setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
+
+    fetchGroups().then(groups => {
+      let gtypeElt = document.getElementById("gtype");
+      let gtype = (new URL(document.location)).searchParams.get("gtype");
+      if (gtype && gtype!="all") {
+        gtype = gtype + " group";
+        groups = groups.filter(grp => grp.type === gtype);
+      } else {
+        gtype = "all group"
+      }
+      gtypeElt.textContent = gtype + "s";
+      let elts = document.querySelectorAll("*.groups");
+      for (let element of elts) {
+        jsonrender({ groups: groups }, element);
+      }
+      return groups;
+    }).catch(console.error);
+
+  </script>
+</body>
+
+</html>
