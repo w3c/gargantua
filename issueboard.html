@@ -74,9 +74,8 @@
     <p class='description'>${description}</p>
 
     <section data-query='shownRepositories'>
+      <h2>${name} <span data-if='description'><span>- ${description}</span></span></h2>
       <span data-if='shownIssues.*'>
-        <div>
-        <h2>${owner.login}/${name}</h2>
         <div data-query='open_issues.*'>
           <h4>#${number} <a href="${html_url}">${title}</a></h4>
           <div style="font-style: italic">
@@ -107,12 +106,11 @@
             </span>
           </div>
         </div>
-      </div>
-      <section>
-       <h2>${owner.login}/${name}</h2>
-       <p class='color--green'><strong>no open issues or pull requests</p>
-      </section>
-    </span>
+        <section>
+          <h2>${name}</h2>
+          <p class='color--green'><strong>no open issues or pull requests</p>
+        </section>
+      </span>
   </section>
 
 
@@ -192,6 +190,28 @@
       return 0;
     }
 
+    function sortRepositories(a, b) {
+      let now = new Date(),
+          aDate = new Date(Date.parse(a.updated_at)),
+          bDate = new Date(Date.parse(b.updated_at)),
+          aScore = 0,
+          bScore = 0;
+
+      // flag repositories with long idle time
+      aScore = ((now-aDate)/1000)/(60*60*24),
+      bScore = ((now-bDate)/1000)/(60*60*24);
+
+      // push bugs with less activity to the top
+      aScore += a.comments - b.comments,
+      bScore += b.comments - a.comments;
+
+      if (aScore < bScore)
+        return 1;
+      if (aScore > bScore)
+        return -1;
+      return 0;
+    }
+
     let gid = document.documentElement.getAttribute("data-gid");
 
     (function () {
@@ -220,7 +240,7 @@
             }).catch(err => err);
           }
         }
-        group.shownRepositories = shownRepositories;
+        group.shownRepositories = shownRepositories.sort(sortRepositories);
         return group;
       }).then(group => {
         console.log(group);
