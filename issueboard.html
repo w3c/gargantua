@@ -37,11 +37,10 @@
 
     h2 {
       margin: 0;
-      font-size: 42px;
-    font-weight: 300;
-    line-height: 1.2381em;
-    padding-top: .619em;
-    padding-bottom: 0;
+      font-size: 2em;
+      font-weight: 300;
+      padding-top: .7em;
+      padding-bottom: 0;
     }
     .color--green {
       font-weight: bold; color: green;
@@ -64,6 +63,9 @@
       line-height: 1.3em;
       padding-bottom: 0;
     }
+    .full_name, .owner {
+      font-size: 70%;
+    }
   </style>
 </head>
 
@@ -74,7 +76,8 @@
     <p class='description'>${description}</p>
 
     <section data-query='shownRepositories'>
-      <h2>${name} <span data-if='description'><span>- ${description}</span></span></h2>
+      <h2><span class='full_name'><span class='owner'>${owner.login}/</span>${name}</span>
+         <span data-if='description'><span> - ${description}</span></span></h2>
       <span data-if='shownIssues.*'>
         <div data-query='open_issues.*'>
           <h4>#${number} <a href="${html_url}">${title}</a></h4>
