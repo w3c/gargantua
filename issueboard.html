@@ -64,7 +64,7 @@
       padding-bottom: 0;
     }
     .full_name, .owner {
-      font-size: 70%;
+      font-size: 80%;
     }
   </style>
 </head>
@@ -243,7 +243,6 @@
         group.shownRepositories = shownRepositories.sort(sortRepositories);
         return group;
       }).then(group => {
-        console.log(group);
         const elts = document.querySelectorAll("*.group-data");
         for (const element of elts) jsonrender({ group: group }, element, functions);
       });
