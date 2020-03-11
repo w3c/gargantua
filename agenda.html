@@ -175,14 +175,10 @@
       }
       if (ngid) gid = ngid;
       fetchGroup(gid).then(async (group) => {
-        const configs = await fetch(`${CACHE}/extra/ids/${group.id}`, {
-            mode: 'no-cors'
-          }).then(res => res.json());
+        const configs = await fetch(`${CACHE}/extra/ids/${group.id}`).then(res => res.json());
         const promises = [];
         for (const config of configs) {
-          promises.push(fetch(`${CACHE}/v3/repos/${config.repository}/issues?ttl=15`, {
-            mode: 'no-cors'
-          }).then(res => res.json())
+          promises.push(fetch(`${CACHE}/v3/repos/${config.repository}/issues?ttl=15`).then(res => res.json())
             .then(issues => {
               return { config, full_name: config.repository, issues: issues.filter(filterIssues) };
             }))
