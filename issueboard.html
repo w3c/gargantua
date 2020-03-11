@@ -73,7 +73,7 @@
   <header class='app-bar'>
     <h1>${name}</h1>
   </header>
-    <p class='description'>${description}</p>
+    <div data-if='description'><p class='description'>${description}</p></div>
 
     <section data-query='repositories'>
       <h2><span class='full_name'><span class='owner'>${owner.login}/</span>${name}</span>
