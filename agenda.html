@@ -123,6 +123,8 @@
 
     setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
 
+    const CACHE = "https://labs.w3.org/github-cache";
+
     function dateFormat(time) {
       return moment(time).fromNow()
     }
@@ -172,7 +174,6 @@
         }
       }
       if (ngid) gid = ngid;
-      const CACHE = "https://labs.w3.org/github-cache";
       fetchGroup(gid).then(async (group) => {
         const configs = await fetch(`${CACHE}/extra/ids/${group.id}`).then(res => res.json());
         const promises = [];
