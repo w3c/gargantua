@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html lang="en-US" data-gid='34314' data-apiary-key="oq0abw4w2bkwcs0k0kws44sok4cg48w">
+
+<head>
+  <meta charset="utf-8">
+  <title>Agenda</title>
+  <meta name="description" content="A group page">
+  <meta name="keywords" content="w3c,w3,w3.org,group,page">
+  <meta name="author" content="W3C">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="//www.w3.org/favicon.ico">
+  <script src='moment.min.js'></script>
+  <style>
+    body {
+      position: relative;
+      font-family: 'Roboto Condensed',Helvetica,Arial,sans-serif;
+      font-weight: 300;
+      background-color: #fff;
+      box-sizing: border-box;
+      min-height: 100%;
+    }
+    body > section {
+      margin: auto;
+      max-width: 50em;
+      padding: 60px 16px 16px;
+      min-height: 100%;
+    }
+    .app-bar {
+      display: block;
+      width: 100%;
+      background-color: #4285f4;
+      color: #fefefe;
+      overflow: hidden;
+      padding: 1em;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 2em;
+      font-weight: 300;
+      padding-top: .7em;
+      padding-bottom: 0;
+    }
+    .color--green {
+      font-weight: bold; color: green;
+    }
+    .color--red {
+      font-weight: bold; color: lightcoral;
+    }
+    h1, h2, h3, h4, h5, p {
+      margin: 0;
+    }
+    p.description {
+      margin: 1em;
+    }
+    h4 {
+      padding-top: .3em;
+    }
+    .medium, h4 {
+      font-size: 20px;
+      font-weight: 300;
+      line-height: 1.3em;
+      padding-bottom: 0;
+    }
+    .full_name, .owner {
+      font-size: 80%;
+    }
+  </style>
+</head>
+
+<body class='group-data' data-query='group'>
+  <header class='app-bar'>
+    <h1>${name} - Agenda items</h1>
+  </header>
+    <p class='description'>${description}</p>
+
+    <section data-query='repositories'>
+      <h2><span class='full_name'><span class='owner'>${full_name}</span>
+         <span data-if='description'><span> - ${description}</span></span></h2>
+      <span data-if='issues.*'>
+        <div data-query='issues.*'>
+          <h4>#${number} <a href="${html_url}">${title}</a></h4>
+          <div style="font-style: italic">
+            <span data-if='pull_request'>
+              <span><strong>pull request</strong> -</span>
+            </span>
+            <span data-query='comments' data-filter='prettyComments'>
+              <span class='${className}'>${text}</span>
+            </span>
+            -
+            <span data-query='updated_at' data-filter='prettyDate'>last update: <i class="${className}">${text}</i></span>
+            -
+            <span>assignee:
+              <span data-if='assignee'>
+                <i class="color--green">${assignee.login}</i>
+                <i class="color--red">none</i>
+              </span>
+            </span>
+            <span data-if='milestone'>
+              <span>- ${milestone.title}</span>
+            </span>
+            <span data-if='labels.*'>
+              <span> -
+                <span data-query='labels'>
+                  <span style="color: #${color}">${name}</span>
+                </span>
+              </span>
+            </span>
+          </div>
+        </div>
+        <p class='color--green'><strong>no open issues or pull requests</p>
+      </span>
+  </section>
+
+
+  </section>
+
+
+  <script type="module">
+    import { fetchGroup, setW3CKey } from 'https://www.w3.org/PM/Groups/w3c.js';
+    import jsonrender from 'https://www.w3.org/PM/Groups/jsonrender.js';
+
+    setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
+
+    function dateFormat(time) {
+      return moment(time).fromNow()
+    }
+
+    function dateColor(arg_time) {
+      const time = new Date(Date.parse(arg_time)),
+          now = new Date();
+
+      if (((now-time)/1000)/(60*60*24) > 14) {
+         return "color--red"
+      } else {
+        return "color--green"
+      }
+    };
+    const functions =
+    {
+      filterRepositories: (repositories) => {
+        let trackedRepositories = repositories.filter(i => i.state === "open" && !i.pull_request);
+        return { trackedRepositories };
+      },
+      prettyComments: (comments) => {
+        if (comments > 0) {
+          return { className: 'color--green', text: comments + " comment" + ((comments>1)?"s":"") }
+        } else {
+          return { className: 'color--red', text: "no comment" }
+        }
+      },
+      prettyDate: (time) => {
+        return { className: dateColor(time), text: dateFormat(time) }
+      },
+    };
+
+    function filterIssues(issue) {
+      return !!issue.labels.find(l => l.name.toLowerCase() == 'agenda');
+    }
+
+    let gid = document.documentElement.getAttribute("data-gid");
+
+    (function () {
+      let ngid = (new URL(document.location)).searchParams.get("gid");
+      if (!ngid) {
+        const matches = document.location.toString().match(new RegExp("([0-9]+)", "g"));
+        if (matches.length > 0) {
+          const last = matches[matches.length - 1];
+          if (last.length > 4)
+            ngid = last;
+        }
+      }
+      if (ngid) gid = ngid;
+      const CACHE = "https://labs.w3.org/github-cache";
+      fetchGroup(gid).then(async (group) => {
+        const configs = await fetch(`${CACHE}/extra/ids/${group.id}`).then(res => res.json());
+        const promises = [];
+        for (const config of configs) {
+          promises.push(fetch(`${CACHE}/v3/repos/${config.repository}/issues?ttl=15`).then(res => res.json())
+            .then(issues => {
+              return { config, full_name: config.repository, issues: issues.filter(filterIssues) };
+            }))
+        }
+        return Promise.all(promises).then(repositories => {
+          group.repositories = repositories.filter(repo => !!repo.issues.length);
+          return group;
+        })
+      }).then(group => {
+        console.log(group);
+        const elts = document.querySelectorAll("*.group-data");
+        for (const element of elts) jsonrender({ group: group }, element, functions);
+      });
+    })();
+
+// telemetry for performance monitoring
+const traceId = (""+Math.random()).substring(2, 18); // for resource correlation
+const rtObserver = new PerformanceObserver(list => {
+  const resources = list.getEntries().filter(entry => entry.name.startsWith(CACHE + '/extra')
+                                                      || entry.name.startsWith("https://api.github.com/"));
+  if (resources.length > 0) {
+    navigator.sendBeacon(`${CACHE}/monitor/beacon`, JSON.stringify({ traceId, resources }));
+  }
+});
+rtObserver.observe({entryTypes: ["resource"]});
+
+  </script>
+
+</body>
+
+</html>
