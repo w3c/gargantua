@@ -76,7 +76,7 @@
     <div data-if='description'><p class='description'>${description}</p></div>
 
     <section data-query='repositories'>
-      <h2><span class='full_name'><span class='owner'>${owner.login}/</span>${name}</span>
+      <h2><span class='full_name'>${full_name}</span>
          <span data-if='description'><span> - ${description}</span></span></h2>
       <span data-if='issues.*'>
         <div data-query='issues.*'>
@@ -228,7 +228,7 @@
       }
       if (ngid) gid = ngid;
       fetchGroup(gid).then(async (group) => {
-        const repositories = await fetch(`${CACHE}/extra/repos/${group.id}?fields=full_name,owner,name,w3c`).then(res => res.json());
+        const repositories = await fetch(`${CACHE}/extra/repos/${group.id}?fields=full_name,w3c`).then(res => res.json());
         const shownRepositories = [];
         for (const repo of repositories) {
           const type = repo.w3c["repo-type"];
