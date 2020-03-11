@@ -72,6 +72,7 @@
 <body class='group-data' data-query='group'>
   <header class='app-bar'>
     <h1>${name} - Agenda items</h1>
+    <h3 style='float: right'>(<a href='./issueboard.html?gid=${group.id}'>issues</a>)</h3>
   </header>
     <div data-if='description'><p class='description'>${description}</p></div>
 
@@ -116,6 +117,12 @@ agenda+ <a href="${html_url}">${title}</a></h4>
 </pre>
       <pre>no agenda item raised</pre>
     </div></section>
+
+    <section>
+      <h3>How does it work?</h3>
+      <p>This page searches for <code id='label'>agenda</code> (or containing this string) in all of the repositories owned by this group. You
+      may change this term by using the URL parameter <code>label</code>.</p>
+    </section>
 
   <script type="module">
     import { fetchGroup, setW3CKey } from './w3c.js';
@@ -178,11 +185,12 @@ agenda+ <a href="${html_url}">${title}</a></h4>
         }
       }
       if (ngid) gid = ngid;
+      document.getElementById("label").textContent = label;
       fetchGroup(gid).then(async (group) => {
         const repositories = await fetch(`${CACHE}/extra/repos/${group.id}?fields=full_name`).then(res => res.json());
         const promises = [];
         for (const repository of repositories) {
-          promises.push(fetch(`${CACHE}/v3/repos/${repository.full_name}/issues?ttl=15&labels=${label}&fields=html_url,title,comments,updated_at,assignee,labels,pull_request,milestone`).then(res => res.json())
+          promises.push(fetch(`${CACHE}/v3/repos/${repository.full_name}/issues?ttl=15&search=${label}&fields=html_url,title,comments,updated_at,assignee,labels,pull_request,milestone`).then(res => res.json())
             .then(issues => issues.filter(filterIssues)));
         }
         return Promise.all(promises).then(issues => {
