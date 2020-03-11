@@ -233,7 +233,9 @@
           if (goodRepoType(type)
             || (Array.isArray(type) && type.reduce((a, c) => a || goodRepoType(c), false))) {
             shownRepositories.push(repo);
-            repo.shownIssues = fetch(`https://labs.w3.org/github-cache/v3/repos/${repo.owner.login}/${repo.name}/issues?ttl=15`)
+            repo.shownIssues = fetch(`https://labs.w3.org/github-cache/v3/repos/${repo.owner.login}/${repo.name}/issues?ttl=15`, {
+                mode: 'no-cors'
+              })
               .then(res => res.json())
               .then(issues => {
                 return issues.sort(sortIssues);
