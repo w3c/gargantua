@@ -72,9 +72,9 @@
 <body class='group-data' data-query='group'>
   <header class='app-bar'>
     <h1>${name} - Agenda items</h1>
-    <h3 style='float: right'>(<a href='./issueboard.html?gid=${group.id}'>issues</a>)</h3>
   </header>
-    <div data-if='description'><p class='description'>${description}</p></div>
+  <p style='float: right'>(<a href='./issueboard.html?gid=${id}'>issues</a>)</p>
+  <div data-if='description'><p class='description'>${description}</p></div>
 
     <div data-if='issues.*'>
       <section data-query='issues'>
@@ -120,8 +120,8 @@ agenda+ <a href="${html_url}">${title}</a></h4>
 
     <section>
       <h3>How does it work?</h3>
-      <p>This page searches for <code id='label'>agenda</code> (or containing this string) in all of the repositories owned by this group. You
-      may change this term by using the URL parameter <code>label</code>.</p>
+      <p>This page searches for <code id='search'>agenda</code> (or containing this string) in all of the repositories owned by this group. You
+      may change this term by using the URL parameter <code>search</code>.</p>
     </section>
 
   <script type="module">
@@ -164,17 +164,13 @@ agenda+ <a href="${html_url}">${title}</a></h4>
       },
     };
 
-    function filterIssues(issue) {
-      return !!issue.labels.find(l => l.name.toLowerCase() == 'agenda');
-    }
-
     let gid = document.documentElement.getAttribute("data-gid");
 
     (function () {
       let ngid = (new URL(document.location)).searchParams.get("gid");
-      let label = (new URL(document.location)).searchParams.get("label");
-      if (!label) {
-        label = "agenda";
+      let search = (new URL(document.location)).searchParams.get("search");
+      if (!search) {
+        search = "agenda";
       }
       if (!ngid) {
         const matches = document.location.toString().match(new RegExp("([0-9]+)", "g"));
@@ -185,13 +181,12 @@ agenda+ <a href="${html_url}">${title}</a></h4>
         }
       }
       if (ngid) gid = ngid;
-      document.getElementById("label").textContent = label;
+      document.getElementById("search").textContent = search;
       fetchGroup(gid).then(async (group) => {
         const repositories = await fetch(`${CACHE}/extra/repos/${group.id}?fields=full_name`).then(res => res.json());
         const promises = [];
         for (const repository of repositories) {
-          promises.push(fetch(`${CACHE}/v3/repos/${repository.full_name}/issues?ttl=15&search=${label}&fields=html_url,title,comments,updated_at,assignee,labels,pull_request,milestone`).then(res => res.json())
-            .then(issues => issues.filter(filterIssues)));
+          promises.push(fetch(`${CACHE}/v3/repos/${repository.full_name}/issues?ttl=15&search=${search}&fields=html_url,title,comments,updated_at,assignee,labels,pull_request,milestone`).then(res => res.json()));
         }
         return Promise.all(promises).then(issues => {
           group.issues = issues.flat();
