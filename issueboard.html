@@ -75,11 +75,11 @@
   </header>
     <p class='description'>${description}</p>
 
-    <section data-query='shownRepositories'>
+    <section data-query='repositories'>
       <h2><span class='full_name'><span class='owner'>${owner.login}/</span>${name}</span>
          <span data-if='description'><span> - ${description}</span></span></h2>
-      <span data-if='shownIssues.*'>
-        <div data-query='open_issues.*'>
+      <span data-if='issues.*'>
+        <div data-query='issues.*'>
           <h4>#${number} <a href="${html_url}">${title}</a></h4>
           <div style="font-style: italic">
             <span data-if='pull_request'>
@@ -226,23 +226,21 @@
       }
       if (ngid) gid = ngid;
       fetchGroup(gid).then(async (group) => {
+        const repositories = await fetch(`${CACHE}/extra/repos/${group.id}?fields=full_name,owner,name,w3c`).then(res => res.json());
         const shownRepositories = [];
-        const repos = await group.repositories;
-        for (const repo of repos) {
+        for (const repo of repositories) {
           const type = repo.w3c["repo-type"];
           if (goodRepoType(type)
             || (Array.isArray(type) && type.reduce((a, c) => a || goodRepoType(c), false))) {
             shownRepositories.push(repo);
-            repo.shownIssues = fetch(`https://labs.w3.org/github-cache/v3/repos/${repo.owner.login}/${repo.name}/issues?ttl=15`, {
-                mode: 'no-cors'
-              })
+            repo.issues = fetch(`${CACHE}/v3/repos/${repo.full_name}/issues?ttl=15&fields=html_url,number,title,comments,updated_at,assignee,labels,pull_request,milestone`)
               .then(res => res.json())
               .then(issues => {
                 return issues.sort(sortIssues);
             }).catch(err => err);
           }
         }
-        group.shownRepositories = shownRepositories.sort(sortRepositories);
+        group.repositories = shownRepositories.sort(sortRepositories);
         return group;
       }).then(group => {
         const elts = document.querySelectorAll("*.group-data");

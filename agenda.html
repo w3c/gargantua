@@ -73,53 +73,53 @@
   <header class='app-bar'>
     <h1>${name} - Agenda items</h1>
   </header>
-    <p class='description'>${description}</p>
+    <div data-if='description'><p class='description'>${description}</p></div>
 
-    <section data-query='repositories'>
-      <h2><span class='full_name'><span class='owner'>${full_name}</span>
-         <span data-if='description'><span> - ${description}</span></span></h2>
-      <span data-if='issues.*'>
-        <div data-query='issues.*'>
-          <h4>#${number} <a href="${html_url}">${title}</a></h4>
-          <div style="font-style: italic">
-            <span data-if='pull_request'>
-              <span><strong>pull request</strong> -</span>
+    <div data-if='issues.*'>
+      <section data-query='issues'>
+        <h4>agenda+ <a href="${html_url}">${title}</a></h4>
+        <div style="font-style: italic">
+
+          <span data-query='comments' data-filter='prettyComments'>
+            <span class='${className}'>${text}</span>
+          </span>
+          -
+          <span data-query='updated_at' data-filter='prettyDate'>last update: <i class="${className}">${text}</i></span>
+          -
+          <span>assignee:
+            <span data-if='assignee'>
+              <i class="color--green">${assignee.login}</i>
+              <i class="color--red">none</i>
             </span>
-            <span data-query='comments' data-filter='prettyComments'>
-              <span class='${className}'>${text}</span>
-            </span>
-            -
-            <span data-query='updated_at' data-filter='prettyDate'>last update: <i class="${className}">${text}</i></span>
-            -
-            <span>assignee:
-              <span data-if='assignee'>
-                <i class="color--green">${assignee.login}</i>
-                <i class="color--red">none</i>
+          </span>
+          <span data-if='milestone'>
+            <span>- ${milestone.title}</span>
+          </span>
+          <span data-if='labels.*'>
+            <span> -
+              <span data-query='labels'>
+                <span style="color: #${color}">${name}</span>
               </span>
             </span>
-            <span data-if='milestone'>
-              <span>- ${milestone.title}</span>
-            </span>
-            <span data-if='labels.*'>
-              <span> -
-                <span data-query='labels'>
-                  <span style="color: #${color}">${name}</span>
-                </span>
-              </span>
-            </span>
-          </div>
+          </span>
         </div>
-        <p class='color--green'><strong>no open issues or pull requests</p>
-      </span>
-  </section>
+      </section>
+      <section><p><strong>no agenda item raised</strong></p></section>
+    </div>
 
-
-  </section>
-
+    <section>
+      <h4>text/plain version:</h4>
+    <div data-if='issues.*'>
+    <pre data-query='issues'>
+agenda+ <a href="${html_url}">${title}</a></h4>
+  ${html_url}
+</pre>
+      <pre>no agenda item raised</pre>
+    </div></section>
 
   <script type="module">
-    import { fetchGroup, setW3CKey } from 'https://www.w3.org/PM/Groups/w3c.js';
-    import jsonrender from 'https://www.w3.org/PM/Groups/jsonrender.js';
+    import { fetchGroup, setW3CKey } from './w3c.js';
+    import jsonrender from './jsonrender.js';
 
     setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
 
@@ -165,6 +165,10 @@
 
     (function () {
       let ngid = (new URL(document.location)).searchParams.get("gid");
+      let label = (new URL(document.location)).searchParams.get("label");
+      if (!label) {
+        label = "agenda";
+      }
       if (!ngid) {
         const matches = document.location.toString().match(new RegExp("([0-9]+)", "g"));
         if (matches.length > 0) {
@@ -175,20 +179,17 @@
       }
       if (ngid) gid = ngid;
       fetchGroup(gid).then(async (group) => {
-        const configs = await fetch(`${CACHE}/extra/ids/${group.id}`).then(res => res.json());
+        const repositories = await fetch(`${CACHE}/extra/repos/${group.id}?fields=full_name`).then(res => res.json());
         const promises = [];
-        for (const config of configs) {
-          promises.push(fetch(`${CACHE}/v3/repos/${config.repository}/issues?ttl=15`).then(res => res.json())
-            .then(issues => {
-              return { config, full_name: config.repository, issues: issues.filter(filterIssues) };
-            }))
+        for (const repository of repositories) {
+          promises.push(fetch(`${CACHE}/v3/repos/${repository.full_name}/issues?ttl=15&labels=${label}&fields=html_url,title,comments,updated_at,assignee,labels,pull_request,milestone`).then(res => res.json())
+            .then(issues => issues.filter(filterIssues)));
         }
-        return Promise.all(promises).then(repositories => {
-          group.repositories = repositories.filter(repo => !!repo.issues.length);
+        return Promise.all(promises).then(issues => {
+          group.issues = issues.flat();
           return group;
         })
       }).then(group => {
-        console.log(group);
         const elts = document.querySelectorAll("*.group-data");
         for (const element of elts) jsonrender({ group: group }, element, functions);
       });
