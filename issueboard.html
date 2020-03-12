@@ -229,7 +229,7 @@
       }
       if (ngid) gid = ngid;
       fetchGroup(gid).then(async (group) => {
-        const repositories = await fetch(`${CACHE}/extra/repos/${group.id}?fields=full_name,w3c`).then(res => res.json());
+        const repositories = await fetch(`${CACHE}/extra/repos/${group.id}?fields=full_name,description,w3c`).then(res => res.json());
         const shownRepositories = [];
         for (const repo of repositories) {
           const type = repo.w3c["repo-type"];
@@ -250,6 +250,18 @@
         for (const element of elts) jsonrender({ group: group }, element, functions);
       });
     })();
+
+    // telemetry for performance monitoring
+const traceId = (""+Math.random()).substring(2, 18); // for resource correlation
+const rtObserver = new PerformanceObserver(list => {
+  const resources = list.getEntries().filter(entry => entry.name.startsWith(CACHE + '/extra')
+                                                      || entry.name.startsWith("https://api.github.com/"));
+  if (resources.length > 0) {
+    navigator.sendBeacon(`${CACHE}/monitor/beacon`, JSON.stringify({ traceId, resources }));
+  }
+});
+rtObserver.observe({entryTypes: ["resource"]});
+
 
   </script>
 
