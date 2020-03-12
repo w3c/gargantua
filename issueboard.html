@@ -69,14 +69,16 @@
   </style>
 </head>
 
-<body class='group-data' data-query='group'>
+<body>
   <header class='app-bar'>
-    <h1>${name}</h1>
+    <h1 class='group-data'>${group.name} - Issues</h1>
   </header>
-  <p style='float: right'>(<a href='./agenda.html?gid=${id}'>agenda</a>)</p>
-    <div data-if='description'><p class='description'>${description}</p></div>
-
-    <section data-query='repositories'>
+  <div class='group-data'>
+    <p style='float: right'>(<a href='./agenda.html?gid=${group.id}'>agenda</a>)</p>
+    <div data-if='group.description'><p class='description'>${group.description}</p></div>
+  </div>
+  <section class='repository-data'>
+      <section data-query='repositories'>
       <h2><span class='full_name'>${full_name}</span>
          <span data-if='description'><span> - ${description}</span></span></h2>
       <span data-if='issues.*'>
@@ -119,10 +121,12 @@
 
 
   <script type="module">
-    import { fetchGroup, setW3CKey } from './w3c.js';
     import jsonrender from './jsonrender.js';
 
-    setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
+    async function fetchGroup(id) {
+      const key = document.documentElement.getAttribute("data-apiary-key");
+      return fetch(`https://api.w3.org/groups/${id}?apikey=${key}&embed=1`).then(res => res.json());
+    }
 
     const CACHE = "https://labs.w3.org/github-cache";
 
@@ -228,30 +232,47 @@
         }
       }
       if (ngid) gid = ngid;
-      fetchGroup(gid).then(async (group) => {
-        const repositories = await fetch(`${CACHE}/extra/repos/${group.id}?fields=full_name,description,w3c`).then(res => res.json());
-        const shownRepositories = [];
-        for (const repo of repositories) {
-          const type = repo.w3c["repo-type"];
-          if (goodRepoType(type)
-            || (Array.isArray(type) && type.reduce((a, c) => a || goodRepoType(c), false))) {
-            shownRepositories.push(repo);
-            repo.issues = fetch(`${CACHE}/v3/repos/${repo.full_name}/issues?ttl=15&fields=html_url,number,title,comments,updated_at,assignee,labels,pull_request,milestone`)
-              .then(res => res.json())
-              .then(issues => {
-                return issues.sort(sortIssues);
-            }).catch(err => err);
-          }
-        }
-        group.repositories = shownRepositories.sort(sortRepositories);
-        return group;
-      }).then(group => {
-        const elts = document.querySelectorAll("*.group-data");
-        for (const element of elts) jsonrender({ group: group }, element, functions);
-      });
+
+      const repoElements  = document.querySelectorAll("*.repository-data");
+      const groupElements = document.querySelectorAll("*.group-data");
+      fetch(`${CACHE}/extra/repos/${gid}?fields=full_name,description,w3c`).then(res => res.json())
+        .then(repositories => {
+          const promises = [];
+           for (const repo of repositories) {
+             const type = repo.w3c["repo-type"];
+             if (type && type.reduce((a, c) => a || goodRepoType(c), false)) {
+               promises.push(fetch(`${CACHE}/v3/repos/${repo.full_name}/issues?ttl=15&fields=html_url,number,title,comments,updated_at,assignee,labels,pull_request,milestone`)
+                 .then(res => res.json())
+                 .then(issues => {
+                   repo.issues = issues.sort(sortIssues);
+                   return repo;
+               }).catch(err => {
+                 repo.hasError = err;
+                 return repo;
+               }));
+             }
+           }
+           return Promise.all(promises).then(repositories => {
+            repositories = repositories.sort(sortRepositories);
+            for (const element of repoElements) jsonrender({ repositories }, element, functions);
+          });
+
+
+           return group;
+         }).then(group => {
+           const elts = document.querySelectorAll("*.group-data");
+           for (const element of elts) jsonrender({ group: group }, element, functions);
+         }).catch(err => {
+           for (const element of repoElements) element.textContent = err.message;
+         });
+         fetchGroup(gid).then(group => {
+           for (const element of groupElements) jsonrender({ group }, element, functions);
+         }).catch(err => {
+           for (const element of groupElements) element.textContent = err.message;
+         });
     })();
 
-    // telemetry for performance monitoring
+// telemetry for performance monitoring
 const traceId = (""+Math.random()).substring(2, 18); // for resource correlation
 const rtObserver = new PerformanceObserver(list => {
   const resources = list.getEntries().filter(entry => entry.name.startsWith(CACHE + '/extra')

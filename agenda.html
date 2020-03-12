@@ -69,13 +69,15 @@
   </style>
 </head>
 
-<body class='group-data' data-query='group'>
+<body>
   <header class='app-bar'>
-    <h1>${name} - Agenda items</h1>
+    <h1 class='group-data'>${group.name} - Agenda items</h1>
   </header>
-  <p style='float: right'>(<a href='./issueboard.html?gid=${id}'>issues</a>)</p>
-  <div data-if='description'><p class='description'>${description}</p></div>
-
+  <div class='group-data'>
+    <p style='float: right'>(<a href='./issueboard.html?gid=${group.id}'>issues</a>)</p>
+    <div data-if='group.description'><p class='description'>${group.description}</p></div>
+  </div>
+  <section class='repository-data'>
     <div data-if='issues.*'>
       <section data-query='issues'>
         <h4>agenda+ <a href="${html_url}">${title}</a></h4>
@@ -106,17 +108,18 @@
         </div>
       </section>
       <section><p><strong>no agenda item raised</strong></p></section>
-    </div>
+    </section>
 
     <section>
       <h4>text/plain version:</h4>
-    <div data-if='issues.*'>
+    <div class='repository-data' data-if='issues.*'>
     <pre data-query='issues'>
 agenda+ <a href="${html_url}">${title}</a></h4>
   ${html_url}
 </pre>
       <pre>no agenda item raised</pre>
     </div></section>
+  </div>
 
     <section>
       <h3>How does it work?</h3>
@@ -125,10 +128,11 @@ agenda+ <a href="${html_url}">${title}</a></h4>
     </section>
 
   <script type="module">
-    import { fetchGroup, setW3CKey } from './w3c.js';
     import jsonrender from './jsonrender.js';
 
-    setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
+    async function fetchGroup(id) {
+      return fetch(`https://api.w3.org/groups/${id}?apikey=${document.documentElement.getAttribute("data-apiary-key")}&embed=1`).then(res => res.json());
+    }
 
     const CACHE = "https://labs.w3.org/github-cache";
 
@@ -182,19 +186,26 @@ agenda+ <a href="${html_url}">${title}</a></h4>
       }
       if (ngid) gid = ngid;
       document.getElementById("search").textContent = search;
-      fetchGroup(gid).then(async (group) => {
-        const repositories = await fetch(`${CACHE}/extra/repos/${group.id}?fields=full_name`).then(res => res.json());
-        const promises = [];
-        for (const repository of repositories) {
-          promises.push(fetch(`${CACHE}/v3/repos/${repository.full_name}/issues?ttl=15&search=${search}&fields=html_url,title,comments,updated_at,assignee,labels,pull_request,milestone`).then(res => res.json()));
-        }
-        return Promise.all(promises).then(issues => {
-          group.issues = issues.flat();
-          return group;
-        })
-      }).then(group => {
-        const elts = document.querySelectorAll("*.group-data");
-        for (const element of elts) jsonrender({ group: group }, element, functions);
+
+      const repoElements  = document.querySelectorAll("*.repository-data");
+      const groupElements = document.querySelectorAll("*.group-data");
+
+      fetch(`${CACHE}/extra/repos/${gid}?fields=full_name`).then(res => res.json())
+        .then(repositories => {
+          const promises = [];
+          for (const repository of repositories) {
+            promises.push(fetch(`${CACHE}/v3/repos/${repository.full_name}/issues?ttl=15&search=${search}&fields=html_url,title,comments,updated_at,assignee,labels,pull_request,milestone`).then(res => res.json()));
+          }
+          return Promise.all(promises).then(issues => {
+            for (const element of repoElements) jsonrender({ issues: issues.flat() }, element, functions);
+          });
+      }).catch(err => {
+        for (const element of repoElements) element.textContent = err.message;
+      });
+      fetchGroup(gid).then(group => {
+        for (const element of groupElements) jsonrender({ group }, element, functions);
+      }).catch(err => {
+        for (const element of groupElements) element.textContent = err.message;
       });
     })();
 
