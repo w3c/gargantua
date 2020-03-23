@@ -11,13 +11,24 @@ const config = {
   gid: document.documentElement.getAttribute("data-gid"),
   key: document.documentElement.getAttribute("data-apiary-key"),
   search: "agenda",
-  cache: "http://localhost:8080",
+  cache: "https://labs.w3.org/github-cache",
 };
 for (const [key, value] of (new URL(window.location)).searchParams) {
   config[key] = value;
 }
 const issues = fetch(`${config.cache}/extra/issues/${config.gid}?ttl=15&search=${config.search}&fields=html_url,title,comments,updated_at,assignee,labels,pull_request,milestone`).then(res => res.json());
 const group = fetch(`https://api.w3.org/groups/${config.gid}?apikey=${config.key}`).then(res => res.json());
+
+// telemetry for performance monitoring
+const traceId = (""+Math.random()).substring(2, 18); // for resource correlation
+const rtObserver = new PerformanceObserver(list => {
+  const resources = list.getEntries().filter(entry => entry.name.startsWith(config.cache + '/extra')
+                                                      || entry.name.startsWith("https://api.github.com/"));
+  if (resources.length > 0) {
+    navigator.sendBeacon(`${config.cache}/monitor/beacon`, JSON.stringify({ traceId, resources }));
+  }
+});
+rtObserver.observe({entryTypes: ["resource"]});
   </script>
   <script src='moment.min.js'></script>
   <style>
