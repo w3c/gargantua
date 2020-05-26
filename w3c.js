@@ -6,6 +6,8 @@ import mlsConfig from "./mls-config.js";
 
 // export { fetchGroup, fetchGroups, fetchJSON, setW3CKey };
 
+const CACHE = "https://labs.w3.org/github-cache";
+
 const NAME_CLEANUP = [["css3-", "css-"], ["NOTE-", ""], ["WD-", ""]];
 
 function titleCleanup(title) {
@@ -152,6 +154,16 @@ async function ongroup(group) {
 
       return GH;
     });
+/*
+    group["repositories"] = new LazyPromise(() =>
+    fetchJSON(`${CACHE}/extra/repos/${groupId}`).then(async (repositories) => {
+      if (!repositories || !repositories.length) return [];
+      repositories.map(repo => {
+        if (repo.w3c && repo.w3c["repo-type"]) { // some shorthands
+          repo.hasRecTrack = repo.w3c["repo-type"].includes("rec-track");
+          repo.hasNote = repo.w3c["repo-type"].includes("note");
+        }
+      }); */
 
     if (!repositories.length) return repositories;
 
@@ -159,16 +171,16 @@ async function ongroup(group) {
     repositories.forEach(repo => {
       // associate issues with their repositories
       repo["issues"] = new LazyPromise(async () => {
-        const dash = await group.dashboard.repositories;
-        const name = repo.name.toLowerCase();
-        const owner = repo.owner.login.toLowerCase();
-        let issues = Object.entries(dash)
-          .map(r => r[1])
-          .filter(r => (r.repo.name.toLowerCase() === name && r.repo.owner.toLowerCase() === owner))[0];
-        if (issues) return issues.issues;
+        return fetchJSON(`${CACHE}/v3/repos/${repo.owner.login}/${repo.name}/issues?state=all`);
+      });
+      repo["commits"] = new LazyPromise(async () => {
+        return fetchJSON(`${CACHE}/v3/repos/${repo.owner.login}/${repo.name}/commits`);
       });
       repo["open_issues"] = new LazyPromise(async () => {
         return fetchJSON(`https://labs.w3.org/github-cache/v3/repos/${repo.owner.login}/${repo.name}/issues`);
+      });
+      repo["hooks"] = new LazyPromise(async () => {
+        return fetchJSON(`${CACHE}/v3/repos/${repo.owner.login}/${repo.name}/hooks`);
       });
       // associate spec configuration with repositories
       specConfig(repo); // this will decorate the object
