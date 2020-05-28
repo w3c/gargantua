@@ -235,25 +235,15 @@ async function ongroup(group) {
             }
             return data;
           }))
+          spec.version = new LazyPromise(() => {
+            return spec['series'].then(series => series.specifications).then(all => {
+              return (all.findIndex(s => s.shortlink === spec.shortlink)+1);
+            })
+          })
           spec.implementations = new LazyPromise(() => fetchJSON("https://w3c.github.io/web-roadmaps/data/impl.json")
           .then(data => data[spec["shortname"]]));
       });
 
-      // deal with TR versioning
-      // @@this needs to be built-in in the W3C API instead!
-      const versionRegExp = new RegExp('-?([.0-9]+)$');
-      const versionNames = [];
-      specs.forEach(spec => {
-        let match = spec.shortname.match(versionRegExp);
-        spec.version = { name: spec.shortname };
-        if (match) {
-          spec.version.level = match[1];
-          spec.version.name = spec.shortname.substring(0, match.index);
-        }
-        let clean = NAME_CLEANUP.find(s => spec.version.name.indexOf(s[0]) === 0);
-        if (clean)
-          spec.version.name = clean[1] + spec.version.name.substring(clean[0].length);
-      });
       return specs;
     }).catch(console.error));
 
@@ -267,31 +257,51 @@ async function ongroup(group) {
       }
       return active;
     }));
-  }
 
-  group["spec-groups"] = new LazyPromise(() => group["active-specifications"].then(specs => {
-    let uniq = {};
-    specs.forEach(spec => {
-      let obj = uniq[spec.version.name];
-      if (!obj) {
-        uniq[spec.version.name] = obj = {};
-        obj.specifications = [];
-        obj.name = spec.version.name;
-        obj.title = titleCleanup(spec.title);
-        obj.icons = ["chrome", "edge", "firefox", "safari"].map(product => {
-          return {
-            product: product,
-            href: `https://wpt-badge.glitch.me/?product=${product}&prefix=/` + spec.version.name
-          };
-        });
-        obj["wpt-fyi"] = "https://wpt.fyi/results/" + spec.shortname;
-        obj.implementations = new LazyPromise(() => fetchJSON("https://w3c.github.io/web-roadmaps/data/impl.json")
-        .then(data => data[spec.shortname]));
+    group["series"] = new LazyPromise(() => group["specifications"].then(async (specs) => {
+      let series = [];
+      for (const spec of specs) {
+        const spec_series = await spec["series"];
+        if (!series.find(s => s.shortname === spec_series.shortname)) {
+          series.push(spec_series);
+          spec_series.title = new LazyPromise(() => {
+            return spec_series['current-specification'].then(current => titleCleanup(current.title));
+          });
+          spec_series.icons = ["chrome", "edge", "firefox", "safari"].map(product => {
+            return {
+              product: product,
+              href: `https://wpt-badge.glitch.me/?product=${product}&prefix=/` + spec_series.shortname,
+            };
+          });
+          spec_series["wpt-fyi"] = "https://wpt.fyi/results/" + spec.shortname;
+          spec_series.implementations = new LazyPromise(() => fetchJSON("https://w3c.github.io/web-roadmaps/data/impl.json")
+            .then(data => data[spec_series.shortname]));
+          // for object and code consistency, we replace the specifications array by our own
+          const specs_p = spec_series['specifications'];
+          spec_series['specifications'] = new LazyPromise(() => {
+            return specs_p.then(specs => {
+              return group['specifications'].then(all => {
+                return specs.map(s => all.find(as => as.shortname === s.shortname));
+              });
+            })
+          })
+        }
       }
-      obj.specifications.push(spec);
-    });
-    return Object.entries(uniq).map(e => e[1]);
-  }));
+      return series;
+    }));
+
+    group["active-series"] = new LazyPromise(() => group["series"].then(async (series) => {
+      let active = [];
+      for (const s of series) {
+        const status = (await (await s["current-specification"])['latest-version']).status;
+        if (status !== "Retired") {
+          active.push(s);
+        }
+      }
+      return active;
+    }));
+
+  }
 
   return group;
 } // END fetchGroup

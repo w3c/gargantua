@@ -271,6 +271,7 @@
             <dl data-query="active-specifications">
               <dt><a href='${latest-version.shortlink}'>${title}</a></dt>
               <dd>Status: ${latest-version.status}<br>Last update: ${latest-version.date}
+                <br>Series: ${series.shortname}
                 <span data-if='milestones.*'>
                   <span><br>Milestones:
                     <span data-query='milestones' data-filter='milestones'>${}, </span>
@@ -315,8 +316,8 @@
       <tr>
         <th><a href='${pp-status}'>IPP</a></th>
         <td>
-          <span data-if="spec-groups-@@">
-            <span data-query="spec-groups">
+          <span data-if="series-@@">
+            <span data-query="series">
               <span><a href="https://www.w3.org/TR/${name}/all/">${name}</a></span>,
             </span>
             <span>@@TODO</span>
@@ -324,15 +325,15 @@
         </td>
       </tr>
       <tr>
-        <th>Specification Cover Page(s)</th>
+        <th>Specification Series</th>
         <td>
-          <span data-if="spec-groups.*">
-            <dl data-query="spec-groups">
+          <span data-if="active-series.*">
+            <dl data-query="active-series">
               <dt><a href="https://www.w3.org/TR/${name}/all/">${title}</a></dt>
               <dd>
                 Versions:
                 <span data-query='specifications'><a href='${shortlink}'>
-                    <span data-if='version.level'><span>${version.level}</span><span>1?</span></span>
+                    <span>${version}</span>
                     <span>(${latest-status})</span>
                   </a>,</span>
                 <span data-if='icons.*'>
