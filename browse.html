@@ -41,7 +41,7 @@
 
       if (!(obj instanceof Object) || obj instanceof String) {
         list = document.createElement("p");
-        const text = obj.toString();
+        const text = (obj)? obj.toString() : "<<undefined>>";
         if (text.indexOf("https://") === 0) {
           const a = document.createElement("a");
           a.textContent = text;
