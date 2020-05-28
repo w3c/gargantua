@@ -57,6 +57,43 @@ function textToNodes(text) {
 
 const GITHUB_TEAM = new RegExp("^https://github.com/orgs/[-A-Za-z0-9]+/teams/([-A-Za-z0-9]+)");
 
+function enhanceSpecification(group, spec) {
+  spec["milestones"] = new LazyPromise(async () => {
+    const dash = await group.dashboard.milestones;
+    let milestones = Object.entries(dash)
+      .filter(s => spec.shortlink === s[0]);
+    if (milestones && milestones[0] && milestones[0][1] && Object.keys(milestones[0][1]).length > 0) {
+      return milestones[0][1];
+    }
+  });
+  if (!spec["latest-version"]) {
+    console.warn("No latest-version?");
+    console.warn(spec);
+  }
+  spec["latest-status"] = new LazyPromise(() => spec["latest-version"].then(latest => latest.status));
+  spec["rec-track"] = new LazyPromise(() => spec["latest-version"].then(latest => latest["rec-track"]));
+  spec.history = `https://www.w3.org/standards/history/${spec.shortname}`;
+  spec.description = textToNodes(spec.description);
+  spec.wpt = new LazyPromise(() => fetchJSON("https://foolip.github.io/day-to-day/specs.json")
+    .then(data =>
+      data.filter(s => (s.href === spec["editor-draft"])))
+    .then(data => (data.length)? data[0] : undefined)
+    .then(data => {
+      if (data) {
+        data.path = data.testpath || data.id;
+        data.icons = ["chrome", "firefox", "safari"].map(product => {
+          return {
+            product: product,
+            href: `https://wpt-badge.glitch.me/?product=${product}&prefix=/` + data.path
+          };
+        });
+      }
+      return data;
+    }))
+    spec.implementations = new LazyPromise(() => fetchJSON("https://w3c.github.io/web-roadmaps/data/impl.json")
+    .then(data => data[spec["shortname"]]));
+}
+
 async function ongroup(group) {
   const groupId = group.id;
 
@@ -197,48 +234,7 @@ async function ongroup(group) {
   if (group["specifications"]) {
     const lazy_specs = group["specifications"];
     group["specifications"] = new LazyPromise(() => lazy_specs.then(async (specs) => {
-      if (!specs) return specs;
-      specs.forEach(spec => {
-        spec["milestones"] = new LazyPromise(async () => {
-          const dash = await group.dashboard.milestones;
-          let milestones = Object.entries(dash)
-            .filter(s => spec.shortlink === s[0]);
-          if (milestones && milestones[0] && milestones[0][1] && Object.keys(milestones[0][1]).length > 0) {
-            return milestones[0][1];
-          }
-        });
-      });
-
-      // enhance specifications information
-      specs.forEach(spec => {
-        if (!spec["latest-version"]) {
-          console.warn("No latest-version?");
-          console.warn(spec);
-        }
-        spec["latest-status"] = new LazyPromise(() => spec["latest-version"].then(latest => latest.status));
-        spec["rec-track"] = new LazyPromise(() => spec["latest-version"].then(latest => latest["rec-track"]));
-        spec.history = `https://www.w3.org/standards/history/${spec.shortname}`;
-        spec.description = textToNodes(spec.description);
-        spec.wpt = new LazyPromise(() => fetchJSON("https://foolip.github.io/day-to-day/specs.json")
-          .then(data =>
-            data.filter(s => (s.href === spec["editor-draft"])))
-          .then(data => (data.length)? data[0] : undefined)
-          .then(data => {
-            if (data) {
-              data.path = data.testpath || data.id;
-              data.icons = ["chrome", "firefox", "safari"].map(product => {
-                return {
-                  product: product,
-                  href: `https://wpt-badge.glitch.me/?product=${product}&prefix=/` + data.path
-                };
-              });
-            }
-            return data;
-          }))
-          spec.implementations = new LazyPromise(() => fetchJSON("https://w3c.github.io/web-roadmaps/data/impl.json")
-          .then(data => data[spec["shortname"]]));
-      });
-
+      if (specs) specs.forEach(spec => enhanceSpecification(group, spec));
       return specs;
     }).catch(console.error));
 
@@ -273,21 +269,17 @@ async function ongroup(group) {
             .then(data => data[spec_series.shortname]));
           // for object and code consistency, we replace the specifications array by our own
           const specs_p = spec_series['specifications'];
-          spec_series['specifications'] = new LazyPromise(() => {
-            return specs_p.then(specs => {
-              return group['specifications'].then(all => {
-                return specs.map(s => {
-                  let ns = all.find(as => as.shortname === s.shortname)
-                  if (ns) {
-                    return ns;
-                  } else {
-                    s['latest-status'] = new LazyPromise(() => s['latest-version'].then(sp => sp.status));
-                    return s;
-                  }
-                });
-              });
-            })
-          })
+
+          const lazy_specs = spec_series["specifications"];
+          spec_series["specifications"] = new LazyPromise(() => lazy_specs.then(async (specs) => {
+            if (specs) specs.forEach(spec => enhanceSpecification(group, spec));
+            return specs;
+          }).catch(console.error));
+          const lazy_spec = spec_series["current-specification"];
+          spec_series["current-specification"] = new LazyPromise(() => lazy_spec.then(async (spec) => {
+            if (spec) enhanceSpecification(group, spec);
+            return spec;
+          }).catch(console.error));
         }
       }
       return series;
