@@ -235,11 +235,6 @@ async function ongroup(group) {
             }
             return data;
           }))
-          spec.version = new LazyPromise(() => {
-            return spec['series'].then(series => series.specifications).then(all => {
-              return (all.findIndex(s => s.shortlink === spec.shortlink)+1);
-            })
-          })
           spec.implementations = new LazyPromise(() => fetchJSON("https://w3c.github.io/web-roadmaps/data/impl.json")
           .then(data => data[spec["shortname"]]));
       });
@@ -281,7 +276,15 @@ async function ongroup(group) {
           spec_series['specifications'] = new LazyPromise(() => {
             return specs_p.then(specs => {
               return group['specifications'].then(all => {
-                return specs.map(s => all.find(as => as.shortname === s.shortname));
+                return specs.map(s => {
+                  let ns = all.find(as => as.shortname === s.shortname)
+                  if (ns) {
+                    return ns;
+                  } else {
+                    s['latest-status'] = new LazyPromise(() => s['latest-version'].then(sp => sp.status));
+                    return s;
+                  }
+                });
               });
             })
           })

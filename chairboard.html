@@ -271,7 +271,7 @@
             <dl data-query="active-specifications">
               <dt><a href='${latest-version.shortlink}'>${title}</a></dt>
               <dd>Status: ${latest-version.status}<br>Last update: ${latest-version.date}
-                <br>Series: ${series.shortname} Version: ${version}
+                <br>Series: ${series.shortname} Version: <span data-if='series-version'><span>${series-version}</span><span>None</span></span>
                 <span data-if='milestones.*'>
                   <span><br>Milestones:
                     <span data-query='milestones' data-filter='milestones'>${}, </span>
@@ -333,7 +333,7 @@
               <dd>
                 Versions:
                 <span data-query='specifications'><a href='${shortlink}'>
-                    <span>${version}</span>
+                    <span data-if='series-version'><span>${series-version}</span><span>None</span></span>
                     <span>(${latest-status})</span>
                   </a>,</span>
                 <span data-if='icons.*'>
