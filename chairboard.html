@@ -271,7 +271,7 @@
             <dl data-query="active-specifications">
               <dt><a href='${latest-version.shortlink}'>${title}</a></dt>
               <dd>Status: ${latest-version.status}<br>Last update: ${latest-version.date}
-                <br>Series: ${series.shortname} Version: <span data-if='series-version'><span>${series-version}</span><span>None</span></span>
+                <br>Series: ${series.shortname} Version: <span>${series-version}</span>
                 <span data-if='milestones.*'>
                   <span><br>Milestones:
                     <span data-query='milestones' data-filter='milestones'>${}, </span>
@@ -331,9 +331,11 @@
             <dl data-query="active-series">
               <dt><a href="https://www.w3.org/TR/${name}/all/">${title}</a></dt>
               <dd>
-                Versions:
+                Current <a href="https://www.w3.org/TR/${shortname}/">https://www.w3.org/TR/${shortname}/</a> : ${current-specification.title}
+                (Version: ${current-specification.series-version})
+                <br>Versions:
                 <span data-query='specifications'><a href='${shortlink}'>
-                    <span data-if='series-version'><span>${series-version}</span><span>None</span></span>
+                    <span>${series-version}</span>
                     <span>(${latest-status})</span>
                   </a>,</span>
                 <span data-if='icons.*'>

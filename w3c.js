@@ -74,6 +74,9 @@ function enhanceSpecification(group, spec) {
   spec["rec-track"] = new LazyPromise(() => spec["latest-version"].then(latest => latest["rec-track"]));
   spec.history = `https://www.w3.org/standards/history/${spec.shortname}`;
   spec.description = textToNodes(spec.description);
+  if (!spec["series-version"]) {
+    spec["series-version"] = "none";
+  }
   spec.wpt = new LazyPromise(() => fetchJSON("https://foolip.github.io/day-to-day/specs.json")
     .then(data =>
       data.filter(s => (s.href === spec["editor-draft"])))
