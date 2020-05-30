@@ -75,7 +75,7 @@ function enhanceSpecification(group, spec) {
   spec.history = `https://www.w3.org/standards/history/${spec.shortname}`;
   spec.description = textToNodes(spec.description);
   if (!spec["series-version"]) {
-    spec["series-version"] = "none";
+    spec["series-version"] = "unknown";
   }
   spec.wpt = new LazyPromise(() => fetchJSON("https://foolip.github.io/day-to-day/specs.json")
     .then(data =>
