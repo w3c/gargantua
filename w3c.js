@@ -11,13 +11,15 @@ const CACHE = "https://labs.w3.org/github-cache";
 const NAME_CLEANUP = [["css3-", "css-"], ["NOTE-", ""], ["WD-", ""]];
 
 function titleCleanup(title) {
-  // from https://github.com/foolip/day-to-day/blob/master/build/specs.js#L180
-  return title.replace(/ \([^)]+\)$/, '')
+  // from https://github.com/foolip/day-to-day/blob/master/build/specs.js#L21
+  return title
+  .replace(/ \([^)]+\)$/, '')
   .replace(/ Level \d+$/, '')
   .replace(/ Module$/, '')
   .replace(/ \d+(\.\d+)?$/, '')
-
-  .replace(/ Specification$/, '');
+  .replace(/ Specification$/, '')
+  .replace(/ -$/, '')
+  ;
 }
 
 async function fetchCharter(url) {
