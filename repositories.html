@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+
+<html lang="en-US" data-apiary-key="oq0abw4w2bkwcs0k0kws44sok4cg48w">
+    <head>
+        <title>Decentralized Identifier Working Group - Publications</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+                    <link rel="stylesheet" href="/2008/site/sf/build/6.585c14f4.css"><link rel="stylesheet" href="/2008/site/sf/build/base_bootstrap.456310d9.css">
+
+        <link rel="stylesheet" href="/2008/site/sf/build/groups_publications.4916c7e7.css">
+
+        <noscript>
+            <style>
+                .dropdown:hover > .dropdown-menu {
+                    display: block;
+                }
+            </style>
+        </noscript>
+    </head>
+    <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-w3c-blue">
+        <a class="navbar-brand" href="https://www.w3.org/">
+            <img src="https://www.w3.org/Icons/WWW/w3c_home_nb-v.svg" alt="W3C Logo"/>
+        </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link bg-w3c-blue" href="https://www.w3.org/standards/">Standards</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link bg-w3c-blue" href="https://www.w3.org/participate/">Participate</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link bg-w3c-blue" href="https://www.w3.org/Consortium/membership">Membership</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link bg-w3c-blue" href="https://www.w3.org/Consortium/">About W3C</a>
+                    </li>
+                                        <li class="nav-item dropdown">
+                            <a class="bg-w3c-blue nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                Groups
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/groups/">Overview of W3C Groups</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/groups/wg/">Working Groups</a>
+                                <a class="dropdown-item" href="/groups/ig/">Interest Groups</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/groups/cg/">Community Groups</a>
+                                <a class="dropdown-item" href="/groups/bg/">Business Groups</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item"
+                                   href="/groups/other/tag">Technical
+                                    Architecture Group</a>
+                                <a class="dropdown-item"
+                                   href="/groups/other/ab">Advisory
+                                    Board</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/groups/tf/">Task Forces</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="member dropdown-item" href="/organizations/">Organizations
+                                    <span class="badge bg-w3c-blue">Member-only</span></a>
+                            </div>
+                        </li>
+                      </ul>
+
+                    </div>
+                  </nav>
+
+                  <main class="container"  class='group-data' data-query='group'>
+                      <h1>${name} - Repositories</h1>
+                      <!-- implement check
+         <dl data-query="services">
+            <dt><a href='${link}'>${shortdesc}</a> (<span>${type}</span>)</dt>
+            <dd><span data-if="::self[longdesc]"><span>${longdesc}</span></span>
+              <ul>
+                <span data-if='edit'>
+                  <li><a href='${edit}'>manage</a></li>
+                </span>
+                <span data-if='repositories'>
+                  <li><a href='${repositories}'>repositories</a></li>
+                </span>
+                <span data-if='stats.mpm'>
+                  <li>${stats.mpm} messages per month averaged over the last 6 months</li>
+                </span>
+                <span data-if='notify'>
+                  <li><span data-if='notify-ml-config'>
+                      <span>notify-ml-config: <a href='${notify}' data-query='notify-ml-config'
+                          data-filter='mlConfig'>${}</a></span>
+                      <a class='warning' title='No mailing list configuration detected. Consider adding one.'
+                        href='${notify}'>no notify-ml-config</a>
+                    </span></li>
+                </span>
+              </ul>
+          </dl>
+        -->
+
+<div class="tab-content" id="nav-tabContent">
+  <div class="tab-pane fade show active" id="nav-publications" role="tabpanel" aria-labelledby="nav-publications-tab">
+              <div data-if='repositories.*'>
+                <dl data-query='repositories'>
+                  <dt><a href="https://github.com/${owner.login}/${name}/">${owner.login}/${name}</a></dt>
+                  <dd>
+                    <span data-if='homepageUrl'>
+                      <a href='${homepageUrl}'>
+                        <span data-if='description'>
+                          <span>${description}</span>
+                          <span>homepage</span>
+                        </span>
+                      </a>
+                      <span data-if='description'>
+                        <span>${description}</span>
+                        <span>${owner.login}/${name}</span>
+                      </span>
+                    </span>
+                  </dd>
+                </dl>
+                <p>No repositories found</p>
+              </div>
+  </div>
+</div>
+</main>
+
+<footer class="footer d-print-none">
+<div class="text-center">
+      <span>Copyright &#xA9; 2020 W3C <sup>&#xAE;</sup> (<a
+                  href="https://www.csail.mit.edu/"><abbr title="Massachusetts Institute of Technology">MIT</abbr></a>, <a
+                  href="https://www.ercim.eu/"><abbr
+                      title="European Research Consortium for Informatics and Mathematics">ERCIM</abbr></a>,
+<a href="https://www.keio.ac.jp/">Keio</a>, <a href="https://ev.buaa.edu.cn/">Beihang</a>) <a
+                  href="/Consortium/Legal/ipr-notice">Usage policies apply</a>.</span>
+</div>
+</footer>
+
+<script src="/2008/site/sf/build/runtime.90af20ea.js"></script><script src="/2008/site/sf/build/0.c0cf600b.js"></script><script src="/2008/site/sf/build/1.112fa38e.js"></script><script src="/2008/site/sf/build/groups_list.18da1409.js"></script>
+
+<script type="module">
+  import { fetchGroup, fetchGroups, setW3CKey } from './w3c.js';
+  import jsonrender from './jsonrender.js';
+
+  const functions =
+  {
+    filterOpenIssues: function (issues) {
+      let openIssues = issues.filter(i => i.state === "open" && !i.pull_request);
+      return { length: openIssues.length };
+    },
+    filterOpenPRs: function (issues) {
+      let openPRs = issues.filter(i => i.state === "open" && i.pull_request);
+      return { length: openPRs.length };
+    },
+    activeSpecs: async function (specs) {
+      return (await Promise.all(specs.map(spec =>
+        spec["latest-status"].then(s => (s !== "Retired") ? spec : undefined)))).filter(spec => spec);
+    },
+    milestones: function (milestones) {
+      return Object.entries(milestones).map(s => s[0] + " " + s[1]);
+    },
+    mlConfig: function (confs) {
+      return Object.keys(confs).map(c => " " + c);
+    },
+  };
+
+  setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
+
+  let gid = document.documentElement.getAttribute("data-gid");
+
+  (function () {
+    let ngid = (new URL(document.location)).searchParams.get("gid");
+    if (!ngid) {
+      const matches = document.location.toString().match(new RegExp("([0-9]+)", "g"));
+      if (matches.length > 0) {
+        const last = matches[matches.length - 1];
+        if (last.length > 4)
+          ngid = last;
+      }
+    }
+    if (ngid) gid = ngid;
+    fetchGroup(gid).then(group => {
+      console.log(group);
+      let elts = document.querySelectorAll("*.group-data");
+      for (let element of elts) jsonrender({ group: group }, element, functions);
+    });
+  })();
+
+</script>
+</body>
+</html>
