@@ -84,6 +84,11 @@
       </tr>
 
       <tr>
+        <th>Datatracker</th>
+        <td><a href='${datatracker.link}'>${datatracker.link}</a></td>
+      </tr>
+
+      <tr>
         <th>Charter<br>
           (<a href='https://w3c.github.io/charter-drafts/charter-template.html?group=${id}'>new template</a>)</th>
         <td><span data-if="active-charter"><span><span data-query="active-charter"><a href="${uri}">from ${start} to ${end}</a></span>
@@ -97,7 +102,7 @@
               <a href="${connected-accounts.*[service=github].href}">${name}</a>
               <span>${name}</span></span> (<span data-if="::self[invited-expert=true]"><span>W3C Invited
                 Expert</span><span data-query="affiliations.*"><a
-                  href="https://www.w3.org/groups/organizations/${id}">${name}</a></span></span>),
+                  href="https://www.w3.org/organizations/${id}">${name}</a></span></span>),
           </span>
         </td>
       </tr>
@@ -147,14 +152,14 @@
         <th>Participating organization(s)<br>
           (<a href='${pp-status}'>IPP</a>)</th>
         <td><span data-query="participations.*[individual=false]">
-            <a href="https://www.w3.org/groups/organizations/${organization.id}">${title}</a><span
+            <a href="https://www.w3.org/organizations/${organization.id}">${title}</a><span
               data-if="organization[is-member!=true]"><span> <span class='warning'>(not a member)</span></span></span>,
           </span></td>
       </tr>
 
       <tr>
         <th>Individual(s)<br>
-          (<a href='https://www.w3.org/2000/09/dbwg/details?group=${id}'>DBWG</a>)</th>
+          (<a href='${datatracker.link}/participants'>datatracker</a>)</th>
         <td><span data-query="users">
             <span data-if="connected-accounts.*[service=github]">
               <a href="${connected-accounts.*[service=github].href}">${name}</a>
@@ -170,7 +175,7 @@
                   <span><a href="https://www.w3.org/users/${user.id}">${title}</a>
                     <span data-if="user.affiliations.*[id!=36747]"><span>(<span
                           data-query="user.affiliations.*[id!=36747]"><a
-                            href="https://www.w3.org/groups/organizations/${id}">${name}</a></span>)</span></span>,
+                            href="https://www.w3.org/organizations/${id}">${name}</a></span>)</span></span>,
                   </span>
                 </span></span></p>
         </td>
