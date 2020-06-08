@@ -113,6 +113,10 @@ async function ongroup(group) {
   // Some additional useful links
   group["details"] = `https://www.w3.org/2000/09/dbwg/details?group=${groupId}&order=org&public=1`;
 
+  const datatracker_file = 'shortnames.json';
+  group["datatracker"] = new LazyPromise(() => fetchJSON(datatracker_file)
+     .then(data => data.find(g => (g.id === group.id))));
+
   // the dashboard knows about spec milestones and a subset of GH repositories issues
   group["dashboard"] = {
     href: `https://w3c.github.io/spec-dashboard/?${groupId}`,
