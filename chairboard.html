@@ -51,6 +51,22 @@
     .impl-consideration {
       background-color: lightcoral;
     }
+    /* from datatracker */
+    @font-face{
+        font-family:Font Awesome\ 5 Brands;
+        font-style:normal;
+        font-weight:400;
+        font-display:auto;
+        src:
+          url(/2008/site/sf/build/fonts/fa-brands-400.067595ad.woff2) format("woff2"),
+          url(/2008/site/sf/build/fonts/fa-brands-400.b564da88.woff) format("woff")
+    }
+    .fab{
+      font-family:Font Awesome\ 5 Brands
+    }
+    .fa-github::before {
+      content: "\f09b";
+    }
   </style>
 </head>
 
@@ -98,8 +114,10 @@
       <tr>
         <th>Chair(s)</th>
         <td><span data-query="chairs">
-            <span data-if="connected-accounts.*[service=github]">
-              <a href="${connected-accounts.*[service=github].href}">${name}</a>
+          <span data-if="connected-accounts.*[service=github]">
+            <a class="fab fa-github" href="${connected-accounts.*[service=github].href}"></a>
+          </span>
+          <a href="https://www.w3.org/users/${id}">${name}</a>
               <span>${name}</span></span> (<span data-if="::self[invited-expert=true]"><span>W3C Invited
                 Expert</span><span data-query="affiliations.*"><a
                   href="https://www.w3.org/organizations/${id}">${name}</a></span></span>),
@@ -111,8 +129,9 @@
         <td><span data-if="team-contacts.*">
           <span data-query="team-contacts">
             <span data-if="connected-accounts.*[service=github]">
-              <a href="${connected-accounts.*[service=github].href}">${name}</a>
-              <span>${name}</span></span>,
+              <a class="fab fa-github" href="${connected-accounts.*[service=github].href}"></a>
+            </span>
+            <a href="https://www.w3.org/users/${id}">${name}</a>,
           </span>
           <span>None</span>
           </span>
@@ -161,9 +180,10 @@
         <th>Individual(s)<br>
           (<a href='${datatracker.link}/participants'>datatracker</a>)</th>
         <td><span data-query="users">
-            <span data-if="connected-accounts.*[service=github]">
-              <a href="${connected-accounts.*[service=github].href}">${name}</a>
-              <span>${name}</span></span>,
+          <span data-if="connected-accounts.*[service=github]">
+            <a class="fab fa-github" href="${connected-accounts.*[service=github].href}"></a>
+          </span>
+          <a href="https://www.w3.org/users/${id}">${name}</a>,
           </span></td>
       </tr>
 
