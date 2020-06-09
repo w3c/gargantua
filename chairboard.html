@@ -348,20 +348,34 @@
           </span>
         </td>
       </tr>
-      <tr>
-        <th>Specification Series</th>
+      <tr id='series'>
+        <th>Versioning</th>
         <td>
           <span data-if="active-series.*">
             <dl data-query="active-series">
-              <dt><a href="https://www.w3.org/TR/${name}/all/">${title}</a></dt>
+              <dt><a href="https://www.w3.org/TR/${shortname}/all/">${title}</a></dt>
               <dd>
-                Current <a href="https://www.w3.org/TR/${shortname}/">https://www.w3.org/TR/${shortname}/</a> : ${current-specification.title}
+                Current at <a href="https://www.w3.org/TR/${shortname}/">https://www.w3.org/TR/${shortname}/</a> : ${current-specification.title}
                 (${current-specification.latest-version.date})
+                <br>Shortname: ${shortname}
                 <br>Alternatives:
                 <span data-query='specifications'><a href='${shortlink}'>
-                    <span>${series-version}</span>
+                  <span data-if='series-version'><code>${series-version}</code><span>unknown</span></span>
                     <span>(${latest-status})</span>
                   </a>,</span>
+              </dd>
+            </dl>
+            <span>@@TODO</span>
+          </span>
+        </td>
+      </tr>
+      <tr id='compat'>
+        <th>Tests / Compatibility</th>
+        <td>
+          <span data-if="active-series.*">
+            <dl data-query="active-series">
+              <dt>${title}</dt>
+              <dd>
                 <span data-if='icons.*'>
                   <span><br><a href='${wpt-fyi}'>WPT</a>:
                     <span data-query='icons'><img src='${href}' alt='WPT ${product} badge'></span>
