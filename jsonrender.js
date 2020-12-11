@@ -4,6 +4,20 @@ const ATTR_QUERY = "data-query";
 const ATTR_IF = "data-if";
 const ATTR_FILTER = "data-filter";
 
+let PROCESS_REQUEST = 0;
+
+function pushRequest() {
+  PROCESS_REQUEST++;
+}
+
+function popRequest(res) {
+  PROCESS_REQUEST--;
+  if (PROCESS_REQUEST === 0) {
+    pub("done");
+  }
+  return res;
+}
+
 async function content(obj, text, node) {
   let ms = text.indexOf('${');
   if (ms === -1) {
@@ -32,10 +46,11 @@ async function content(obj, text, node) {
     const query = text.substring(ms + 2, me);
     let add;
     addValue(text.substring(start, ms));
+    pushRequest();
     let replacement = await jsonquery(obj, query).catch(err => {
-      console.error(err);
+      pub('warn', `Query /${query}/ failed ${err}`);
       return "${" + query + "}";
-    });
+    }).then(popRequest());
     if (replacement) {
       if (replacement instanceof Element) {
         if (node) {
@@ -45,7 +60,7 @@ async function content(obj, text, node) {
         addValue(replacement.toString());
       }
     } else {
-      console.warn(`${query} returned nothing`);
+      pub("warn", `Query /${query}/ returned nothing`);
     }
     start = me + 1;
     ms = text.indexOf('${', start);
@@ -56,6 +71,7 @@ async function content(obj, text, node) {
 }
 
 function processLeaf(obj, node) {
+  pushRequest();
   content(obj, node.textContent, node).then(newtext => {
     if (!newtext) return;
     if (newtext.length === 1) {
@@ -76,7 +92,7 @@ function processLeaf(obj, node) {
       }
       node.parentNode.replaceChild(container, node);
     }
-  }).catch(console.error);
+  }).catch(err => pub('error', err)).then(popRequest);
 }
 
 // identity function as a Promise
@@ -90,6 +106,7 @@ function internalrender(obj, node, env) {
     return;
   }
 
+  pushRequest();
 
   let filter = identity;
   let hasQuery = false;
@@ -113,17 +130,19 @@ function internalrender(obj, node, env) {
         }
           break;
         default:
+          pushRequest();
           content(obj, node.getAttribute(attrname)).then(newtext => {
             if (newtext) {
               node.setAttribute(attrname, newtext[0]);
             }
-          }).catch(console.error);
+          }).catch(err => pub('error', err)).then(popRequest);
       }
     }
   }
 
   if (hasQuery) {
     const query = node.getAttribute(ATTR_QUERY);
+    pushRequest();
     jsonquery(obj, query).then(filter).then(subobj => {
       if (!subobj) return subobj; //filterFct returned an empty set
       if (!(subobj instanceof Object))
@@ -155,9 +174,7 @@ function internalrender(obj, node, env) {
           internalrender(subobj, child, env);
         }
       }
-    }).catch(err => {
-      console.error(err);
-    });
+    }).catch(err => pub('error', err)).then(popRequest);
   } else if (hasIf) {
     const query = node.getAttribute(ATTR_IF);
     const firstBranch = node.firstElementChild;
@@ -165,7 +182,7 @@ function internalrender(obj, node, env) {
 
     if (!firstBranch)
       throw new SyntaxError("missing if branch for " + query);
-
+    pushRequest();
     jsonquery(obj, query).then(filter).then(subobj => {
       if (!subobj) throw new Error("// it's an else")
       // if query successful
@@ -176,7 +193,7 @@ function internalrender(obj, node, env) {
     }).then(branch => {
       node.parentNode.replaceChild(branch, node);
       internalrender(obj, branch, env);
-    });
+    }).then(popRequest);
   } else {
     let subobj = filter(obj);
     let subprocess = o => {
@@ -184,11 +201,14 @@ function internalrender(obj, node, env) {
         for (const child of node.childNodes) internalrender(subobj, child, env);
       }
     };
-    if (subobj instanceof Promise)
-      subobj.then(subprocess);
-    else
+    if (subobj instanceof Promise) {
+      pushRequest();
+      subobj.then(subprocess).all(popRequest);
+    } else {
       subprocess(subobj);
+    }
   }
+  popRequest();
 }
 
 function jsonrender(obj, element, env) {
@@ -198,4 +218,80 @@ function jsonrender(obj, element, env) {
   internalrender(obj, element, env);
 }
 
-export default jsonrender;
+// from https://github.com/w3c/respec/blob/develop/src/core/pubsubhub.js
+
+const subscriptions = new Map();
+
+function pub(topic, ...data) {
+  if (!subscriptions.has(topic)) {
+    return; // Nothing to do...
+  }
+  Array.from(subscriptions.get(topic)).forEach(cb => {
+    try {
+      cb(...data);
+    } catch (err) {
+      pub(
+        "error",
+        `Error when calling function ${cb.name}. See developer console.`
+      );
+      pub('error', err);
+    }
+  });
+  if (window.parent === window.self) {
+    return;
+  }
+  // If this is an iframe, postMessage parent (used in testing).
+  const args = data
+    // to structured clonable
+    .map(arg => String(JSON.stringify(arg.stack || arg)));
+  window.parent.postMessage({ topic, args }, window.parent.location.origin);
+}
+
+/**
+ * Subscribes to a message type.
+ *
+ * @param  {string} topic        The topic to subscribe to (e.g., "start-all")
+ * @param  {Function} cb         Callback function
+ * @param  {Object} [opts]
+ * @param  {Boolean} [opts.once] Add prop "once" for single notification.
+ * @return {Object}              An object that should be considered opaque,
+ *                               used for unsubscribing from messages.
+ */
+export function sub(topic, cb, opts = { once: false }) {
+  if (opts.once) {
+    return sub(topic, function wrapper(...args) {
+      unsub({ topic, cb: wrapper });
+      cb(...args);
+    });
+  }
+  if (subscriptions.has(topic)) {
+    subscriptions.get(topic).add(cb);
+  } else {
+    subscriptions.set(topic, new Set([cb]));
+  }
+  return { topic, cb };
+}
+/**
+ * Unsubscribe from messages.
+ *
+ * @param {Object} opaque The object that was returned from calling sub()
+ */
+export function unsub({ topic, cb }) {
+  // opaque is whatever is returned by sub()
+  const callbacks = subscriptions.get(topic);
+  if (!callbacks || !callbacks.has(cb)) {
+    console.warn("Already unsubscribed:", topic, cb);
+    return false;
+  }
+  return callbacks.delete(cb);
+}
+
+sub("error", err => {
+  console.error(err, err.stack);
+});
+
+sub("warn", str => {
+  console.warn(str);
+});
+
+export { jsonrender as default, sub as subscribe, unsub as unsubscribe };
