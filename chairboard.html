@@ -406,7 +406,20 @@
 <a href='https://github.com/w3c/gargantua/'>It's on GitHub</a>
   <script type="module">
     import { fetchGroup, fetchGroups, setW3CKey } from './w3c.js';
-    import jsonrender from './jsonrender.js';
+    import jsonrender, { subscribe } from './jsonrender.js';
+
+    // telemetry for performance monitoring
+    const GH_CACHE = "https://labs.w3.org/github-cache";
+    subscribe("done", () => {
+      const resources = [ {
+        name: window.location.href,
+        entryType: "measure",
+        startTime: 0,
+        duration: performance.now()
+       } ];
+      const traceId = (""+Math.random()).substring(2, 18); // for resource correlation
+      navigator.sendBeacon(`${GH_CACHE}/monitor/beacon`, JSON.stringify({ traceId, resources }));
+    });
 
     const functions =
     {
@@ -446,7 +459,6 @@
       }
       if (ngid) gid = ngid;
       fetchGroup(gid).then(group => {
-        console.log(group);
         let elts = document.querySelectorAll("*.group-data");
         for (let element of elts) jsonrender({ group: group }, element, functions);
       });
