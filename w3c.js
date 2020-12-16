@@ -113,11 +113,6 @@ async function ongroup(group) {
   // Some additional useful links
   group["details"] = `https://www.w3.org/2000/09/dbwg/details?group=${groupId}&order=org&public=1`;
 
-  // this is a stop solution until the W3C API exposes shortnames
-  const datatracker_file = 'https://w3c.github.io/gargantua/shortnames.json';
-  group["datatracker"] = new LazyPromise(() => fetchJSON(datatracker_file)
-     .then(data => data.find(g => (g.id === group.id))));
-
   // the dashboard knows about spec milestones and a subset of GH repositories issues
   group["dashboard"] = {
     href: `https://w3c.github.io/spec-dashboard/?${groupId}`,
@@ -127,6 +122,23 @@ async function ongroup(group) {
     // publications: getData(`https://w3c.github.io/spec-dashboard/pergroup/${groupId}.json`),
   }
 
+  let sgtype = "unknown";
+  switch (group.type) {
+    case "community group":
+      sgtype = "cg";
+      break;
+    case "business group":
+      sgtype = "bg";
+      break;
+    case "interest group":
+      sgtype = "ig";
+      break;
+    case "working group":
+      sgtype = "wg";
+      break;
+  }
+  group["short-type"] = sgtype;
+  group["default-public-page"] = `https://www.w3.org/groups/${sgtype}/${shortname}`;
   // enhance participations
   if (group["participations"]) {
     const lazy_participations = group["participations"];
