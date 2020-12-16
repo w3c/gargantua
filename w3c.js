@@ -138,7 +138,7 @@ async function ongroup(group) {
       break;
   }
   group["short-type"] = sgtype;
-  group["default-public-page"] = `https://www.w3.org/groups/${sgtype}/${shortname}`;
+  group["default-public-page"] = `https://www.w3.org/groups/${sgtype}/${group["shortname"]}`;
   // enhance participations
   if (group["participations"]) {
     const lazy_participations = group["participations"];
