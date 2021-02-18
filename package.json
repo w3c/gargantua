@@ -1,10 +1,11 @@
 {
-  "name": "gargantua",
-  "version": "1.0.0",
+  "name": "w3c-gargantua",
+  "version": "1.0.1",
   "description": "Scripts and task for dynamic data in W3C boards",
   "main": "start.js",
+  "type": "module",
   "dependencies": {
-    "jsdom": "16.2.*",
+    "jsdom": "16.4.*",
     "jsdom-global": "3.0.*",
     "node-fetch": "2.6.*"
   },
