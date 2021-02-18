@@ -1,6 +1,5 @@
 import 'jsdom-global/register.js';
 import jsdom from "jsdom";
-import fs from "fs/promises";
 const { JSDOM } = jsdom;
 import { fetchGroup, setW3CKey } from './w3c.js';
 import jsonrender, { subscribe } from './jsonrender.js';
