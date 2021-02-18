@@ -52,7 +52,7 @@ async function content(obj, text, node) {
       return "${" + query + "}";
     }).then(popRequest());
     if (replacement) {
-      if (replacement instanceof Element) {
+      if (replacement.nodeType && replacement.nodeType === 1) { // replacement instanceof Element
         if (node) {
           addValue(replacement.cloneNode(true));
         }
@@ -150,7 +150,7 @@ function internalrender(obj, node, env) {
         throw new Error(`${JSON.stringify(subobj)} not an Object`)
       if (Array.isArray(subobj)) {
         // @@could get an Array of primitive types
-        const docFrag = document.createDocumentFragment();
+        const docFrag = node.ownerDocument.createDocumentFragment();
         while (node.hasChildNodes()) {
           docFrag.appendChild(node.firstChild);
         }
@@ -189,7 +189,7 @@ function internalrender(obj, node, env) {
       return firstBranch;
     }).catch(err => {
       // if query failed
-      return (secondBranch) ? secondBranch : document.createTextNode(" ");
+      return (secondBranch) ? secondBranch : node.ownerDocument.createTextNode(" ");
     }).then(branch => {
       node.parentNode.replaceChild(branch, node);
       internalrender(obj, branch, env);

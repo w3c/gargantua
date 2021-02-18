@@ -1,0 +1,22 @@
+{
+  "name": "gargantua",
+  "version": "1.0.0",
+  "description": "Scripts and task for dynamic data in W3C boards",
+  "main": "start.js",
+  "dependencies": {
+    "jsdom": "^16.2.2",
+    "jsdom-global": "^3.0.2",
+    "node-fetch": "^2.6.1",
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/w3c/gargantua"
+  },
+  "bugs": {
+    "url": "https://github.com/w3c/gargantua/issues"
+  },
+  "homepage": "https://github.com/w3c/gargantua",
+  "keywords": ["w3c", "dashboard", "tool"],
+  "author": "Philippe Le Hegaret <plh@w3.org>",
+  "license": "MIT"
+}
