@@ -138,8 +138,21 @@
 </div>
 </footer>
 
-<script src="/2008/site/sf/build/runtime.90af20ea.js"></script><script src="/2008/site/sf/build/0.c0cf600b.js"></script><script src="/2008/site/sf/build/1.112fa38e.js"></script><script src="/2008/site/sf/build/groups_list.18da1409.js"></script>
+<script src="/bundles/fosjsrouting/js/router.js"></script>
+<script src="/js/routing?callback=fos.Router.setData"></script>
+    <script src="/2008/site/sf/build/runtime.783b3300.js"></script><script src="/2008/site/sf/build/0.cf60d32b.js"></script><script src="/2008/site/sf/build/1.45b22a26.js"></script><script src="/2008/site/sf/build/groups_list.e47ddeeb.js"></script>
+<script>
+    let domReady = (cb) => {
+        document.readyState === 'interactive' || document.readyState === 'complete'
+            ? cb()
+            : document.addEventListener('DOMContentLoaded', cb);
+    };
 
+    domReady(() => {
+        // Display body when DOM is loaded
+        document.body.style.visibility = 'visible';
+    });
+</script>
 <script type="module">
   import { fetchGroup, fetchGroups, setW3CKey } from './w3c.js';
   import jsonrender from './jsonrender.js';
