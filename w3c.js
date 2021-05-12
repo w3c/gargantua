@@ -259,12 +259,12 @@ async function ongroup(group) {
       if (specs) specs.forEach(spec => enhanceSpecification(group, spec));
       return specs;
     }).catch(console.error));
-
     group["active-specifications"] = new LazyPromise(() => group["specifications"].then(async (specs) => {
       let active = [];
       for (const spec of specs) {
+        const supersededBy = spec["superseded-by"];
         const status = await spec["latest-status"];
-        if (status !== "Retired") {
+        if (status !== "Retired" && !supersededBy) {
           active.push(spec);
         }
       }
