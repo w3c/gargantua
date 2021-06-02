@@ -270,6 +270,12 @@
                       <span><a class='warning' href='https://tobie.github.io/pr-preview/config.html'>No
                         .pr-preview.json</a></span>
                     </span>
+                    <span data-if="autoPublish">
+                      <span><a
+                        href='https://github.com/${owner.login}/${name}/blob/${defaultBranch.name}/.github/workflows/auto-publish.yml'>auto-publish</a>,</span>
+                      <span><a class='warning' href='https://w3c.github.io/spec-prod/#deploy-to-w3c-using-echidna'>No
+                        auto-publish.yml</a></span>
+                    </span>
                     <span data-if="labels.*[name=i18n-tracker]">
                       <span></span>
                       <span><a class='warning'
