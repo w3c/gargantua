@@ -1,6 +1,6 @@
 {
   "name": "w3c-gargantua",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Scripts and task for dynamic data in W3C boards",
   "main": "start.js",
   "type": "module",
