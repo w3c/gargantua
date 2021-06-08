@@ -202,21 +202,13 @@
       </tr>
 
       <tr>
-        <th>Upcoming face-to-face meetings
-          <br>(<a href="https://www.w3.org/Web/Tools/Events/">edit W3C Calendar</a>)
+        <th>Upcoming meetings
+          <br>(<a href="${default-homepage}/calendar">edit</a>,
+          <a href="https://www.w3.org/events/meetings/new?group=${id}">add</a>)
         </th>
         <td>
-          <span data-if="events.*">
-            <span data-query="events">
-              <dl>
-                <dt><a href="${href}">${summary}</a></dt>
-                <dd>In ${location}, from ${start} to ${end}</dd>
-              </dl>
-            </span>
-            <span>None found</span>
-          </span>
-          <p><strong>Note: </strong> W3C doesn't <a href="https://github.com/w3c/modern-tooling/issues/68">support a calendar system</a> yet for Groups. Use an entry "calendar" in the services section in the meantime :(</p>
-        </td>
+          <p><a href="${default-homepage}/calendar">See the group Calendar</a></p>
+        <td>
       </tr>
 
       <tr>

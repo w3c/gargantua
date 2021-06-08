@@ -55,6 +55,8 @@ let EVENT_CACHE;
 async function fetchEvents() {
   if (EVENT_CACHE) return EVENT_CACHE;
 
+  return []; // @@deactivate the W3C calendar
+
   return fetchHTML("https://www.w3.org/participate/eventscal").then(doc => {
     const text = (n) => (n) ? n.textContent : undefined;
     let element = doc.querySelector("#groups").parentNode;
