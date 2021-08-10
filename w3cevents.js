@@ -51,9 +51,9 @@ function sortEvents(a, b) {
 }
 
 
-let EVENT_CACHE;
+let EVENT_CACHE = [];
 async function fetchEvents(group) {
-  if (EVENT_CACHE) return EVENT_CACHE;
+  if (EVENT_CACHE[group.id]) return EVENT_CACHE[group.id];
 
   return fetchHTML(`${group["default-homepage"]}/calendar`).then(doc => {
     const text = (n) => (n) ? n.textContent.trim() : undefined;
@@ -73,7 +73,7 @@ async function fetchEvents(group) {
         events.push(event);
       }
     }
-    return EVENT_CACHE = events.sort(sortEvents);
+    return EVENT_CACHE[group.id] = events.sort(sortEvents);
   });
 
   return []; // @@deactivate the W3C TPAC calendar
