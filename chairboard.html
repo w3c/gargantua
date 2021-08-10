@@ -207,6 +207,7 @@
           <a href="https://www.w3.org/events/meetings/new?group=${id}">add</a>)
         </th>
         <td>
+          <p>From the <a href="${default-homepage}/calendar">group calendar</a>:</p>
           <span data-if="events.*">
             <ul data-query="events">
               <li><span data-filter='startdate'>${}</span>: <a href="${href}">${summary}</a> (${state})</li>
@@ -444,6 +445,9 @@
       },
       mlConfig: function (confs) {
         return Object.keys(confs).map(c => " " + c);
+      },
+      startdate: function (event) {
+        return event["start"].split('T')[0];
       },
     };
 
