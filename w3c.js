@@ -193,7 +193,7 @@ async function ongroup(group) {
     }));
   }
 
-  group["events"] = new LazyPromise(() => fetchEvents().then(events => events.filter(evt => evt.summary.includes(group.name))));
+  group["events"] = new LazyPromise(() => fetchEvents(group));
 
   // the repo validator is gathering a lot of useful data on GitHub repositories, so let's add it
   const report = "https://w3c.github.io/validate-repos/report.json";

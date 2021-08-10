@@ -52,10 +52,31 @@ function sortEvents(a, b) {
 
 
 let EVENT_CACHE;
-async function fetchEvents() {
+async function fetchEvents(group) {
   if (EVENT_CACHE) return EVENT_CACHE;
 
-  return []; // @@deactivate the W3C calendar
+  return fetchHTML(`${group["default-homepage"]}/calendar`).then(doc => {
+    const text = (n) => (n) ? n.textContent.trim() : undefined;
+    let elements = doc.querySelectorAll("#event-list > li");
+    let events = [];
+    for (const evt of elements) {
+      let title = text(evt.querySelector("h2 a"));
+      if (title) {
+        title = title.split('\n');
+        let event = {
+          summary: title[0].trim(),
+          state: title[1].trim(),
+          start: evt.querySelector("div.date-orig time:nth-child(1)").getAttribute("datetime"),
+          end: evt.querySelector("div.date-orig time:nth-child(2)").getAttribute("datetime"),
+          href: evt.querySelector("div nav ul li:nth-child(1) a").href
+        }
+        events.push(event);
+      }
+    }
+    return EVENT_CACHE = events.sort(sortEvents);
+  });
+
+  return []; // @@deactivate the W3C TPAC calendar
 
   return fetchHTML("https://www.w3.org/participate/eventscal").then(doc => {
     const text = (n) => (n) ? n.textContent : undefined;
