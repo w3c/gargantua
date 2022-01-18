@@ -74,6 +74,12 @@
       </header>
       <div class='group-data'>
         <div id='group-description'>{group-description}</div>
+        <p>See also:</p>
+        <ul>
+          <li>List of <a id='group-issues' href='.'>issues</a></li>
+          <li>Search for <a id='group-agenda' href='.'>agenda items</a></li>
+        </ul>
+
       </div>
       <hr>
       <p>For repositories configuration, see the <a href="https://w3c.github.io/w3c.json.html">w3c.json documentation</a>
@@ -139,6 +145,8 @@
     group.then(group => repositories.then(repositories => {
       document.getElementById('group-name').textContent = group.name;
       document.getElementById('group-id').textContent = group.id;
+      document.getElementById('group-agenda').setAttribute('href', `./agenda.html?gid=${config.gid}`);
+      document.getElementById('group-issues').setAttribute('href', `./issueboard.html?gid=${config.gid}`);
       document.getElementById('group-description').innerHTML = group.description;
       for (const element of groupElements) jsonrender({ repositories }, element);
      })
