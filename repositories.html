@@ -4,15 +4,81 @@
         <title class='group-data' data-query='group'>${name} - Repositories</title>
         <!-- Required meta tags -->
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    </head>
-    <body>
+        <link rel=preconnect href=http://labs.w3.org>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/x-icon" href="//www.w3.org/favicon.ico">
+        <style>
+          body {
+            position: relative;
+            font-family: 'Roboto Condensed',Helvetica,Arial,sans-serif;
+            font-weight: 300;
+            background-color: #fff;
+            box-sizing: border-box;
+            min-height: 100%;
+          }
+          body > section {
+            max-width: 50em;
+            padding: 60px 16px 16px;
+            min-height: 100%;
+          }
+          .app-bar {
+            display: block;
+            width: 100%;
+            background-color: #4285f4;
+            color: #fefefe;
+            overflow: hidden;
+            padding: 1em;
+          }
 
-                  <main class="container group-data" data-query='group'>
-                      <h1>${name} - Repositories</h1>
-<div class="tab-content" id="nav-tabContent">
-  <div class="tab-pane fade show active" id="nav-publications" role="tabpanel" aria-labelledby="nav-publications-tab">
-              <div data-if='repositories.*'>
+          h2 {
+            margin: 0;
+            font-size: 2em;
+            font-weight: 300;
+            padding-top: .7em;
+            padding-bottom: 0;
+          }
+          .color--green {
+            font-weight: bold; color: green;
+          }
+          .color--red {
+            font-weight: bold; color: lightcoral;
+          }
+          h1, h2, h3, h4, h5, p {
+            margin: 0;
+          }
+          #group-description {
+            margin: 1em;
+          }
+          h4 {
+            padding-top: .3em;
+          }
+          .medium, h4 {
+            font-size: 20px;
+            font-weight: 300;
+            line-height: 1.3em;
+            padding-bottom: 0;
+          }
+          .full_name, .owner {
+            font-size: 80%;
+          }
+          footer {
+            margin-top: 3em;
+            padding-top: 1em;
+            border-top: 1px solid black;
+          }
+        </style>
+          </head>
+    <body>
+      <header class='app-bar'>
+        <h1 class='group-data'><span id='group-name'>{group-name}</span> - Repositories</h1>
+      </header>
+      <div class='group-data'>
+        <div id='group-description'>{group-description}</div>
+      </div>
+      <hr>
+      <p>For repositories configuration, see the <a href="https://w3c.github.io/w3c.json.html">w3c.json documentation</a>
+        (the numeric ID of this group is <code id='group-id'>???</code>).</p>
+      <section class='group-repositories'>
                 <dl data-query='repositories'>
                   <dt><a href="https://github.com/${owner.login}/${name}/">${owner.login}/${name}</a></dt>
                   <dd>
@@ -30,12 +96,8 @@
                     </span>
                   </dd>
                 </dl>
-                <p>No repositories found</p>
-              </div>
-  </div>
-</div>
-</main>
-
+                <p style='float:right'>.</p>
+              </section>
 <footer class="footer d-print-none">
 <div class="text-center">
       <span>Copyright &#xA9; 2020 W3C <sup>&#xAE;</sup> (<a
@@ -73,10 +135,12 @@
   const repositories = fetch(`${config.cache}/extra/repositories/${config.gid}`).then(res => res.json());
   const group = fetch(`https://api.w3.org/groups/${config.gid}?apikey=${config.key}`).then(res => res.json());
 
-  const groupElements = document.querySelectorAll("*.group-data");
+  const groupElements = document.querySelectorAll("*.group-repositories");
     group.then(group => repositories.then(repositories => {
-      group.repositories = repositories;
-      for (const element of groupElements) jsonrender({ group }, element);
+      document.getElementById('group-name').textContent = group.name;
+      document.getElementById('group-id').textContent = group.id;
+      document.getElementById('group-description').innerHTML = group.description;
+      for (const element of groupElements) jsonrender({ repositories }, element);
      })
     .catch(err => {
       for (const element of groupElements) element.textContent = err.message;

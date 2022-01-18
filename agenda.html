@@ -71,7 +71,7 @@ rtObserver.observe({entryTypes: ["resource"]});
     h1, h2, h3, h4, h5, p {
       margin: 0;
     }
-    p.description {
+    #group-description {
       margin: 1em;
     }
     h4 {
@@ -91,11 +91,15 @@ rtObserver.observe({entryTypes: ["resource"]});
 
 <body>
   <header class='app-bar'>
-    <h1 class='group-data'>${group.name} - Agenda items</h1>
+    <h1 class='group-data'><span id='group-name'>{group-name}</span> - Agenda items</h1>
   </header>
   <div class='group-data'>
-    <p style='float: right'>(<a href='./issueboard.html?gid=${group.id}'>issues</a>)</p>
-    <div data-if='group.description'><p class='description'>${group.description}</p></div>
+    <div id='group-description'>{group-description}</div>
+    <p>See also:</p>
+    <ul>
+      <li>List of <a id='group-issues' href='.'>issues</a></li>
+      <li>List of <a id='group-repositories' href='.'>repositories</a></li>
+    </ul>
   </div>
   <section class='repository-data'>
     <div data-if='issues.*'>
@@ -134,8 +138,16 @@ rtObserver.observe({entryTypes: ["resource"]});
       <h4>text/plain version:</h4>
     <div class='repository-data' data-if='issues.*'>
     <pre data-query='issues'>
-agenda+ <a href="${html_url}">${title}</a></h4>
+agenda+ <a href="${html_url}">${title}</a>
   ${html_url}
+</pre>
+      <pre>no agenda item raised</pre>
+    </div></section>
+    <section>
+      <h4>Markdown:</h4>
+    <div class='repository-data' data-if='issues.*'>
+    <pre data-query='issues'>
+1. [${title}](${html_url})
 </pre>
       <pre>no agenda item raised</pre>
     </div></section>
@@ -143,7 +155,7 @@ agenda+ <a href="${html_url}">${title}</a></h4>
 
     <section>
       <h3>How does it work?</h3>
-      <p>This page searches for the string <code id='search'>agenda</code> in title/labels/milestones in all of the repositories owned by this group. You
+      <p>This page searches for the string <code id='search'>agenda</code> in title/labels/milestones in all of the <a id='group-repositories' href=".">repositories owned by this group</a>. You
       may change this term by using the URL parameter <code>search</code>.</p>
     </section>
 
@@ -184,8 +196,6 @@ agenda+ <a href="${html_url}">${title}</a></h4>
       },
     };
 
-    let gid = config.gid;
-
     (function () {
       document.getElementById("search").textContent = config.search;
 
@@ -197,7 +207,10 @@ agenda+ <a href="${html_url}">${title}</a></h4>
         for (const element of repoElements) element.textContent = err.message;
       });
       group.then(group => {
-        for (const element of groupElements) jsonrender({ group }, element, functions);
+        document.getElementById('group-name').textContent = group.name;
+        document.getElementById('group-description').innerHTML = group.description;
+        document.getElementById('group-issues').setAttribute('href', `./issueboard.html?gid=${config.gid}`);
+        document.getElementById('group-repositories').setAttribute('href', `./repositories.html?gid=${config.gid}`);
       }).catch(err => {
         for (const element of groupElements) element.textContent = err.message;
       });

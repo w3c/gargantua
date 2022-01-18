@@ -51,7 +51,7 @@
     h1, h2, h3, h4, h5, p {
       margin: 0;
     }
-    p.description {
+    #group-description {
       margin: 1em;
     }
     h4 {
@@ -71,11 +71,16 @@
 
 <body>
   <header class='app-bar'>
-    <h1 class='group-data'>${group.name} - Issues</h1>
+    <h1 class='group-data'><span id='group-name'>{group-name}</span> - Issues</h1>
   </header>
   <div class='group-data'>
-    <p style='float: right'>(<a href='./agenda.html?gid=${group.id}'>agenda</a>)</p>
-    <div data-if='group.description'><p class='description'>${group.description}</p></div>
+    <p style='float: right'>(agenda</a>)</p>
+    <div id='group-description'>{group-description}</div>
+    <p>See also:</p>
+    <ul>
+      <li>Search for <a id='group-agenda' href='.'>agenda items</a></li>
+      <li>List of <a id='group-repositories' href='.'>repositories</a></li>
+    </ul>
   </div>
   <section class='repository-data'>
       <section data-query='repositories'>
@@ -162,11 +167,6 @@
       },
     };
 
-    function goodRepoType(type) {
-      const good =["rec-track", "note", "cg-report", "tests", "article", "process"];
-      return good.includes(type);
-    }
-
     function sortIssues(a, b) {
       let now = new Date(),
           aDate = new Date(Date.parse(a.updated_at)),
@@ -234,41 +234,34 @@
       if (ngid) gid = ngid;
 
       const repoElements  = document.querySelectorAll("*.repository-data");
-      const groupElements = document.querySelectorAll("*.group-data");
-      fetch(`${CACHE}/extra/repositories/enhanced/${gid}?fields=full_name,description,w3c`).then(res => res.json())
+      fetch(`${CACHE}/extra/repositories/${gid}?fields=full_name,description,w3c`).then(res => res.json())
         .then(repositories => {
           const promises = [];
            for (const repo of repositories) {
-             const type = repo.w3c["repo-type"];
-             if (type && type.reduce((a, c) => a || goodRepoType(c), false)) {
-               promises.push(fetch(`${CACHE}/v3/repos/${repo.full_name}/issues?ttl=15&fields=html_url,number,title,comments,updated_at,assignee,labels,pull_request,milestone`)
-                 .then(res => res.json())
-                 .then(issues => {
-                   repo.issues = issues.sort(sortIssues);
-                   return repo;
-               }).catch(err => {
-                 repo.hasError = err;
+             promises.push(fetch(`${CACHE}/v3/repos/${repo.full_name}/issues?ttl=15&fields=html_url,number,title,comments,updated_at,assignee,labels,pull_request,milestone`)
+               .then(res => res.json())
+               .then(issues => {
+                 repo.issues = issues.sort(sortIssues);
                  return repo;
-               }));
-             }
+             }).catch(err => {
+               repo.hasError = err;
+               return repo;
+             }));
            }
            return Promise.all(promises).then(repositories => {
-            repositories = repositories.sort(sortRepositories);
-            for (const element of repoElements) jsonrender({ repositories }, element, functions);
-          });
-
-
-           return group;
-         }).then(group => {
-           const elts = document.querySelectorAll("*.group-data");
-           for (const element of elts) jsonrender({ group: group }, element, functions);
+              repositories = repositories.sort(sortRepositories);
+              for (const element of repoElements) jsonrender({ repositories }, element, functions);
+           });
          }).catch(err => {
            for (const element of repoElements) element.textContent = err.message;
          });
          fetchGroup(gid).then(group => {
-           for (const element of groupElements) jsonrender({ group }, element, functions);
+           document.getElementById('group-name').textContent = group.name;
+           document.getElementById('group-description').innerHTML = group.description;
+           document.getElementById('group-agenda').setAttribute('href', `./agenda.html?gid=${gid}`);
+           document.getElementById('group-repositories').setAttribute('href', `./repositories.html?gid=${gid}`);
          }).catch(err => {
-           for (const element of groupElements) element.textContent = err.message;
+          document.getElementById('group-name').textContent = "404?";
          });
     })();
 
