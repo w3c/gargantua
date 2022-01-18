@@ -235,7 +235,7 @@
 
       const repoElements  = document.querySelectorAll("*.repository-data");
       const groupElements = document.querySelectorAll("*.group-data");
-      fetch(`${CACHE}/extra/repositories/${gid}?fields=full_name,description,w3c`).then(res => res.json())
+      fetch(`${CACHE}/extra/repositories/enhanced/${gid}?fields=full_name,description,w3c`).then(res => res.json())
         .then(repositories => {
           const promises = [];
            for (const repo of repositories) {
