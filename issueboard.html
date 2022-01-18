@@ -46,7 +46,7 @@
       font-weight: bold; color: green;
     }
     .color--red {
-      font-weight: bold; color: lightcoral;
+      font-weight: bold; color: rgb(245, 40, 40);
     }
     h1, h2, h3, h4, h5, p {
       margin: 0;
@@ -65,6 +65,13 @@
     }
     .full_name, .owner {
       font-size: 80%;
+    }
+    .label {
+      padding: 3px; border-radius: 5px;
+      border: 1px solid black;
+      font-size: smaller;
+      hyphens: none;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -89,7 +96,7 @@
       <span data-if='issues.*'>
         <div data-query='issues.*'>
           <h4>#${number} <a href="${html_url}">${title}</a></h4>
-          <div style="font-style: italic">
+          <div style="font-style: italic;padding-top: 5px;">
             <span data-if='pull_request'>
               <span><strong>pull request</strong> -</span>
             </span>
@@ -110,8 +117,8 @@
             </span>
             <span data-if='labels.*'>
               <span> -
-                <span data-query='labels'>
-                  <span style="color: #${color}">${name}</span>
+                <span data-query='labels' data-filter='prettyLabels'>
+                  <span class='label'>${name}</span>,
                 </span>
               </span>
             </span>
@@ -164,6 +171,12 @@
       },
       prettyDate: (time) => {
         return { className: dateColor(time), text: dateFormat(time) }
+      },
+      prettyLabels: (labels) => {
+        labels.forEach(label => {
+          label.name = label.name.replaceAll(' ', '\u00A0');
+        });
+        return labels;
       },
     };
 

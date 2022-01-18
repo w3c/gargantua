@@ -66,7 +66,7 @@ rtObserver.observe({entryTypes: ["resource"]});
       font-weight: bold; color: green;
     }
     .color--red {
-      font-weight: bold; color: lightcoral;
+      font-weight: bold; color: rgb(236, 65, 65);
     }
     h1, h2, h3, h4, h5, p {
       margin: 0;
@@ -85,6 +85,13 @@ rtObserver.observe({entryTypes: ["resource"]});
     }
     .full_name, .owner {
       font-size: 80%;
+    }
+    .label {
+      padding: 3px; border-radius: 5px;
+      border: 1px solid black;
+      font-size: smaller;
+      hyphens: none;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -124,8 +131,8 @@ rtObserver.observe({entryTypes: ["resource"]});
           </span>
           <span data-if='labels.*'>
             <span> -
-              <span data-query='labels'>
-                <span style="color: #${color}">${name}</span>
+              <span data-query='labels' data-filter='prettyLabels'>
+                <span class="label">${name}</span>
               </span>
             </span>
           </span>
@@ -193,6 +200,12 @@ agenda+ <a href="${html_url}">${title}</a>
       },
       prettyDate: (time) => {
         return { className: dateColor(time), text: dateFormat(time) }
+      },
+      prettyLabels: (labels) => {
+        labels.forEach(label => {
+          label.name = label.name.replaceAll(' ', '\u00A0');
+        });
+        return labels;
       },
     };
 
