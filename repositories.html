@@ -5,38 +5,11 @@
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     </head>
     <body>
 
                   <main class="container group-data" data-query='group'>
                       <h1>${name} - Repositories</h1>
-                      <!-- implement check
-         <dl data-query="services">
-            <dt><a href='${link}'>${shortdesc}</a> (<span>${type}</span>)</dt>
-            <dd><span data-if="::self[longdesc]"><span>${longdesc}</span></span>
-              <ul>
-                <span data-if='edit'>
-                  <li><a href='${edit}'>manage</a></li>
-                </span>
-                <span data-if='repositories'>
-                  <li><a href='${repositories}'>repositories</a></li>
-                </span>
-                <span data-if='stats.mpm'>
-                  <li>${stats.mpm} messages per month averaged over the last 6 months</li>
-                </span>
-                <span data-if='notify'>
-                  <li><span data-if='notify-ml-config'>
-                      <span>notify-ml-config: <a href='${notify}' data-query='notify-ml-config'
-                          data-filter='mlConfig'>${}</a></span>
-                      <a class='warning' title='No mailing list configuration detected. Consider adding one.'
-                        href='${notify}'>no notify-ml-config</a>
-                    </span></li>
-                </span>
-              </ul>
-          </dl>
-        -->
-
 <div class="tab-content" id="nav-tabContent">
   <div class="tab-pane fade show active" id="nav-publications" role="tabpanel" aria-labelledby="nav-publications-tab">
               <div data-if='repositories.*'>
@@ -87,53 +60,27 @@
     });
 </script>
 <script type="module">
-  import { fetchGroup, fetchGroups, setW3CKey } from './w3c.js';
   import jsonrender from './jsonrender.js';
-
-  const functions =
-  {
-    filterOpenIssues: function (issues) {
-      let openIssues = issues.filter(i => i.state === "open" && !i.pull_request);
-      return { length: openIssues.length };
-    },
-    filterOpenPRs: function (issues) {
-      let openPRs = issues.filter(i => i.state === "open" && i.pull_request);
-      return { length: openPRs.length };
-    },
-    activeSpecs: async function (specs) {
-      return (await Promise.all(specs.map(spec =>
-        spec["latest-status"].then(s => (s !== "Retired") ? spec : undefined)))).filter(spec => spec);
-    },
-    milestones: function (milestones) {
-      return Object.entries(milestones).map(s => s[0] + " " + s[1]);
-    },
-    mlConfig: function (confs) {
-      return Object.keys(confs).map(c => " " + c);
-    },
+  const config = {
+    gid: document.documentElement.getAttribute("data-gid"),
+    key: document.documentElement.getAttribute("data-apiary-key"),
+    cache: "https://labs.w3.org/github-cache",
   };
+  for (const [key, value] of (new URL(window.location)).searchParams) {
+    config[key] = value;
+  }
 
-  setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
+  const repositories = fetch(`${config.cache}/extra/repositories/${config.gid}`).then(res => res.json());
+  const group = fetch(`https://api.w3.org/groups/${config.gid}?apikey=${config.key}`).then(res => res.json());
 
-  let gid = document.documentElement.getAttribute("data-gid");
-
-  (function () {
-    let ngid = (new URL(document.location)).searchParams.get("gid");
-    if (!ngid) {
-      const matches = document.location.toString().match(new RegExp("([0-9]+)", "g"));
-      if (matches.length > 0) {
-        const last = matches[matches.length - 1];
-        if (last.length > 4)
-          ngid = last;
-      }
-    }
-    if (ngid) gid = ngid;
-    fetchGroup(gid).then(group => {
-      console.log(group);
-      let elts = document.querySelectorAll("*.group-data");
-      for (let element of elts) jsonrender({ group: group }, element, functions);
-    });
-  })();
-
+  const groupElements = document.querySelectorAll("*.group-data");
+    group.then(group => repositories.then(repositories => {
+      group.repositories = repositories;
+      for (const element of groupElements) jsonrender({ group }, element);
+     })
+    .catch(err => {
+      for (const element of groupElements) element.textContent = err.message;
+      }));
 </script>
 </body>
 </html>
