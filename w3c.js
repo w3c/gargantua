@@ -110,6 +110,8 @@ async function ongroup(group) {
     group.description = textToNodes(group.description);
   }
 
+  group.identifier =  group._links.self.href.replace('https://api.w3.org/groups/','');
+
   // Some additional useful links
   group["details"] = `https://www.w3.org/2000/09/dbwg/details?group=${groupId}&order=org&public=1`;
 
