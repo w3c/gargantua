@@ -16,8 +16,27 @@ const config = {
 for (const [key, value] of (new URL(window.location)).searchParams) {
   config[key] = value;
 }
-const issues = fetch(`${config.cache}/extra/issues/${config.gid}?ttl=15&search=${config.search}&fields=html_url,title,comments,updated_at,assignee,labels,pull_request,milestone`).then(res => res.json());
-const group = fetch(`https://api.w3.org/groups/${config.gid}?apikey=${config.key}`).then(res => res.json());
+async function fetchJSON(url) {
+      let res = await fetch(url);
+      if (res.status !== 200) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+      return res.json();
+}
+async function getID(input) {
+    if (typeof input.match("[0-9]+")) {
+      const gid = Number.parseInt(input);
+      return fetch(`https://w3c.github.io/groups/identifiers.json`).then(res => res.json())
+        .then(mapping => {
+          const g = mapping.find(g => g.id === gid);
+          return (g)? g.identifier : input;
+        });
+    } else {
+      return input;
+    }
+  }
+
+const pgid = getID(config.gid);
+const issues = pgid.then(gid => fetch(`${config.cache}/extra/issues/${gid}?ttl=15&search=${config.search}&fields=html_url,title,comments,updated_at,assignee,labels,pull_request,milestone`).then(res => res.json()));
+const group = pgid.then(gid => fetchJSON(`https://w3c.github.io/groups/${gid}/group.json`));
 
 // telemetry for performance monitoring
 const traceId = (""+Math.random()).substring(2, 18); // for resource correlation

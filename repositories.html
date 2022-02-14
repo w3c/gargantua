@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-US" data-apiary-key="oq0abw4w2bkwcs0k0kws44sok4cg48w">
+<html lang="en-US" data-apiary-key="oq0abw4w2bkwcs0k0kws44sok4cg48w" data-gid="other/tag">
     <head>
         <title>Repositories</title>
         <!-- Required meta tags -->
@@ -129,6 +129,26 @@
 </script>
 <script type="module">
   import jsonrender from './jsonrender.js';
+
+  async function fetchJSON(url) {
+    let res = await fetch(url);
+    if (res.status !== 200) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+    return res.json();
+  }
+  async function getID(input) {
+    if (typeof config.gid.match("[0-9]+")) {
+      const gid = Number.parseInt(config.gid);
+      return fetch(`https://w3c.github.io/groups/identifiers.json`).then(res => res.json())
+        .then(mapping => {
+          const g = mapping.find(g => g.id === gid);
+          return (g)? g.identifier : input;
+        })
+        .catch(() => input);
+    } else {
+      return input;
+    }
+  }
+
   const config = {
     gid: document.documentElement.getAttribute("data-gid"),
     key: document.documentElement.getAttribute("data-apiary-key"),
@@ -137,22 +157,28 @@
   for (const [key, value] of (new URL(window.location)).searchParams) {
     config[key] = value;
   }
+  getID(config.gid).then(async (gid) => {
+    const groupElements = document.querySelectorAll("*.group-repositories");
 
-  const repositories = fetch(`${config.cache}/extra/repositories/${config.gid}`).then(res => res.json());
-  const group = fetch(`https://api.w3.org/groups/${config.gid}?apikey=${config.key}`).then(res => res.json());
-
-  const groupElements = document.querySelectorAll("*.group-repositories");
-    group.then(group => repositories.then(repositories => {
-      document.getElementById('group-name').textContent = group.name;
-      document.getElementById('group-id').textContent = group.id;
-      document.getElementById('group-agenda').setAttribute('href', `./agenda.html?gid=${config.gid}`);
-      document.getElementById('group-issues').setAttribute('href', `./issueboard.html?gid=${config.gid}`);
-      document.getElementById('group-description').innerHTML = group.description;
-      for (const element of groupElements) jsonrender({ repositories }, element);
-     })
-    .catch(err => {
-      for (const element of groupElements) element.textContent = err.message;
-      }));
+    fetchJSON(`https://w3c.github.io/groups/${gid}/group.json`)
+      .then(group => {
+        document.getElementById('group-name').textContent = group.name;
+        document.getElementById('group-id').textContent = group.id;
+        document.getElementById('group-agenda').setAttribute('href', `./agenda.html?gid=${gid}`);
+        document.getElementById('group-issues').setAttribute('href', `./issueboard.html?gid=${gid}`);
+        document.getElementById('group-description').innerHTML = group.description;
+      }).catch(err => {
+        document.getElementById('group-name').textContent = gid;
+        document.getElementById('group-description').innerHTML = `Group not found - ${err.message}`;
+      });
+    fetchJSON(`https://w3c.github.io/groups/${gid}/repositories.json`)
+      .then(repositories => {
+        for (const element of groupElements) jsonrender({ repositories }, element);
+      }).catch(err => {
+        console.log(err);
+        for (const element of groupElements) element.textContent = `Repositories not found - ${err.message}`;
+      });
+  });
 </script>
 </body>
 </html>

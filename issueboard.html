@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en-US" data-gid='45211' data-apiary-key="oq0abw4w2bkwcs0k0kws44sok4cg48w">
+<html lang="en-US" data-gid='wg/webperf' data-apiary-key="oq0abw4w2bkwcs0k0kws44sok4cg48w">
 
 <head>
   <meta charset="utf-8">
@@ -91,7 +91,7 @@
   </div>
   <section class='repository-data'>
       <section data-query='repositories'>
-      <h2><span class='full_name'>${full_name}</span>
+      <h2><span class='owner.login'>${owner.login}</span>/<span class='name'>${name}</span>
          <span data-if='description'><span> - ${description}</span></span></h2>
       <span data-if='issues.*'>
         <div data-query='issues.*'>
@@ -135,9 +135,25 @@
   <script type="module">
     import jsonrender from './jsonrender.js';
 
+    async function fetchJSON(url) {
+      let res = await fetch(url);
+      if (res.status !== 200) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+      return res.json();
+    }
     async function fetchGroup(id) {
-      const key = document.documentElement.getAttribute("data-apiary-key");
-      return fetch(`https://api.w3.org/groups/${id}?apikey=${key}&embed=1`).then(res => res.json());
+      return fetch(`https://w3c.github.io/groups/${id}/group.json`).then(res => res.json());
+    }
+    async function getID(input) {
+      if (typeof input.match("[0-9]+")) {
+        const gid = Number.parseInt(input);
+        return fetch(`https://w3c.github.io/groups/identifiers.json`).then(res => res.json())
+          .then(mapping => {
+            const g = mapping.find(g => g.id === gid);
+            return (g)? g.identifier : input;
+          });
+      } else {
+        return input;
+      }
     }
 
     const CACHE = "https://labs.w3.org/github-cache";
@@ -247,35 +263,38 @@
       if (ngid) gid = ngid;
 
       const repoElements  = document.querySelectorAll("*.repository-data");
-      fetch(`${CACHE}/extra/repositories/${gid}?fields=full_name,description,w3c`).then(res => res.json())
-        .then(repositories => {
-          const promises = [];
-           for (const repo of repositories) {
-             promises.push(fetch(`${CACHE}/v3/repos/${repo.full_name}/issues?ttl=15&fields=html_url,number,title,comments,updated_at,assignee,labels,pull_request,milestone`)
-               .then(res => res.json())
-               .then(issues => {
-                 repo.issues = issues.sort(sortIssues);
+      getID(gid).then(gid => {
+        fetchJSON(`https://w3c.github.io/groups/${gid}/repositories.json`)
+          .then(repositories => {
+            const promises = [];
+             for (const repo of repositories) {
+               promises.push(fetch(`${CACHE}/v3/repos/${repo.owner.login}/${repo.name}/issues?ttl=15&fields=html_url,number,title,comments,updated_at,assignee,labels,pull_request,milestone`)
+                 .then(res => res.json())
+                 .then(issues => {
+                   repo.issues = issues.sort(sortIssues);
+                   return repo;
+               }).catch(err => {
+                 repo.hasError = err;
                  return repo;
-             }).catch(err => {
-               repo.hasError = err;
-               return repo;
-             }));
-           }
-           return Promise.all(promises).then(repositories => {
-              repositories = repositories.sort(sortRepositories);
-              for (const element of repoElements) jsonrender({ repositories }, element, functions);
+               }));
+             }
+             return Promise.all(promises).then(repositories => {
+                repositories = repositories.sort(sortRepositories);
+                for (const element of repoElements) jsonrender({ repositories }, element, functions);
+             });
+           }).catch(err => {
+             for (const element of repoElements) element.textContent = err.message;
            });
-         }).catch(err => {
-           for (const element of repoElements) element.textContent = err.message;
-         });
-         fetchGroup(gid).then(group => {
-           document.getElementById('group-name').textContent = group.name;
-           document.getElementById('group-description').innerHTML = group.description;
-           document.getElementById('group-agenda').setAttribute('href', `./agenda.html?gid=${gid}`);
-           document.getElementById('group-repositories').setAttribute('href', `./repositories.html?gid=${gid}`);
-         }).catch(err => {
-          document.getElementById('group-name').textContent = "404?";
-         });
+           fetchGroup(gid).then(group => {
+             document.getElementById('group-name').textContent = group.name;
+             document.getElementById('group-description').innerHTML = group.description;
+             document.getElementById('group-agenda').setAttribute('href', `./agenda.html?gid=${gid}`);
+             document.getElementById('group-repositories').setAttribute('href', `./repositories.html?gid=${gid}`);
+           }).catch(err => {
+            document.getElementById('group-name').textContent = gid;
+            document.getElementById('group-description').innerHTML = `Group not found - ${err.message}`;
+           });
+      });
     })();
 
 // telemetry for performance monitoring
