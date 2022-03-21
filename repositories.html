@@ -163,7 +163,7 @@
     fetchJSON(`https://w3c.github.io/groups/${gid}/group.json`)
       .then(group => {
         document.getElementById('group-name').textContent = group.name;
-        document.getElementById('group-id').textContent = group.id;
+        document.getElementById('group-id').textContent = group.identifier;
         document.getElementById('group-agenda').setAttribute('href', `./agenda.html?gid=${gid}`);
         document.getElementById('group-issues').setAttribute('href', `./issueboard.html?gid=${gid}`);
         document.getElementById('group-description').innerHTML = group.description;
