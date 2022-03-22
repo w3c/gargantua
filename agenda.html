@@ -181,7 +181,7 @@ agenda+ <a href="${html_url}">${title}</a>
 
     <section>
       <h3>How does it work?</h3>
-      <p>This page searches for the string <code id='search'>agenda</code> in title/labels/milestones in all of the <a id='group-repositories' href=".">repositories owned by this group</a>. You
+      <p>This page searches for the string <code id='search'>agenda</code> in title/labels/milestones in all of the <a id='group-repositories-2' href=".">repositories owned by this group</a>. You
       may change this term by using the URL parameter <code>search</code>.</p>
     </section>
 
@@ -243,6 +243,7 @@ agenda+ <a href="${html_url}">${title}</a>
         document.getElementById('group-description').innerHTML = group.description;
         document.getElementById('group-issues').setAttribute('href', `./issueboard.html?gid=${config.gid}`);
         document.getElementById('group-repositories').setAttribute('href', `./repositories.html?gid=${config.gid}`);
+        document.getElementById('group-repositories-2').setAttribute('href', `./repositories.html?gid=${config.gid}`);
       }).catch(err => {
         for (const element of groupElements) element.textContent = err.message;
       });
