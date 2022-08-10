@@ -149,7 +149,7 @@
         document.getElementById('group-id').textContent = group.identifier;
         document.getElementById('group-agenda').setAttribute('href', `./agenda.html?gid=${gid}`);
         document.getElementById('group-issues').setAttribute('href', `./issueboard.html?gid=${gid}`);
-        document.getElementById('repos-link').setAttribute('href', `https://www.w3.org/groups/${group.identifer}/tools`);
+        document.getElementById('repos-link').setAttribute('href', `https://www.w3.org/groups/${group.identifier}/tools`);
         document.getElementById('group-description').innerHTML = group.description;
       }).catch(err => {
         document.getElementById('group-name').textContent = gid;
