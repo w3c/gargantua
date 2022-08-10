@@ -85,28 +85,11 @@
       <p>For repositories configuration, see the <a href="https://w3c.github.io/w3c.json.html">w3c.json documentation</a>
         (the identifier of this group is "<code id='group-id'>???</code>").</p>
       <section class='group-repositories'>
-                <dl data-query='repositories'>
-                  <dt><a href="https://github.com/${owner.login}/${name}/">${owner.login}/${name}</a></dt>
-                  <dd>
-                    <span data-if='homepageUrl'>
-                      <a href='${homepageUrl}'>
-                        <span data-if='description'>
-                          <span>${description}</span>
-                          <span>homepage</span>
-                        </span>
-                      </a>
-                      <span data-if='description'>
-                        <span>${description}</span>
-                        <span>${owner.login}/${name}</span>
-                      </span>
-                    </span>
-                  </dd>
-                </dl>
-                <p style='float:right'>.</p>
-              </section>
+        <h3>This page is deprecated. See the <a id='repos-link' href=".">group tools page</a> instead.</h3>
+      </section>
 <footer class="footer d-print-none">
 <div class="text-center">
-      <span>Copyright &#xA9; 2020 W3C <sup>&#xAE;</sup> (<a
+      <span>Copyright &#xA9; 2022 W3C <sup>&#xAE;</sup> (<a
                   href="https://www.csail.mit.edu/"><abbr title="Massachusetts Institute of Technology">MIT</abbr></a>, <a
                   href="https://www.ercim.eu/"><abbr
                       title="European Research Consortium for Informatics and Mathematics">ERCIM</abbr></a>,
@@ -166,17 +149,11 @@
         document.getElementById('group-id').textContent = group.identifier;
         document.getElementById('group-agenda').setAttribute('href', `./agenda.html?gid=${gid}`);
         document.getElementById('group-issues').setAttribute('href', `./issueboard.html?gid=${gid}`);
+        document.getElementById('repos-link').setAttribute('href', `https://www.w3.org/groups/${group.identifer}/tools`);
         document.getElementById('group-description').innerHTML = group.description;
       }).catch(err => {
         document.getElementById('group-name').textContent = gid;
         document.getElementById('group-description').innerHTML = `Group not found - ${err.message}`;
-      });
-    fetchJSON(`https://w3c.github.io/groups/${gid}/repositories.json`)
-      .then(repositories => {
-        for (const element of groupElements) jsonrender({ repositories }, element);
-      }).catch(err => {
-        console.log(err);
-        for (const element of groupElements) element.textContent = `Repositories not found - ${err.message}`;
       });
   });
 </script>

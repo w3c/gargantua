@@ -242,8 +242,8 @@ agenda+ <a href="${html_url}">${title}</a>
         document.getElementById('group-name').textContent = group.name;
         document.getElementById('group-description').innerHTML = group.description;
         document.getElementById('group-issues').setAttribute('href', `./issueboard.html?gid=${config.gid}`);
-        document.getElementById('group-repositories').setAttribute('href', `./repositories.html?gid=${config.gid}`);
-        document.getElementById('group-repositories-2').setAttribute('href', `./repositories.html?gid=${config.gid}`);
+        document.getElementById('group-repositories').setAttribute('href', `https://www.w3.org/groups/${config.gid}/tools`);
+        document.getElementById('group-repositories-2').setAttribute('href', `https://www.w3.org/groups/${config.gid}/tools`);
       }).catch(err => {
         for (const element of groupElements) element.textContent = err.message;
       });

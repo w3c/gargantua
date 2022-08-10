@@ -289,7 +289,7 @@
              document.getElementById('group-name').textContent = group.name;
              document.getElementById('group-description').innerHTML = group.description;
              document.getElementById('group-agenda').setAttribute('href', `./agenda.html?gid=${gid}`);
-             document.getElementById('group-repositories').setAttribute('href', `./repositories.html?gid=${gid}`);
+             document.getElementById('group-repositories').setAttribute('href', `https://www.w3.org/groups/${gid}/tools`);
            }).catch(err => {
             document.getElementById('group-name').textContent = gid;
             document.getElementById('group-description').innerHTML = `Group not found - ${err.message}`;
