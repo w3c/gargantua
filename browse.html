@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en-US" data-apiary-key="oq0abw4w2bkwcs0k0kws44sok4cg48w">
+<html lang="en-US">
 
 <head>
   <meta charset="utf-8">
@@ -31,7 +31,7 @@
 
   <hr />
   <script type="module">
-    import { fetchGroup, fetchGroups, setW3CKey } from './w3c.js';
+    import { fetchGroup, fetchGroups } from './w3c.js';
     import query from './jsonquery.js';
     import jsonrender from './jsonrender.js';
     import LazyPromise from './lazypromise.js';
@@ -178,8 +178,6 @@
       history.pushState(config, config.gid, "?gid=" + config.gid + ((config.query)? "&query="+config.query : ""));
       renderGID().catch(console.error);
     };
-
-    setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
 
     fetchGroups().then(groups => {
       let elts = document.querySelectorAll("*.groups");

@@ -1,6 +1,6 @@
 import LazyPromise from './lazypromise.js';
 
-// export { fetchGroup, fetchGroups, fetchJSON, fetchW3C, setW3CKey };
+// export { fetchGroup, fetchGroups, fetchJSON, fetchW3C };
 
 // This helps retrieve asynchronously information from the W3C API
 // fetchJSON and fetchW3C provide caching mechanisms
@@ -11,11 +11,6 @@ import LazyPromise from './lazypromise.js';
 
 // used by getW3CData and groupInfo
 const W3C_APIURL = "https://api.w3.org/";
-
-let W3C_APIKEY;
-function setW3CKey(key) {
-  W3C_APIKEY = key.toString();
-}
 
 let JSON_CACHE = {};
 
@@ -128,9 +123,7 @@ function fetchW3C(queryPath, expanders) {
   const mapper = (set) => resolveLinks(set, expanders);
   const ENTRY = queryPath.toString();
   if (API_CACHE[ENTRY]) return API_CACHE[ENTRY];
-  if (!W3C_APIKEY) throw new ReferenceError("Missing W3C key. Use setKey")
   const apiURL = new URL(queryPath, W3C_APIURL);
-  apiURL.searchParams.set("apikey", W3C_APIKEY);
   apiURL.searchParams.set("embed", "1"); // grab everything
   return API_CACHE[ENTRY] = fetchJSON(apiURL).then(data => {
     if (data.error) return data;
@@ -157,4 +150,4 @@ function fetchW3C(queryPath, expanders) {
   });
 }
 
-export { fetchJSON, fetchW3C, fetchHTML, setW3CKey };
+export { fetchJSON, fetchW3C, fetchHTML };

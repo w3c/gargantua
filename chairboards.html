@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en-US" data-apiary-key="oq0abw4w2bkwcs0k0kws44sok4cg48w">
+<html lang="en-US">
 
 <head>
   <meta charset="utf-8">
@@ -29,10 +29,8 @@
   </p>
 
 <script type="module">
-    import { fetchGroups, setW3CKey } from './w3c.js';
+    import { fetchGroups } from './w3c.js';
     import jsonrender from './jsonrender.js';
-
-    setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
 
     fetchGroups().then(groups => {
       let gtypeElt = document.getElementById("gtype");

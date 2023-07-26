@@ -1,7 +1,7 @@
 import 'jsdom-global/register.js';
 import jsdom from "jsdom";
 const { JSDOM } = jsdom;
-import { fetchGroup, setW3CKey } from './w3c.js';
+import { fetchGroup } from './w3c.js';
 import jsonrender, { subscribe } from './jsonrender.js';
 import fetch from 'node-fetch';
 
@@ -49,7 +49,6 @@ function renderGroup(url) {
         for (let script of scripts) script.parentNode.removeChild(script);
         resolve(dom.serialize());
       }
-      setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
       subscribe("done", done);
 
       let gid = document.documentElement.getAttribute("data-gid");

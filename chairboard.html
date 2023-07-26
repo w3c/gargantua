@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en-US" data-apiary-key="oq0abw4w2bkwcs0k0kws44sok4cg48w">
+<html lang="en-US">
 
 <head>
   <meta charset="utf-8">
@@ -411,7 +411,7 @@
 <hr>
 <a href='https://github.com/w3c/gargantua/'>It's on GitHub</a>
   <script type="module">
-    import { fetchGroup, fetchGroups, setW3CKey } from './w3c.js';
+    import { fetchGroup, fetchGroups } from './w3c.js';
     import jsonrender, { subscribe } from './jsonrender.js';
 
     // telemetry for performance monitoring
@@ -451,8 +451,6 @@
         return event["start"].split('T')[0];
       },
     };
-
-    setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
 
     let gid = document.documentElement.getAttribute("data-gid");
 
