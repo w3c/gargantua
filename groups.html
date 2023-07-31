@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-US" data-apiary-key="oq0abw4w2bkwcs0k0kws44sok4cg48w">
+<html lang="en-US">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,9 +7,6 @@
   <meta name="description" content="A group page">
   <link rel="preconnect" href="https://api.w3.org" />
   <link rel="preconnect" href="https://w3c.github.io" />
-  <!--
-    To get your own API key, go to https://www.w3.org/users/myprofile/apikeys
-  -->
   <style>
     @keyframes fadeInOpacity {
       0% {
@@ -346,10 +343,8 @@
   </main>
 
   <script type="module">
-    import { fetchGroups, setW3CKey } from './w3c.js';
+    import { fetchGroups } from './w3c.js';
     import jsonrender from './jsonrender.js';
-
-    setW3CKey(document.documentElement.getAttribute("data-apiary-key"));
 
     fetchGroups().then(groups => {
       let elts = document.querySelectorAll("*.group-data");

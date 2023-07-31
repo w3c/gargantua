@@ -1,10 +1,10 @@
 import LazyPromise from './lazypromise.js';
-import { fetchJSON, fetchW3C, fetchHTML, setW3CKey } from "./fetch-utils.js";
+import { fetchJSON, fetchW3C, fetchHTML } from "./fetch-utils.js";
 import fetchEvents from "./w3cevents.js";
 import specConfig from "./spec-config.js";
 import mlsConfig from "./mls-config.js";
 
-// export { fetchGroup, fetchGroups, fetchJSON, setW3CKey };
+// export { fetchGroup, fetchGroups, fetchJSON };
 
 const CACHE = "https://labs.w3.org/github-cache";
 
@@ -418,4 +418,4 @@ function sortSpecifications(a, b) {
 }
 
 // export default fetchGroup;
-export { fetchGroup, fetchGroups, fetchJSON, fetchHTML, fetchW3C, setW3CKey };
+export { fetchGroup, fetchGroups, fetchJSON, fetchHTML, fetchW3C };
