@@ -60,12 +60,13 @@ async function fetchEvents(group) {
     let elements = doc.querySelectorAll(".event-list article");
     let events = [];
     for (const evt of elements) {
-      let title = text(evt.querySelector("h2 a"));
-      if (title) {
-        title = title.split('\n');
+      let h2 = evt.querySelector("h2");
+      if (h2) {
+        let id = h2.id.substr(0, h2.id.length -6);
         let event = {
-          summary: title[0].trim(),
-          state: title[1].trim(),
+          summary: text(h2.querySelector("a")),
+          id: id,
+          state: text(evt.querySelector("#"+id+"-tag-status")),
           start: evt.querySelector(".date-orig time:nth-child(1)").getAttribute("datetime"),
           end: evt.querySelector(".date-orig time:nth-child(2)").getAttribute("datetime"),
           href: evt.querySelector(".card__link").href
