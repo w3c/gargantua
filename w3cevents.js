@@ -55,9 +55,9 @@ let EVENT_CACHE = [];
 async function fetchEvents(group) {
   if (EVENT_CACHE[group.id]) return EVENT_CACHE[group.id];
 
-  return fetchHTML(`${group["default-homepage"]}/calendar`).then(doc => {
+  return fetchHTML(`${group["default-homepage"]}/calendar/`).then(doc => {
     const text = (n) => (n) ? n.textContent.trim() : undefined;
-    let elements = doc.querySelectorAll("#event-list > li");
+    let elements = doc.querySelectorAll(".event-list article");
     let events = [];
     for (const evt of elements) {
       let title = text(evt.querySelector("h2 a"));
@@ -66,9 +66,9 @@ async function fetchEvents(group) {
         let event = {
           summary: title[0].trim(),
           state: title[1].trim(),
-          start: evt.querySelector("div.date-orig time:nth-child(1)").getAttribute("datetime"),
-          end: evt.querySelector("div.date-orig time:nth-child(2)").getAttribute("datetime"),
-          href: evt.querySelector("div nav ul li:nth-child(1) a").href
+          start: evt.querySelector(".date-orig time:nth-child(1)").getAttribute("datetime"),
+          end: evt.querySelector(".date-orig time:nth-child(2)").getAttribute("datetime"),
+          href: evt.querySelector(".card__link").href
         }
         events.push(event);
       }
