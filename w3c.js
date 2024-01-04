@@ -111,9 +111,11 @@ async function ongroup(group) {
   }
 
   group.identifier =  group._links.self.href.replace('https://api.w3.org/groups/','');
+  group["short-type"] = group.identifier.match("^([a-z]+)")[1];
+  group["default-homepage"] = `https://www.w3.org/groups/${group.identifier}`;
 
-  // Some additional useful links
-  group["details"] = `https://www.w3.org/2000/09/dbwg/details?group=${groupId}&order=org&public=1`;
+  // Some additional useful links (fopr backward compat)
+  group["details"] = `https://www.w3.org/admin/${group["short-type"]}/${groupId}/show`;
 
   // the dashboard knows about spec milestones and a subset of GH repositories issues
   group["dashboard"] = {
@@ -124,8 +126,6 @@ async function ongroup(group) {
     // publications: getData(`https://w3c.github.io/spec-dashboard/pergroup/${groupId}.json`),
   }
 
-  group["short-type"] = group.identifier.match("^([a-z]+)")[1];
-  group["default-homepage"] = `https://www.w3.org/groups/${group.identifier}`;
   // enhance participations
   if (group["participations"]) {
     const lazy_participations = group["participations"];
