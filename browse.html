@@ -20,7 +20,7 @@
 
   <form class='groups'>
     <select id="grlist" data-query='groups' onfocus='onfocusing()' onchange="selectGr()">
-      <option id="g${id}" value="${id}">${name}</option>
+      <option id="g${id}" value="${identifier}">${name}</option>
     </select>
     <input type="button" value="Get Your Group's Info" onclick="putGrInfo('grlist');" />
   </form>
