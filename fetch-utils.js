@@ -50,8 +50,7 @@ function fetchJSON(url) {
 const FILTERS_REGEXP =
 [
   [ new RegExp(`^${W3C_APIURL}groups/[0-9]+$`), "ongroup" ],
-  [ new RegExp(`^${W3C_APIURL}groups/[a-z]g/[-_a-zA-Z]+$`), "ongroup" ]
-
+  [ new RegExp(`^${W3C_APIURL}groups/[a-z]g/[-_a-zA-Z0-9]+$`), "ongroup" ]
 ];
 
 let HTML_CACHE = {};
