@@ -146,6 +146,9 @@ async function ongroup(group) {
     const lazy_charter = group["active-charter"];
     group["active-charter"] = new LazyPromise(() => lazy_charter.then(async (charter) => {
       charter.info = new LazyPromise(() => fetchCharter(charter.uri));
+      const today = new Date();
+      const end = new Date(charter.end);
+      charter.expired = (today > end);
       return charter;
     }));
   }
