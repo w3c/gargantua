@@ -148,7 +148,11 @@ async function ongroup(group) {
       charter.info = new LazyPromise(() => fetchCharter(charter.uri));
       const today = new Date();
       const end = new Date(charter.end);
+      const rejoin = new Date(charter.start + "T00:00:00Z");
+      rejoin.setHours(45*24); // add 45 days
+
       charter.expired = (today > end);
+      charter.rejoin = (today < rejoin); // @@ this could inaccurate :-(
       return charter;
     }));
   }
