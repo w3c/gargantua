@@ -124,23 +124,8 @@ async function ongroup(group) {
     // publications: getData(`https://w3c.github.io/spec-dashboard/pergroup/${groupId}.json`),
   }
 
-  let sgtype = "unknown";
-  switch (group.type) {
-    case "community group":
-      sgtype = "cg";
-      break;
-    case "business group":
-      sgtype = "bg";
-      break;
-    case "interest group":
-      sgtype = "ig";
-      break;
-    case "working group":
-      sgtype = "wg";
-      break;
-  }
-  group["short-type"] = sgtype;
-  group["default-homepage"] = `https://www.w3.org/groups/${sgtype}/${group["shortname"]}`;
+  group["short-type"] = group.identifier.match("^([a-z]+)")[1];
+  group["default-homepage"] = `https://www.w3.org/groups/${group.identifier}`;
   // enhance participations
   if (group["participations"]) {
     const lazy_participations = group["participations"];
