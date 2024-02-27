@@ -267,7 +267,7 @@
         fetchJSON(`https://w3c.github.io/groups/${gid}/repositories.json`)
           .then(repositories => {
             const promises = [];
-             for (const repo of repositories) {
+             for (const repo of repositories.filter(r => (!r.isArchived && !r.isPrivate))) {
                promises.push(fetch(`${CACHE}/v3/repos/${repo.owner.login}/${repo.name}/issues?ttl=15&fields=html_url,number,title,comments,updated_at,assignee,labels,pull_request,milestone`)
                  .then(res => res.json())
                  .then(issues => {
