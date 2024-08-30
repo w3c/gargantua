@@ -203,14 +203,14 @@
       </tr>
 
       <tr>
-        <th>Upcoming meetings
+        <th><a href="#meetings">#</a> Calendar
           <br>(<a href="${default-homepage}/calendar">edit</a>,
           <a href="https://www.w3.org/events/meetings/new?group=${id}">add</a>)
+          <br>(limited to 12 events max)
         </th>
         <td>
-          <p>From the <a href="${default-homepage}/calendar">group calendar</a>:</p>
           <span data-if="events.*">
-            <ul data-query="events">
+            <ul data-query="events" data-filter='eventsfilter'>
               <li><span data-filter='startdate'>${}</span>: <a href="${href}">${summary}</a> (${state})</li>
             </ul>
             <span>None</span>
@@ -446,6 +446,14 @@
       },
       mlConfig: function (confs) {
         return Object.keys(confs).map(c => " " + c);
+      },
+      eventsfilter: function (events) {
+        const MAX_EVENTS = 12;
+        let subset = [];
+        for (let index = 0; index < events.length && index < MAX_EVENTS; index++) {
+          subset.push(events[index]);
+        }
+        return subset;
       },
       startdate: function (event) {
         return event["start"].split('T')[0];
