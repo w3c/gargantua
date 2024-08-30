@@ -301,6 +301,7 @@
             <dl data-query="active-specifications">
               <dt><a href='${latest-version.shortlink}'>${title}</a></dt>
               <dd>Status: ${latest-version.status}<br>Last update: ${latest-version.date}
+                <span data-query="version-history" data-filter="crdwarning">${msg}</span>
                 <br>Series: ${series.shortname} Version: <span>${series-version}</span>
                 <span data-if='milestones.*'>
                   <span><br>Milestones:
@@ -440,6 +441,26 @@
       activeSpecs: async function (specs) {
         return (await Promise.all(specs.map(spec =>
           spec["latest-status"].then(s => (s !== "Retired") ? spec : undefined)))).filter(spec => spec);
+      },
+      crdwarning: async function (versions) {
+        const CRD = "Candidate Recommendation Draft";
+        let ret =  { msg : "" };
+        let version;
+        let index = 0;
+        if (versions[0].status === CRD) {
+          do {
+            version = versions[index++];
+          } while (version.status === CRD && index < versions.length);
+          ret.date = version.date;
+          ret.status = version.status;
+          let dY = new Date(version.date).getFullYear();
+          if (dY <= (currentYear - 2)) {
+            ret.msg = "(Last snapshot: " + version.date + " PLEASE UPDATE)";
+          } else {
+            ret.msg = "(Last snapshot: " + version.date + ")";
+          }
+        }
+        return ret;
       },
       milestones: function (milestones) {
         return Object.entries(milestones).map(s => s[0] + " " + s[1]);
