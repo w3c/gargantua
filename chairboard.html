@@ -79,7 +79,7 @@
 
   <form class='groups'>
     <select id="grlist" data-query='groups'>
-      <option value="${id}">${name}</option>
+      <option value="${identifier}">${name}</option>
     </select>
     <input type="button" value="Get Your Group's Info" onclick="putGrInfo('grlist');" />
     <p>You may filter the lists of groups in the pull-down menu to <a href="?gtype=working">working groups</a>, <a href="?gtype=interest">interest groups</a>, or <a href="?gtype=community">community groups</a></p>
@@ -91,7 +91,7 @@
 
     <p>${description}</p>
 
-    <p><a href="browse.html?gid=${id}">browse data</a></p>
+    <p><a href="browse.html?gid=${identifier}">browse data</a></p>
     <table>
       <tr>
         <th>Homepage</th>
@@ -105,7 +105,7 @@
 
       <tr>
         <th>Charter<br>
-          (<a href='https://w3c.github.io/charter-drafts/charter-template.html?group=${id}'>new template</a>)</th>
+          (<a href='https://w3c.github.io/charter-drafts/charter-template.html?group=${identifier}'>new template</a>)</th>
         <td><span data-if="active-charter"><span><span data-query="active-charter"><a href="${uri}">from ${start} to ${end}</a></span>
           (<span data-if="::self[closed=true]"><span>closed</span><span>open</span></span>)</span></td>
       </tr>
@@ -220,7 +220,7 @@
 
       <tr>
         <th>GitHub repo(s)
-          <br>(<a href='issueboard.html?gid=${id}'>issue board</a>)
+          <br>(<a href='issueboard.html?gid=${identifier}'>issue board</a>)
           <br>(<a href='https://w3c.github.io/w3c.json.html'>w3c.json doc</a>)
           <br>(<a href='https://github.com/tobie/pr-preview'>prpreview doc</a>)</th>
         <td>
