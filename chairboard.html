@@ -453,7 +453,7 @@
       const traceId = (""+Math.random()).substring(2, 18); // for resource correlation
       navigator.sendBeacon(`${GH_CACHE}/monitor/beacon`, JSON.stringify({ traceId, resources }));
     });
-
+    const currentYear = (new Date().getFullYear());
     const functions =
     {
       filterOpenIssues: function (issues) {
