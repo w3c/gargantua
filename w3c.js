@@ -160,6 +160,36 @@ async function ongroup(group) {
   group["mailing-lists"] = {
     public: mlsConfig("https://lists.w3.org/Archives/Public/00stats.json", groupId)
   }
+  if (group["short-type"] === "wg" || group["short-type"] === "ig" || group["short-type"] === "other") {
+    const glabel = group.identifier.replace('/', ':');
+//    group["transitions"] = new LazyPromise(async () => fetchJSON(`${CACHE}/v3/repos/w3c/transitions/issues?state=open&labels=${group.identifier}`)).then(doc => {
+    group["transitions"] = new LazyPromise(async () => {
+      let doc = await fetchJSON(`${CACHE}/v3/repos/w3c/transitions/issues?state=open&labels=${glabel}`);
+      console.log(doc);
+      return doc;
+    });
+    group["horizontal-issues"] = new LazyPromise(async () => {
+      const HR_REPOSITORIES = await fetchJSON("https://w3c.github.io/common-labels.json")
+          .then(labels => labels.filter(l => l.repo).map(l => l.repo))
+          .then(labels => {
+              const se = new Set();
+              labels.forEach(r => se.add(r));
+              return se;
+          });
+
+      const all = {};
+      for (const repo of HR_REPOSITORIES) {
+        all[repo] = await fetchJSON(`${CACHE}/v3/repos/${repo}/issues?state=open&labels=${glabel}`);
+      }
+      console.log(all);
+      /*
+      for await (const requests of issues()) {
+        all = all.concat(requests);
+      }
+        */
+      return all;
+    });
+  }
 
   // enhance services
   if (group["services"]) {

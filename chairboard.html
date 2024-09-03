@@ -293,10 +293,18 @@
           </div>
         </td>
       </tr>
-      <tr>
+      <tr id="specs">
         <th>Specification(s)
           <br>(<a href="https://www.w3.org/Guide/transitions">transition requirements</a>)</th>
         <td>
+          <div data-if="transitions.*">
+            <div>
+              <p>Pending transitions:</p>
+              <ul data-query="transitions">
+                <li><a href="${html_url}">${title}</a></li>
+              </ul>
+            </div>
+          </div>
           <div data-if="active-specifications.*">
             <dl data-query="active-specifications">
               <dt><a href='${latest-version.shortlink}'>${title}</a></dt>
