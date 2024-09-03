@@ -330,6 +330,24 @@
           </div>
         </td>
       </tr>
+      <tr id="issues">
+        <th>Horizontal Issue(s)</th>
+        <td>
+          <dl data-query="horizontal-issues">
+            <dt>${repo}</dt>
+            <dd>
+              <div data-if="issues.*">
+                <ul data-query="issues">
+                  <li><a href="${html_url}">${title}</a></li>
+                </ul>
+                <p>None</p>
+              </div>
+            </dd>
+          </dl>
+          <div data-if="horizontal-issuesspecifications.*.milestones.*">
+          </div>
+        </td>
+      </tr>
       <tr>
         <th>Milestones
           <br>(<a href="https://w3c.github.io/spec-releases/milestones/">Calculate</a>)</th>

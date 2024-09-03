@@ -168,6 +168,7 @@ async function ongroup(group) {
       console.log(doc);
       return doc;
     });
+    group["past-transitions"] = `https://github.com/w3c/transitions/issues?q=is%3Aissue+label%3A${glabel}+is%3Aclosed`;
     group["horizontal-issues"] = new LazyPromise(async () => {
       const HR_REPOSITORIES = await fetchJSON("https://w3c.github.io/common-labels.json")
           .then(labels => labels.filter(l => l.repo).map(l => l.repo))
@@ -177,16 +178,14 @@ async function ongroup(group) {
               return se;
           });
 
-      const all = {};
+      const all = [];
       for (const repo of HR_REPOSITORIES) {
-        all[repo] = await fetchJSON(`${CACHE}/v3/repos/${repo}/issues?state=open&labels=${glabel}`);
+        all.push({
+          repo: repo,
+          issues: await fetchJSON(`${CACHE}/v3/repos/${repo}/issues?state=open&labels=${glabel}`)
+        });
       }
       console.log(all);
-      /*
-      for await (const requests of issues()) {
-        all = all.concat(requests);
-      }
-        */
       return all;
     });
   }
