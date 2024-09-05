@@ -186,6 +186,7 @@ async function ongroup(group) {
       for (const repo of HR_REPOSITORIES) {
         all.push({
           repo: repo,
+          html_url: `https://github.com/${repo}/issues?state=open&labels=${glabel}`,
           issues: await fetchJSON(`${CACHE}/v3/repos/${repo}/issues?state=open&labels=${glabel}`)
         });
       }
