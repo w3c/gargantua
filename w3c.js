@@ -157,6 +157,7 @@ async function ongroup(group) {
     }));
   }
 
+
   group["mailing-lists"] = {
     public: mlsConfig("https://lists.w3.org/Archives/Public/00stats.json", groupId)
   }
@@ -165,7 +166,10 @@ async function ongroup(group) {
 //    group["transitions"] = new LazyPromise(async () => fetchJSON(`${CACHE}/v3/repos/w3c/transitions/issues?state=open&labels=${group.identifier}`)).then(doc => {
     group["transitions"] = new LazyPromise(async () => {
       let doc = await fetchJSON(`${CACHE}/v3/repos/w3c/transitions/issues?state=open&labels=${glabel}`);
-      console.log(doc);
+      return doc;
+    });
+    group["strategy"] = new LazyPromise(async () => {
+      let doc = await fetchJSON(`${CACHE}/v3/repos/w3c/strategy/issues?state=open&search=[${group["identifier"]}]`);
       return doc;
     });
     group["past-transitions"] = `https://github.com/w3c/transitions/issues?q=is%3Aissue+label%3A${glabel}+is%3Aclosed`;
@@ -185,7 +189,6 @@ async function ongroup(group) {
           issues: await fetchJSON(`${CACHE}/v3/repos/${repo}/issues?state=open&labels=${glabel}`)
         });
       }
-      console.log(all);
       return all;
     });
   }

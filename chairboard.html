@@ -107,7 +107,15 @@
         <th>Charter<br>
           (<a href='https://w3c.github.io/charter-drafts/charter-template.html?group=${identifier}'>new template</a>)</th>
         <td><span data-if="active-charter"><span><span data-query="active-charter"><a href="${uri}">from ${start} to ${end}</a></span>
-          (<span data-if="::self[closed=true]"><span>closed</span><span>open</span></span>)</span></td>
+          (<span data-if="::self[closed=true]"><span>closed</span><span>open</span></span>)</span></span>
+          <div data-if="strategy.*">
+            <div><p>Strategy:</p>
+            <ul data-query="strategy">
+              <li><a href="${html_url}">${title}</a></li>
+            </ul>
+          </div>
+          </div>
+</td>
       </tr>
 
       <tr>
@@ -294,10 +302,13 @@
         </td>
       </tr>
       <tr id="specs">
-        <th>Specification(s)
-          <br>(<a href="https://www.w3.org/Guide/transitions">transition requirements</a>)</th>
+        <th>Specification(s)</th>
         <td>
-          <p>Pending transitions:
+          <div style="border: 1px solid black;margin: 0;padding: 1ex;">
+          <h4><a href="https://www.w3.org/Guide/transitions">Transition requirements</a></h4>
+          <dl>
+            <dt>Pending transitions</dt>
+            <dd>
           <div data-if="transitions.*">
             <div>
               <ul data-query="transitions">
@@ -306,7 +317,11 @@
             </div>
             <span>None</span>
           </div>
-          <p><a href='${past-transitions}'>Past transitions</a></p>
+        </dd>
+        <dt>Past transitions</dt>
+        <dd>See <a href='${past-transitions}'>w3c/transitions</a></dd>
+        </dl>
+          </div>
           <div data-if="active-specifications.*">
             <dl data-query="active-specifications">
               <dt><a href='${latest-version.shortlink}'>${title}</a></dt>
