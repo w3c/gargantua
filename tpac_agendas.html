@@ -58,7 +58,7 @@ function svgElement(name, attrs, ...content) {
 </script>
 
 <script type="module">
-    import { loadICS } from './ics.js';
+    import loadICS from './ics.js';
     const HEV = document.getElementById('events');
     let YEAR = (new URL(document.location)).searchParams.get("year");
     if (!YEAR) YEAR = '2024';
