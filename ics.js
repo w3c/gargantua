@@ -309,7 +309,7 @@ function VEVENT(vcalendar, component) {
         let index2 = vevent.description.indexOf('\\', index+agenda_url_descr.length);
         if (index2 === -1) index2 = vevent.description.length;
         vevent.agenda_url = vevent.description.substring(index+agenda_url_descr.length, index2);
-        if (!vevent.agenda_url.startsWith("https://")) {
+        if (!vevent.agenda_url.match(/^https?:\/\//)) {
             console.log(vevent.description);
             throw new Error(`Invalid URL ${vevent.agenda_url} for agenda in ${vevent.html_url}`)
         }
