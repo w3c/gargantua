@@ -60,8 +60,8 @@ function svgElement(name, attrs, ...content) {
 <script type="module">
     import loadICS from './ics.js';
     const HEV = document.getElementById('events');
-    let YEAR = (new URL(document.location)).searchParams.get("year");
-    if (!YEAR) YEAR = '2024';
+    let year = (new URL(document.location)).searchParams.get("year");
+    if (!year) year = '2024';
     loadICS(`https://www.w3.org/calendar/tpac${year}/export/`).then(calendar => {
       document.getElementById('name').textContent = calendar.name;
       calendar.events.forEach(ev => {
