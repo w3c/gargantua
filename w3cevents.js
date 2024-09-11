@@ -22,9 +22,9 @@ function sortEvents(a, b) {
 async function fetchEvents(group) {
   if (EVENT_CACHE[group.id]) return EVENT_CACHE[group.id];
 
-  return loadICS(`${group["default-homepage"]}/calendar/export/`).then(calendar => {
-    return EVENT_CACHE[group.id] = calendar.events.sort(sortEvents);
-  });
+  const calendar = await loadICS(`${group["default-homepage"]}/calendar/export/`);
+  const events = calendar.events;
+  return EVENT_CACHE[group.id] = events.sort(sortEvents);
 }
 
 export default fetchEvents;
