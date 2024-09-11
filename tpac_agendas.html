@@ -63,9 +63,9 @@ function svgElement(name, attrs, ...content) {
     let year = (new URL(document.location)).searchParams.get("year");
     if (!year) year = '2024';
     loadICS(`https://www.w3.org/calendar/tpac${year}/export/`).then(calendar => {
-      document.getElementById('name').textContent = calendar.name;
+      document.getElementById('calname').textContent = calendar.name;
       calendar.events.forEach(ev => {
-        let li = htmlElement('li',
+        const li = htmlElement('li',
           htmlElement('a', { href: ev.html_url }, ev.summary),
           ": "
         );
