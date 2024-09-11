@@ -8,6 +8,10 @@
   <meta name="author" content="W3C">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="//www.w3.org/favicon.ico">
+  <style>
+    .warning { font-weight: bold; }
+    li { margin-top: 0.5ex;}
+  </style>
 </head>
 
 <body>
@@ -67,14 +71,14 @@ function svgElement(name, attrs, ...content) {
       calendar.events.forEach(ev => {
         const li = htmlElement('li',
           htmlElement('a', { href: ev.html_url }, ev.summary),
-          ": "
+          htmlElement('br')
         );
         if (ev.agenda) {
-          li.appendChild(htmlElement('a', { href: ev.html_url }, "agenda"))
+          li.appendChild(htmlElement('a', { href: ev.html_url, 'class': 'ok' }, "agenda"))
         } else if (ev.agenda_url) {
-          li.appendChild(htmlElement('a', { href: ev.agenda_url }, "agenda"))
+          li.appendChild(htmlElement('a', { href: ev.agenda_url, 'class': 'ok' }, "agenda"))
         } else if (ev.description) {
-          li.appendChild(htmlElement('a', { href: ev.agenda_url }, "description"))
+          li.appendChild(htmlElement('a', { href: ev.agenda_url, 'class': 'ok' }, "description"))
         } else {
           li.appendChild(htmlElement('span',{ 'class': 'warning' }, 'no agenda found'));
         }
