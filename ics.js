@@ -4,7 +4,7 @@
 function contentLines(eventText) {
     const PROPERTY = new RegExp("[A-Z-]+.*:");
     let seq = eventText.split('\r\n');
-    const event = new Event();
+    const event = {};
     // line "folding" technique
     for (let index = seq.length -1; index >= 0; index--) {
         const line = seq[index];
