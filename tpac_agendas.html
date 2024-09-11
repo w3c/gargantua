@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <title>Agendas for TPAC meetings</title>
+  <meta name="author" content="W3C">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="//www.w3.org/favicon.ico">
+</head>
+
+<body>
+
+  <h1>Agendas for <span id="calname">TPAC meetings</span></h1>
+
+  <ul id="events">
+
+  </ul>
+  <script>
+// create an element easily
+// attrs is object (and optional)
+// content is Element or string
+function text(str) {
+  return document.createTextNode(str);
+}
+function domElement(namespaceURI, name, attrs, ...content) {
+  const elt = document.createElementNS(namespaceURI, name);
+  const makeChild = c => (c instanceof Element) ?
+    c : (typeof c === 'string') ?
+      text(c) : undefined;
+
+  if (attrs) {
+    const c = makeChild(attrs);
+    if (c) {
+      elt.appendChild(c);
+    } else {
+      for (const [name, value] of Object.entries(attrs)) {
+        elt.setAttribute(name, value);
+      }
+    }
+  }
+  for (const child of content) {
+    if (child instanceof Element) {
+      elt.appendChild(child);
+    } else {
+      elt.appendChild(text(child));
+    }
+  }
+  return elt;
+}
+function htmlElement(name, attrs, ...content) {
+  return domElement("http://www.w3.org/1999/xhtml", name, attrs, ...content);
+}
+function svgElement(name, attrs, ...content) {
+  return domElement("http://www.w3.org/2000/svg", name, attrs, ...content);
+}
+</script>
+
+<script type="module">
+    import { loadICS } from './ics.js';
+    const HEV = document.getElementById('events');
+    let YEAR = (new URL(document.location)).searchParams.get("year");
+    if (!YEAR) YEAR = '2024';
+    loadICS(`https://www.w3.org/calendar/tpac${year}/export/`).then(calendar => {
+      document.getElementById('name').textContent = calendar.name;
+      calendar.events.forEach(ev => {
+        let li = htmlElement('li',
+          htmlElement('a', { href: ev.html_url }, ev.summary),
+          ": "
+        );
+        if (ev.agenda) {
+          li.appendChild(htmlElement('a', { href: ev.html_url }, "agenda"))
+        } else if (ev.agenda_url) {
+          li.appendChild(htmlElement('a', { href: ev.agenda_url }, "agenda"))
+        } else if (ev.description) {
+          li.appendChild(htmlElement('a', { href: ev.agenda_url }, "description"))
+        } else {
+          li.appendChild(htmlElement('span',{ 'class': 'warning' }, 'no agenda found'));
+        }
+        li.appendChild(text(", "));
+        li.appendChild(htmlElement('a', { href: ev.html_url + 'edit/' }, "edit"))
+        HEV.appendChild(li);
+      })
+    }).catch(console.error);
+
+  </script>
+
+<hr>
+<a href='https://github.com/w3c/gargantua/'>It's on GitHub</a>
+</body>
+
+</html>
