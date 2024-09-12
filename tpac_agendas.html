@@ -18,7 +18,15 @@
 
   <h1>Agendas for <span id="calname">TPAC meetings</span></h1>
 
-  <ul id="events">
+  <h2 id="warning">Meeting without agendas</h2>
+  <p>Chairs and Team Contacts should update the calendar entries to add the meeting agenda (or where the agenda is discussed in the meantime).</p>
+  <ul id="mevents">
+
+  </ul>
+
+  <h2 id="ok">Meeting with agendas</h2>
+  <p>The following meetings have an agenda (some maybe be in draft state):</p>
+  <ul id="oevents">
 
   </ul>
   <script>
@@ -63,14 +71,16 @@ function svgElement(name, attrs, ...content) {
 
 <script type="module">
     import loadICS from './ics.js';
-    const HEV = document.getElementById('events');
+    const MEV = document.getElementById('mevents');
+    const OEV = document.getElementById('oevents');
     let year = (new URL(document.location)).searchParams.get("year");
     if (!year) year = '2024';
     loadICS(`https://www.w3.org/calendar/tpac${year}/export/`).then(calendar => {
       document.getElementById('calname').textContent = calendar.name;
       calendar.events.forEach(ev => {
+        let ul = OEV;
         const li = htmlElement('li',
-          htmlElement('a', { href: ev.html_url }, ev.summary),
+          text(ev.dtstart.substring(0, ev,dtstart.indexOf('T')) + " -- " + ev.summary),
           htmlElement('br')
         );
         if (ev.agenda) {
@@ -81,10 +91,11 @@ function svgElement(name, attrs, ...content) {
           li.appendChild(htmlElement('a', { href: ev.agenda_url, 'class': 'ok' }, "description"))
         } else {
           li.appendChild(htmlElement('span',{ 'class': 'warning' }, 'no agenda found'));
+          ul = MEV;
         }
         li.appendChild(text(", "));
         li.appendChild(htmlElement('a', { href: ev.html_url + 'edit/' }, "edit"))
-        HEV.appendChild(li);
+        ul.appendChild(li);
       })
     }).catch(console.error);
 
