@@ -16,28 +16,29 @@
 
 <body>
 
-  <h1>Agendas for <a id="calname">TPAC meetings</a></h1>
+  <h1>Agendas for <a id="calname"  aria-live="assertive">TPAC meetings</a></h1>
 
   <ol>
     <li>
-    <a href="#warning">Meeting without agendas</a>
-    </li>
-    <li>
-    <a href="#ok">Meeting without agendas</a>
+      <a href="#ok">TPAC Meetings</a>
+      </li>
+      <li>
+    <a href="#warning">TPAC Meetings missing agendas</a>
     </li>
   </ol>
 
-  <h2 id="warning">Meeting with agendas</h2>
+  <h2 id="ok">TPAC Meetings</h2>
+  <p>The following meetings have an agenda (some maybe in <i>draft</i> state):</p>
+  <ul id="oevents" aria-live="polite">
+
+  </ul>
+
+  <h2 id="warning">TPAC Meetings missing agendas</h2>
   <p>Chairs and Team Contacts should update the calendar entries to add the meeting agenda (or where the agenda is discussed in the meantime).</p>
-  <ul id="mevents">
+  <ul id="mevents" aria-live="polite">
 
   </ul>
 
-  <h2 id="ok">Meeting without agendas</h2>
-  <p>The following meetings have an agenda (some maybe be in draft state):</p>
-  <ul id="oevents">
-
-  </ul>
   <script>
 // create an element easily
 // attrs is object (and optional)
