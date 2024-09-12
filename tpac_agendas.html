@@ -16,15 +16,24 @@
 
 <body>
 
-  <h1>Agendas for <span id="calname">TPAC meetings</span></h1>
+  <h1>Agendas for <a id="calname">TPAC meetings</a></h1>
 
-  <h2 id="warning">Meeting without agendas</h2>
+  <ol>
+    <li>
+    <a href="#warning">Meeting without agendas</a>
+    </li>
+    <li>
+    <a href="#ok">Meeting without agendas</a>
+    </li>
+  </ol>
+
+  <h2 id="warning">Meeting with agendas</h2>
   <p>Chairs and Team Contacts should update the calendar entries to add the meeting agenda (or where the agenda is discussed in the meantime).</p>
   <ul id="mevents">
 
   </ul>
 
-  <h2 id="ok">Meeting with agendas</h2>
+  <h2 id="ok">Meeting without agendas</h2>
   <p>The following meetings have an agenda (some maybe be in draft state):</p>
   <ul id="oevents">
 
@@ -71,12 +80,22 @@ function svgElement(name, attrs, ...content) {
 
 <script type="module">
     import loadICS from './ics.js';
+
+    const config = {
+      year: '2024'
+    };
+    for (const [key, value] of (new URL(window.location)).searchParams) {
+      config[key] = value;
+    }
+
+
     const MEV = document.getElementById('mevents');
     const OEV = document.getElementById('oevents');
-    let year = (new URL(document.location)).searchParams.get("year");
-    if (!year) year = '2024';
-    loadICS(`https://www.w3.org/calendar/tpac${year}/export/`).then(calendar => {
-      document.getElementById('calname').textContent = calendar.name;
+    const tpac = `https://www.w3.org/calendar/tpac${config.year}/`;
+    loadICS(`${tpac}export/`).then(calendar => {
+      const title = document.getElementById('calname');
+      title.textContent = calendar.name;
+      title.href = tpac;
       calendar.events.forEach(ev => {
         let ul = OEV;
         const li = htmlElement('li',
@@ -85,14 +104,16 @@ function svgElement(name, attrs, ...content) {
         );
         if (ev.agenda) {
           li.appendChild(htmlElement('a', { href: ev.html_url, 'class': 'ok' }, "agenda"))
+          li.appendChild(text(", "));
         } else if (ev.agenda_url) {
           li.appendChild(htmlElement('a', { href: ev.agenda_url, 'class': 'ok' }, "agenda"))
+          li.appendChild(text(", "));
         } else if (ev.description) {
           li.appendChild(htmlElement('a', { href: ev.agenda_url, 'class': 'ok' }, "description"))
+          li.appendChild(text(", "));
         } else {
           ul = MEV;
         }
-        li.appendChild(text(", "));
         li.appendChild(htmlElement('a', { href: ev.html_url + 'edit/' }, "edit"))
         ul.appendChild(li);
       })
