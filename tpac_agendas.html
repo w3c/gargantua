@@ -80,7 +80,7 @@ function svgElement(name, attrs, ...content) {
       calendar.events.forEach(ev => {
         let ul = OEV;
         const li = htmlElement('li',
-          text(ev.dtstart.substring(0, ev.dtstart.indexOf('T')) + " -- " + ev.summary),
+          ev.dtstart.substring(0, ev.dtstart.indexOf('T')) + " -- " + ev.summary,
           htmlElement('br')
         );
         if (ev.agenda) {
