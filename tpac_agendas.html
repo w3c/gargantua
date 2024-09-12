@@ -90,7 +90,6 @@ function svgElement(name, attrs, ...content) {
         } else if (ev.description) {
           li.appendChild(htmlElement('a', { href: ev.agenda_url, 'class': 'ok' }, "description"))
         } else {
-          li.appendChild(htmlElement('span',{ 'class': 'warning' }, 'no agenda found'));
           ul = MEV;
         }
         li.appendChild(text(", "));
