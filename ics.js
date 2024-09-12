@@ -281,6 +281,12 @@ function VEVENT(vcalendar, component) {
                 }
                 vevent[oneOrMore].push(pp);
             break;
+            case 'related-to':
+                if (!vevent[name]) {
+                    vevent[name] = [];
+                }
+                vevent[name].push(value);
+            break;
             default:
                 if (vevent[name]) throw new Error(`Duplicate ${name} entry`)
                 vevent[name] = p;
