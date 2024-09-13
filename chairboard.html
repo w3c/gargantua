@@ -536,9 +536,12 @@
         for (let index = 0; index < events.length && subset.length < MAX_EVENTS; index++) {
           const evt = events[index];
           const rrule = evt.rrule;
-          if (evt["dtstart"].substring(0, 10) >= today
+          if ((!rrule && evt["dtstart"].substring(0, 10) >= today)
               || (rrule && !rrule.until)) {
             evt.dtstartp = evt["dtstart"].split('T')[0];
+            if (rrule) {
+              rrule.prettyRule = "invalid until?";
+            }
             subset.push(evt);
           } else if (rrule && rrule.until
                   && rrule.until.substring(0, 10) >= today) {
