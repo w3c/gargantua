@@ -357,6 +357,7 @@ function VEVENT(vcalendar, component) {
                 vevent[name].push(value);
             break;
             case 'rrule':
+                if (vevent[name]) throw new Error(`Duplicate ${name} entry`)
                 vevent[name] = RECUR(vcalendar, params, value);
             break;
             default:
