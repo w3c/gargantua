@@ -222,6 +222,74 @@ function findOffset(vcalendar, tzid, dt) {
     return current.tzoffsetto;
 }
 
+function RECUR(vcalendar, params, text) {
+    const parts = text.split(';').map(r => r.split('='));
+    const ruleParts = {
+        interval: 1
+    };
+    let offset = "+0000";
+    if (params && params[0][0] === 'tzid') {
+        offset = findOffset(vcalendar, params[0][1], dt);
+    } 
+    for (let index = 0; index < parts.length; index++) {
+        const part = parts[index];
+        const name = part[0].toLowerCase();
+        const value = part[1];
+        switch (name) {
+            case 'freq':
+                //      freq        = "SECONDLY" / "MINUTELY" / "HOURLY" / "DAILY"
+                //                    / "WEEKLY" / "MONTHLY" / "YEARLY"
+                ruleParts[name] = value.toLowerCase();
+            break;
+            case 'until':
+                ruleParts[name] = text2date(value) + offset;
+            break;
+            case 'count':
+            case 'interval':
+                ruleParts[name] = parseInt(value);
+            break;
+            case 'bysecond':
+                ruleParts[name] = parseInt(value);
+                break;
+            case 'byminute':
+                ruleParts[name] = parseInt(value);
+                break;
+            case 'byhour':
+                ruleParts[name] = parseInt(value);
+                break;
+            case 'byday':
+                ruleParts[name] = value.toLowerCase();
+                break;
+            case 'bymonthday':
+                ruleParts[name] = parseInt(value);
+                break;
+            case 'byyearday':
+                ruleParts[name] = parseInt(value);
+                break;
+            case 'byweekno':
+                ruleParts[name] = parseInt(value);
+                break;
+            case 'bymonth':
+                ruleParts[name] = parseInt(value);
+                break;
+            case 'bysetpos':
+                ruleParts[name] = parseInt(value);
+                break;
+            case 'count':
+                ruleParts[name] = parseInt(value);
+            break;
+            case 'wkst':
+                ruleParts[name] = parseInt(value);
+            break;
+            default:
+                ruleParts[name] = value;
+            break;
+        }
+    }
+    return ruleParts;
+}
+
+
 function VEVENT(vcalendar, component) {
     const vevent = {};
     component.props.forEach(p => {
@@ -286,6 +354,9 @@ function VEVENT(vcalendar, component) {
                     vevent[name] = [];
                 }
                 vevent[name].push(value);
+            break;
+            case 'rrule':
+                vevent[name] = RECUR(vcalendar, params, value);
             break;
             default:
                 if (vevent[name]) throw new Error(`Duplicate ${name} entry`)
