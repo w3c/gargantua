@@ -279,7 +279,8 @@ function RECUR(vcalendar, params, text) {
                 ruleParts[name] = parseInt(value);
             break;
             case 'wkst':
-                ruleParts[name] = parseInt(value);
+                // weekday     = "SU" / "MO" / "TU" / "WE" / "TH" / "FR" / "SA"
+                ruleParts[name] = value.toLowerCase();
             break;
             default:
                 ruleParts[name] = value;
