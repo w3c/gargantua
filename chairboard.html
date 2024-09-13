@@ -536,21 +536,26 @@
         for (let index = 0; index < events.length && subset.length < MAX_EVENTS; index++) {
           const evt = events[index];
           const rrule = evt.rrule;
-          if ((!rrule && evt["dtstart"].substring(0, 10) >= today)
+          const dtstart = evt["dtstart"].substring(0, 10); 
+          if ((!rrule && dtstart >= today)
               || (rrule && !rrule.until)) {
-            evt.dtstartp = evt["dtstart"].split('T')[0];
+            evt.dtstartp = dtstart;
             if (rrule) {
+              console.error(evt);
               rrule.prettyRule = "invalid until?";
             }
             subset.push(evt);
           } else if (rrule && rrule.until
                   && rrule.until.substring(0, 10) >= today) {
-            const until = rrule.until.substring(0, 10);
+            let range = ", until " + rrule.until.substring(0, 10);
+            if (dtstart > today) {
+              range = ", from " + dtstart + range.substring(1);
+            }
             if (rrule.interval < 2) {
-              rrule.prettyRule = rrule.freq + ", until " + until;
+              rrule.prettyRule = rrule.freq + range;
             } else {
               rrule.prettyRule = "every " + rrule.interval
-                + " " + prettyFreq(rrule.freq) + ", until " + until;
+                + " " + prettyFreq(rrule.freq) + range;
             }
             subset.push(evt);
           }
