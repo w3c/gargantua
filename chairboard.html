@@ -219,7 +219,9 @@
         <td>
           <span data-if="events.*">
             <ul data-query="events" data-filter='eventsfilter'>
-              <li><span data-filter='startdate'>${}</span>: <a href="${html_url}">${summary}</a> (${status})</li>
+              <li><span data-filter='startdate'>${}</span>: <a href="${html_url}">${summary}</a> - ${status} - 
+                <span data-if='rrule'><span>(every ${rrule.interval} ${rrule.freq} until ${rrule.until})</span></span>
+              </span><a href="${html_url}edit/">edit</a></li>
             </ul>
             <span>None</span>
           </span>
@@ -513,8 +515,14 @@
       eventsfilter: function (events) {
         const MAX_EVENTS = 12;
         let subset = [];
-        for (let index = 0; index < events.length && index < MAX_EVENTS; index++) {
-          subset.push(events[index]);
+        const today = (new Date()).toISOString().substring(0, 10);
+        for (let index = 0; index < events.length && subset.length < MAX_EVENTS; index++) {
+          if (events[index]["dtstart"].substring(0, 10) >= today
+              || (events[index].rrule && events[index].rrule.until
+                  && events[index].rrule.until.substring(0, 10) >= today)
+              || (events[index].rrule && !events[index].rrule.until)) {
+            subset.push(events[index]);
+          }
         }
         return subset;
       },
