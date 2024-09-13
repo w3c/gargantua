@@ -227,7 +227,7 @@ function RECUR(vcalendar, params, text) {
     const ruleParts = {
         interval: 1
     };
-    let offset = "+0000";
+    let offset = "Z";
     if (params && params[0][0] === 'tzid') {
         offset = findOffset(vcalendar, params[0][1], dt);
     } 
