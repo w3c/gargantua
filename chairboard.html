@@ -222,10 +222,10 @@
               <li><span data-if='rrule'>
                 <span>Recurring:
                   <a href="${html_url}">${summary}</a>
-                  (${rrule.freq}, every ${rrule.interval}, until ${rrule.until})
+                  (${rrule.prettyRule})
                 </span>
                 <span>
-                  <span data-filter='startdate'>${}</span>:
+                  ${dtstartp}:
                    <a href="${html_url}">${summary}</a> - ${status} - 
                   <a href="${html_url}edit/">edit</a>
                 </span>
@@ -481,6 +481,14 @@
       navigator.sendBeacon(`${GH_CACHE}/monitor/beacon`, JSON.stringify({ traceId, resources }));
     });
     const currentYear = (new Date().getFullYear());
+    function prettyFreq(freq) {
+      switch (freq) {
+        case 'weekly': return "weeks";
+        case 'monthly': return "months";
+        case 'yearly': return "years";
+        default: return freq;
+      }
+    }
     const functions =
     {
       filterOpenIssues: function (issues) {
@@ -526,17 +534,25 @@
         let subset = [];
         const today = (new Date()).toISOString().substring(0, 10);
         for (let index = 0; index < events.length && subset.length < MAX_EVENTS; index++) {
-          if (events[index]["dtstart"].substring(0, 10) >= today
-              || (events[index].rrule && events[index].rrule.until
-                  && events[index].rrule.until.substring(0, 10) >= today)
-              || (events[index].rrule && !events[index].rrule.until)) {
-            subset.push(events[index]);
+          const evt = events[index];
+          const rrule = evt.rrule;
+          if (evt["dtstart"].substring(0, 10) >= today
+              || (rrule && !rrule.until)) {
+            evt.dtstartp = evt["dtstart"].split('T')[0];
+            subset.push(evt);
+          } else if (rrule && rrule.until
+                  && rrule.until.substring(0, 10) >= today) {
+            const until = rrule.until.substring(0, 10);
+            if (rrule.interval < 2) {
+              rrule.prettyRule = rrule.freq + ", until " + until;
+            } else {
+              rrule.prettyRule = "every " + rrule.interval
+                + " " + prettyFreq(rrule.freq) + ", until " + until;
+            }
+            subset.push(evt);
           }
         }
         return subset;
-      },
-      startdate: function (event) {
-        return event["dtstart"].split('T')[0];
       },
     };
 
