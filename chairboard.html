@@ -214,7 +214,8 @@
         <th><a href="#meetings">#</a> Calendar
           <br>(<a href="${default-homepage}/calendar">edit</a>,
           <a href="https://www.w3.org/events/meetings/new?group=${id}">add</a>)
-          <br>(limited to 12 events max)
+          <br>(public information only)
+          <br><a href="https://www.w3.org/PM/Groups/agenda.html?gid=${identifier}">agenda items</a>
         </th>
         <td>
           <span data-if="events.*">
@@ -241,7 +242,9 @@
         <th>GitHub repo(s)
           <br>(<a href='issueboard.html?gid=${identifier}'>issue board</a>)
           <br>(<a href='https://w3c.github.io/w3c.json.html'>w3c.json doc</a>)
-          <br>(<a href='https://github.com/tobie/pr-preview'>prpreview doc</a>)</th>
+          <br>(<a href='https://github.com/tobie/pr-preview'>prpreview doc</a>)
+          <br><a href="https://www.w3.org/PM/Groups/issueboard.html?gid=${identifier}">issue board</a>
+        </th>
         <td>
           <div data-if='repositories.*'>
             <dl data-query='repositories'>
@@ -530,11 +533,9 @@
         return Object.keys(confs).map(c => " " + c);
       },
       eventsfilter: function (events) {
-        const MAX_EVENTS = 12;
-        let subset = [];
         const today = (new Date()).toISOString().substring(0, 10);
-        for (let index = 0; index < events.length && subset.length < MAX_EVENTS; index++) {
-          const evt = events[index];
+        // we filter and augment the event list.
+        return events.filter(evt => {
           const rrule = evt.rrule;
           const dtstart = evt["dtstart"].substring(0, 10); 
           if ((!rrule && dtstart >= today)
@@ -544,7 +545,7 @@
               console.error(evt);
               rrule.prettyRule = "invalid until?";
             }
-            subset.push(evt);
+            return true;
           } else if (rrule && rrule.until
                   && rrule.until.substring(0, 10) >= today) {
             let range = ", until " + rrule.until.substring(0, 10);
@@ -557,10 +558,10 @@
               rrule.prettyRule = "every " + rrule.interval
                 + " " + prettyFreq(rrule.freq) + range;
             }
-            subset.push(evt);
+            return true;
           }
-        }
-        return subset;
+          return false;
+        });
       },
     };
 
