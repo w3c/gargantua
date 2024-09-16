@@ -304,54 +304,10 @@
     <h1>W3C Groups</h1>
   </header>
   <main class='group-data'>
-    <section class=groups>
-      <h2 id="wgs">Working Groups</h2>
-      <dl data-query='groups.*[type=working group]'>
-        <div id="wg${id}">
-          <dt><a href='./?gid=${id}'>${name}</a></dt>
-          <dd>${description}</dd>
-        </div>
-      </dl>
-    </section>
-    <section class=groups>
-      <h2 id="igs">Interest Groups</h2>
-      <dl data-query='groups.*[type=interest group]'>
-        <div id="ig${id}">
-          <dt><a href='./?gid=${id}'>${name}</a></dt>
-          <dd>${description}</dd>
-        </div>
-      </dl>
-    </section>
-    <section class=groups>
-      <h2 id='cgs'>Business Groups</h2>
-      <dl class=groups data-query='groups.*[type=business group]'>
-        <div id="cg${id}">
-          <dt><a href='./?gid=${id}'>${name}</a></dt>
-          <dd>${description}</dd>
-        </div>
-      </dl>
-    </section>
-    <section class=groups>
-      <h2 id='cgs'>Community Groups</h2>
-      <dl class=groups data-query='groups.*[type=community group]'>
-        <div id="cg${id}">
-          <dt><a href='./?gid=${id}'>${name}</a></dt>
-          <dd>${description}</dd>
-        </div>
-      </dl>
-    </section>
+      <p>
+        See <q><a href="https://www.w3.org/groups/">Discover W3C groups</a></q>.
+      </p>
   </main>
-
-  <script type="module">
-    import { fetchGroups } from './w3c.js';
-    import jsonrender from './jsonrender.js';
-
-    fetchGroups().then(groups => {
-      let elts = document.querySelectorAll("*.group-data");
-      for (let element of elts) jsonrender({ groups: groups }, element);
-    });
-
-  </script>
 
 </body>
 
