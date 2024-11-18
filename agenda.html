@@ -116,7 +116,7 @@ rtObserver.observe({entryTypes: ["resource"]});
 
 <body>
   <header class='app-bar'>
-    <h1 class='group-data'><span id='group-name'>{group-name}</span> - Agenda items</h1>
+    <h1 class='group-data'><a href='' id='group-name'>{group-name}</a> - Agenda items</h1>
   </header>
   <div class='group-data'>
     <div id='group-description'>{group-description}</div>
@@ -239,6 +239,7 @@ agenda+ <a href="${html_url}">${title}</a>
       });
       group.then(group => {
         document.getElementById('group-name').textContent = group.name;
+        document.getElementById('group-name').href = group._links.homepage.href;
         document.getElementById('group-description').innerHTML = group.description;
         document.getElementById('group-issues').setAttribute('href', `./issueboard.html?gid=${config.gid}`);
         document.getElementById('group-repositories').setAttribute('href', `https://www.w3.org/groups/${config.gid}/tools/#repositories`);
