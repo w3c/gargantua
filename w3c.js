@@ -168,6 +168,7 @@ async function ongroup(group) {
       let doc = await fetchJSON(`${CACHE}/v3/repos/w3c/transitions/issues?state=open&labels=${glabel}`);
       return doc;
     });
+    group["onboarding"] = `https://github.com/w3c/onboarding/blob/master/template/${group.identifier}`;
     group["strategy"] = new LazyPromise(async () => {
       let doc = await fetchJSON(`${CACHE}/v3/repos/w3c/strategy/issues?state=open&search=[${group["identifier"]}]`);
       return doc;

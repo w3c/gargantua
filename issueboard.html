@@ -78,7 +78,7 @@
 
 <body>
   <header class='app-bar'>
-    <h1 class='group-data'><span id='group-name'>{group-name}</span> - Issues</h1>
+    <h1 class='group-data'><a href='' id='group-name'>{group-name}</a> - Issues</h1>
   </header>
   <div class='group-data'>
     <p style='float: right'>(agenda</a>)</p>
@@ -288,6 +288,7 @@
            });
            fetchGroup(gid).then(group => {
              document.getElementById('group-name').textContent = group.name;
+             document.getElementById('group-name').href = group._links.homepage.href;
              document.getElementById('group-description').innerHTML = group.description;
              document.getElementById('group-agenda').setAttribute('href', `./agenda.html?gid=${gid}`);
              document.getElementById('group-repositories').setAttribute('href', `https://www.w3.org/groups/${gid}/tools/#repositories`);
