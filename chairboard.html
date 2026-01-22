@@ -277,6 +277,13 @@
                 <a href="https://github.com/${owner.login}/${name}/settings/hooks">hooks</a>
                 <br>default branch: <a
                   href="https://github.com/${owner.login}/${name}/tree/${defaultBranch.name}">${defaultBranch.name}</a>
+                <span data-if='milestones.*'>
+                  <span><br>Milestones:
+                    <span data-query="milestones">
+                      <span>[<a href="${html_url}">${title}</a> <span data-query="due_on" data-filter="formatDate">${date}</span>],</span>
+                    </span>
+                  </span>
+                </span>
                 <br>Protections: <span data-if="branchProtectionRules.nodes.*">
                   <span data-query="branchProtectionRules.nodes">${pattern},</span>
                   <span><a class='warning' href='https://github.com/${owner.login}/${name}/settings/branches'>No branch
@@ -532,6 +539,10 @@
       },
       mlConfig: function (confs) {
         return Object.keys(confs).map(c => " " + c);
+      },
+      formatDate: function (dateStr) {
+        const date = new Date(dateStr);
+        return { date: date.toISOString().substring(0, 10) };
       },
       eventsfilter: function (events) {
         const today = (new Date()).toISOString().substring(0, 10);
