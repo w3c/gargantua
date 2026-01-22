@@ -266,6 +266,9 @@ async function ongroup(group) {
       repo["open_issues"] = new LazyPromise(async () => {
         return fetchJSON(`${CACHE}/v3/repos/${repo.owner.login}/${repo.name}/issues`);
       });
+      repo["milestones"] = new LazyPromise(async () => {
+        return fetchJSON(`${CACHE}/v3/repos/${repo.owner.login}/${repo.name}/milestones`);
+      });
       repo["hooks"] = new LazyPromise(async () => {
         return fetchJSON(`${CACHE}/v3/repos/${repo.owner.login}/${repo.name}/hooks`);
       });
