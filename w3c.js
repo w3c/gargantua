@@ -34,6 +34,36 @@ async function fetchCharter(url) {
     if (href) charter.licenses.push(href);
   }
 
+  charter.milestones = [];
+  let specs = doc.querySelectorAll("#normative dl dt.spec");
+  for (const spec of specs) {
+    let milestone = {};
+    let anchor = spec.querySelector("a");
+    if (anchor) {
+      let spec = {href: anchor.href, title: anchor.textContent.trim()};
+      milestone.specification = spec;
+    }
+    let dd = spec.nextElementSibling;
+    if (dd) {
+      let elt = dd.querySelector(".milestone a");
+      if (elt) {
+        milestone.milestone = elt.textContent.trim();
+        milestone.href = elt.href;
+        charter.milestones.push(milestone);
+      } else {
+        elt = dd.querySelector(".milestone");
+        if (elt)  {
+          elt = elt.textContent;
+          let match = elt.match(/Expected completion:\s+([A-Za-z0-9.\-_\s ]+)/);
+          if (match) {
+            milestone.milestone = match[1].trim();
+            charter.milestones.push(milestone);
+          }
+        }
+      }
+    }
+  }
+
   // @@ could grab more info later..
 
   return charter;
