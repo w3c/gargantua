@@ -1,17 +1,51 @@
 <!DOCTYPE html>
 <html lang="en-US">
-  <head>
-    <meta charset="utf-8">
+<head>
+  <meta charset="utf-8">
+  
+  <title>charter template generator</title>
+  
+  <link rel="stylesheet" type="text/css" href="https://www.w3.org/2026/01/charter-style.css">
+  <script src="lib/2026.js" type="module" class="remove todo"></script>
+  <style>
+    .hidden {
+      visibility: hidden;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>charter template generator</h1>
+    
+    <div id="initialize">
 
-    <title>charter template generator</title>
+      <p>
+        This page is used to generate charters for W3C Working Groups and Interest Groups. Be patient while it's loading&hellip;
+      </p>
+      
+    </div>
+    
+    <div id="crash" class="hidden">
 
-    <link rel="stylesheet" type="text/css" href="https://www.w3.org/2026/01/charter-style.css">
-    <script src="lib/2026.js" type="module" class="remove todo"></script>
-  </head>
-  <body>
-    <p>
-      Oops! This is a template generator page. It is not meant to be viewed
-      directly. Please use the <a id='template' href="https://w3c.github.io/charter-drafts/charter-template.html">charter template</a>.
-    </p>
-  </body>
+      <p>
+        Oops! This is a template generator page. It is not meant to be viewed
+        directly.
+      </p>
+      <p>
+        Did you set the "group" query parameter in the URL? It should be something like
+        <code>?group=wg/social</code> or <code>?group=ig/security</code>.
+      </p>
+      <p>
+        You should reach this page by following a link from the <a href="charter-assistant.html">charter assistant</a>.
+      </p>
+      <p>
+        Otherwise, you're out of luck, so please use the <a id='template' href="https://w3c.github.io/charter-drafts/charter-template.html">charter template</a>.
+      </p>
+      
+      <p id="reason">
+        <!-- Filled in by script -->
+      </p>
+    </div>
+  </main>
+</body>
 </html>
