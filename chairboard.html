@@ -126,7 +126,7 @@
           </span>
           <a href="https://www.w3.org/users/${id}">${name}</a>
           (<span data-if="::self[invited-expert=true]"><span>W3C Invited
-            Expert</span><span data-query="affiliations.*"><a
+            Expert</span><span data-query="affiliations.*[is-member!false]"><a
             href="https://www.w3.org/organizations/${id}">${name}</a></span></span>),
           </span>
         </td>
