@@ -26,14 +26,17 @@
     </ul>
 </body>
 <script type="module">
-    import { hal } from 'https://www.w3.org/PM/Groups/lib/hal.js';
+    import configuration from './lib/hal.js';
+    import hal from './lib/hal.js';
     
+    const config = configuration();
+
     const templateLink = 'charter-template.html';
 
     async function populate() {
         const wgs = [];
         const igs = [];
-        for await (const group of hal("groups", "https://api.w3.org/groups", true)) {
+        for await (const group of hal("groups", `${config.w3cAPI}/groups`, true)) {
             if (group.type === "working group") {            
                 wgs.push({
                     name: group.name,
