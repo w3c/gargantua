@@ -6,7 +6,7 @@
   <title>charter template generator</title>
   
   <link rel="stylesheet" type="text/css" href="https://www.w3.org/2026/01/charter-style.css">
-  <script src="lib/2026.js" type="module" class="remove todo"></script>
+  <script src="lib/2026.js" type="module"></script>
   <style>
     .hidden {
       visibility: hidden;
@@ -18,15 +18,17 @@
     <h1>charter template generator</h1>
     
     <div id="initialize">
-
-      <p>
-        This page is used to generate charters for W3C Working Groups and Interest Groups. Be patient while it's loading&hellip;
-      </p>
       
+      <p>
+        This page is used to generate charters for W3C Working Groups and Interest Groups.
+      </p>
+      <p>
+        Be patient while it's fetching resources and loading&hellip;
+      </p>
     </div>
     
     <div id="crash" class="hidden">
-
+      
       <p>
         Oops! This is a template generator page. It is not meant to be viewed
         directly.
@@ -41,11 +43,8 @@
       <p>
         Otherwise, you're out of luck, so please use the <a id='template' href="https://w3c.github.io/charter-drafts/charter-template.html">charter template</a>.
       </p>
-      
-      <p id="reason">
-        <!-- Filled in by script -->
-      </p>
     </div>
+    <pre id="status"></pre>
   </main>
 </body>
 </html>
