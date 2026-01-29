@@ -32,7 +32,7 @@
     const config = configuration();
 
     const templateLink = 'charter-template.html';
-
+    const debugParam = (config.debug)? '&debug=true' : '';
     async function populate() {
         const wgs = [];
         const igs = [];
@@ -40,12 +40,12 @@
             if (group.type === "working group") {            
                 wgs.push({
                     name: group.name,
-                    html_url: templateLink + `?group=wg/${group.shortname}`
+                    html_url: templateLink + `?group=wg/${group.shortname}${debugParam}`
                 });
             } else if (group.type === "interest group") {
                 igs.push({
                     name: group.name,
-                    html_url: templateLink + `?group=ig/${group.shortname}`
+                    html_url: templateLink + `?group=ig/${group.shortname}${debugParam}`
                 });
             }
         }
