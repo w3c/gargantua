@@ -16,6 +16,8 @@
         that you may want to draft a charter using the <a href="https://w3c.github.io/charter-drafts/charter-template.html">charter template</a>.
     </p>
 
+    <p id="load">Loading groups&hellip;</p>
+
     <h2>Working Groups</h2>
     <ul id="wgs">
         <!-- Filled in by script -->
@@ -69,6 +71,7 @@
             li.appendChild(a);
             document.getElementById("igs").appendChild(li);
         });
+        document.getElementById("load").remove();
     }
     populate();
 </script>
