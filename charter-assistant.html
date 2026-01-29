@@ -38,7 +38,7 @@
     async function populate() {
         const wgs = [];
         const igs = [];
-        for await (const group of hal("groups", `${config.w3cAPI}/groups`, true)) {
+        for await (const group of hal("groups", `${config.w3cAPI}/groups`, { embed: true })) {
             if (group.type === "working group") {            
                 wgs.push({
                     name: group.name,
