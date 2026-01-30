@@ -72,7 +72,7 @@
       
       <tr id="charter">
         <th>Charter<br>
-          (<a href='https://www.w3.org/PM/Groups/charter-template.html?group=${identifier}'>new template</a>)</th>
+          (<a href='https://www.w3.org/PM/Groups/charter-assistant.html'>new template</a>)</th>
           <td><span data-if="active-charter"><span><span data-query="active-charter"><a href="${uri}">from ${start} to ${end}</a></span>
             (<span data-if="::self[closed=true]"><span>closed</span><span>open</span></span>)</span></span>
             <div data-if="strategy.*">
@@ -152,7 +152,7 @@
             
             <tr id="individuals">
               <th>Individual(s)<br>
-                (<a href='${default-homepage}/participants'>show</a>,
+                (<a href='${default-homepage}participants'>show</a>,
                 <a title='Participants who should rejoin within 45 days of a rechartering' href='https://www.w3.org/groups/${identifier}/participants/'>discrepancies</a>,
                 <a href='${onboarding}'>onboarding</a>)</th>
                 <td><span data-query="users">
@@ -165,7 +165,7 @@
               
               <tr id="invited_experts">
                 <th>Invited Expert(s)<br>
-                  (<a href='${default-homepage}/invited-experts'>manage</a>)</th>
+                  (<a href='${default-homepage}invited-experts'>manage</a>)</th>
                   <td>
                     <p><span data-if="participations.*[invited-expert=true]"><span>Current: <span
                       data-query="participations.*[invited-expert=true]">
@@ -180,7 +180,7 @@
                   
                   <tr id="meetings">
                     <th><a href="#meetings">#</a> Calendar
-                      <br>(<a href="${default-homepage}/calendar">edit</a>,
+                      <br>(<a href="${default-homepage}calendar">edit</a>,
                       <a href="https://www.w3.org/events/meetings/new?group=${id}">add</a>)
                       <br>(public information only)
                       <br><a href="https://www.w3.org/PM/Groups/agenda.html?gid=${identifier}">agenda items</a>
