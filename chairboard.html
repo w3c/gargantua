@@ -5,81 +5,45 @@
 <head>
   <meta charset="utf-8">
   <title>Chair Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="https://www.w3.org/favicon.ico">
   <meta name="description" content="A group page">
   <meta name="keywords" content="w3c,w3,w3.org,group,page">
   <meta name="author" content="W3C">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/x-icon" href="//www.w3.org/favicon.ico">
-  <style>
-    /* from W3C pages */
-    @font-face {
-      font-display: fallback;
-      font-family: "Noto Sans";
-      font-style: normal;
-      font-weight: 400;
-      src: url("https://www.w3.org/assets/website-2021/fonts/notosans/notosans-regular.woff2") format("woff2"), url("https://www.w3.org/assets/website-2021/fonts/notosans/notosans-regular.woff") format("woff");
-    }
-    body {
-      font-family: "Noto Sans", "Trebuchet MS", Geneva, sans-serif
-    }
-
-    table {
-      border-collapse: collapse
-    }
-
-    tr {
-      border-bottom: 1px solid black;
-      border-top: 1px solid black;
-    }
-
-    th {
-      border-right: 1px solid black;
-      vertical-align: top;
-    }
-
-    td {
-      padding: 1ex;
-    }
-
-    .warning {
-      color: black;
-      font-weight: bold;
-      background-color: yellow;
-      border-radius: 1.5ex;
-      padding: 0.25ex;
-    }
-    .impls, .impl-shipped, .impl-indevelopment, .impl-consideration {
-      padding: 0.5ex; border-radius: 0.4ex;
-    }
-    .impls {
-      color: white; background-color: dimgrey; font-size: 90%;
-    }
-    .impl-shipped {
-      font-weight: bold; background-color: green;
-    }
-    .impl-indevelopment {
-      background-color: rosybrown;
-    }
-    .impl-consideration {
-      background-color: lightcoral;
-    }
-
-    .fab{
-      font-family:Font Awesome\ 5 Brands
-    }
-    .fa-github::before {
-      content: "🪲";
-    }
-  </style>
+  <link rel="stylesheet" href="pages.css" media="all">
 </head>
 
 <body>
-
+  <header id="header">
+    <aside>
+      <ul id="navbar">
+        <li><a href="#homepage">Homepage</a></li>
+        <li><a href="#charter">Charter</a></li>
+        <li><a href="#chairs">Chairs</a></li>
+        <li><a href="#team_contacts">Team contacts</a></li>
+        <li><a href="#tools">Tools</a></li>
+        <li><a href="#organizations">Organizations</a></li>
+        <li><a href="#individuals">Individuals</a></li>
+        <li><a href="#invited_experts">Invited Experts</a></li>
+        <li><a href="#meetings">Calendar</a></li>
+        <li><a href="#version_control">Version Control</a></li>
+        <li><a href="#specs">Specifications</a></li>
+        <li><a href="#issues">Horizontal Issues</a></li>
+        <li><a href="#milestones">Milestones</a></li>
+        <li><a href="#series">Versioning</a></li>
+        <li><a href="#compat">Tests / Compatibility</a></li>
+      </ul>
+    </aside>
+    <p>
+      <a href="https://www.w3.org/"><img alt="W3C" height="60" width="60" src="https://www.w3.org/assets/logos/w3c-2025/svg/w3c.svg"></a>
+    </p>
+  </header>
+  <main>
   <h1>Chair Dashboard</h1>
-
+  
   <!--
   <p>Choose your group from the pull-down menu below and push the "Get Your Group's Info" button:</p>
-
+  
   <form class='groups'>
     <select id="grlist" data-query='groups'>
       <option value="${identifier}">${name}</option>
@@ -87,68 +51,68 @@
     <input type="button" value="Get Your Group's Info" onclick="putGrInfo('grlist');" />
     <p>You may filter the lists of groups in the pull-down menu to <a href="?gtype=working">working groups</a>, <a href="?gtype=interest">interest groups</a>, or <a href="?gtype=community">community groups</a></p>
   </form>
--->
-
+  -->
+  
   <section class='group-data' data-query='group'>
     <h2>${name}</h2>
-
+    
     <p>${description}</p>
-
-    <p><a href="browse.html?gid=${identifier}">browse data</a></p>
+    
+    <p>Under the hood: <a href="browse.html?gid=${identifier}">browse data</a></p>
     <table>
-      <tr>
+      <tr id="homepage">
         <th>Homepage</th>
         <td><a href='${homepage}'>${homepage}</a></td>
       </tr>
-
-      <tr>
+      
+      <tr id="public_page">
         <th>Default public page</th>
         <td><a href='${default-homepage}'>${default-homepage}</a></td>
       </tr>
-
-      <tr>
+      
+      <tr id="charter">
         <th>Charter<br>
           (<a href='https://www.w3.org/PM/Groups/charter-template.html?group=${identifier}'>new template</a>)</th>
-        <td><span data-if="active-charter"><span><span data-query="active-charter"><a href="${uri}">from ${start} to ${end}</a></span>
-          (<span data-if="::self[closed=true]"><span>closed</span><span>open</span></span>)</span></span>
-          <div data-if="strategy.*">
-            <div><p>Strategy:</p>
-            <ul data-query="strategy">
-              <li><a href="${html_url}">${title}</a></li>
-            </ul>
-          </div>
-          </div>
-      </td>
-      </tr>
-
-      <tr>
-        <th>Chair(s)</th>
-        <td><span data-query="chairs">
-          <span data-if="connected-accounts.*[service=github]">
-            <a class="fab fa-github" href="${connected-accounts.*[service=github].href}"></a>
-          </span>
-          <a href="https://www.w3.org/users/${id}">${name}</a>
-          (<span data-if="::self[invited-expert=true]"><span>W3C Invited
-            Expert</span><span data-query="affiliations.*[is-member!=false]"><a
-            href="https://www.w3.org/organizations/${id}">${name}</a></span></span>),
-          </span>
-        </td>
-      </tr>
-      <tr>
-        <th>Team contact(s)</th>
-        <td><span data-if="team-contacts.*">
-          <span data-query="team-contacts">
+          <td><span data-if="active-charter"><span><span data-query="active-charter"><a href="${uri}">from ${start} to ${end}</a></span>
+            (<span data-if="::self[closed=true]"><span>closed</span><span>open</span></span>)</span></span>
+            <div data-if="strategy.*">
+              <div><p>Strategy:</p>
+                <ul data-query="strategy">
+                  <li><a href="${html_url}">${title}</a></li>
+                </ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+        
+        <tr id="chairs">
+          <th>Chair(s)</th>
+          <td><span data-query="chairs">
             <span data-if="connected-accounts.*[service=github]">
               <a class="fab fa-github" href="${connected-accounts.*[service=github].href}"></a>
             </span>
-            <a href="https://www.w3.org/users/${id}">${name}</a>,
-          </span>
-          <span>None</span>
-          </span>
-        </td>
-      </tr>
+            <a href="https://www.w3.org/users/${id}">${name}</a>
+            (<span data-if="::self[invited-expert=true]"><span>W3C Invited
+              Expert</span><span data-query="affiliations.*[is-member!=false]"><a
+                href="https://www.w3.org/organizations/${id}">${name}</a></span></span>),
+              </span>
+            </td>
+          </tr>
+          <tr id="team_contacts">
+            <th>Team contact(s)</th>
+            <td><span data-if="team-contacts.*">
+              <span data-query="team-contacts">
+                <span data-if="connected-accounts.*[service=github]">
+                  <a class="fab fa-github" href="${connected-accounts.*[service=github].href}"></a>
+                </span>
+                <a href="https://www.w3.org/users/${id}">${name}</a>,
+              </span>
+              <span>None</span>
+            </span>
+          </td>
+        </tr>
       </span>
-      <tr>
+      <tr id="tools">
         <th>Tool(s)</th>
         <td>
           <dl data-query="services">
@@ -166,441 +130,442 @@
                 </span>
                 <span data-if='notify'>
                   <li><span data-if='notify-ml-config'>
-                      <span>notify-ml-config: <a href='${notify}' data-query='notify-ml-config'
-                          data-filter='mlConfig'>${}</a></span>
+                    <span>notify-ml-config: <a href='${notify}' data-query='notify-ml-config'
+                      data-filter='mlConfig'>${}</a></span>
                       <a class='warning' title='No mailing list configuration detected. Consider adding one.'
-                        href='${notify}'>no notify-ml-config</a>
+                      href='${notify}'>no notify-ml-config</a>
                     </span></li>
-                </span>
-              </ul>
-          </dl>
-        </td>
-      </tr>
-
-      <tr>
-        <th>Participating organization(s)<br>
-          (<a href='${pp-status}'>IPP</a>)</th>
-        <td><span data-query="participations.*[individual=false]">
-            <a href="https://www.w3.org/organizations/${organization.id}">${title}</a><span
-              data-if="organization[is-member!=true]"><span> <span class='warning'>(not a member)</span></span></span>,
-          </span></td>
-      </tr>
-
-      <tr>
-        <th>Individual(s)<br>
-          (<a href='${default-homepage}/participants'>show</a>,
-          <a title='Participants who should rejoin within 45 days of a rechartering' href='https://www.w3.org/groups/${identifier}/participants/'>discrepancies</a>,
-          <a href='${onboarding}'>onboarding</a>)</th>
-        <td><span data-query="users">
-          <span data-if="connected-accounts.*[service=github]">
-            <a class="fab fa-github" href="${connected-accounts.*[service=github].href}"></a>
-          </span>
-          <a href="https://www.w3.org/users/${id}">${name}</a>,
-          </span></td>
-      </tr>
-
-      <tr>
-        <th>Invited Expert(s)<br>
-          (<a href='${default-homepage}/invited-experts'>manage</a>)</th>
-        <td>
-          <p><span data-if="participations.*[invited-expert=true]"><span>Current: <span
-                  data-query="participations.*[invited-expert=true]">
-                  <span><a href="https://www.w3.org/users/${user.id}">${title}</a>
-                    <span data-if="user.affiliations.*[id!=36747]"><span>(<span
-                          data-query="user.affiliations.*[id!=36747]"><a
-                            href="https://www.w3.org/organizations/${id}">${name}</a></span>)</span></span>,
                   </span>
-                </span></span></p>
-        </td>
-      </tr>
-
-      <tr>
-        <th><a href="#meetings">#</a> Calendar
-          <br>(<a href="${default-homepage}/calendar">edit</a>,
-          <a href="https://www.w3.org/events/meetings/new?group=${id}">add</a>)
-          <br>(public information only)
-          <br><a href="https://www.w3.org/PM/Groups/agenda.html?gid=${identifier}">agenda items</a>
-        </th>
-        <td>
-          <span data-if="events.*">
-            <ul data-query="events" data-filter='eventsfilter'>
-              <li><span data-if='rrule'>
-                <span>Recurring:
-                  <a href="${html_url}">${summary}</a>
-                  (${rrule.prettyRule})
-                </span>
-                <span>
-                  ${dtstartp}:
-                   <a href="${html_url}">${summary}</a> - ${status} - 
-                  <a href="${html_url}edit/">edit</a>
-                </span>
-                </span>
-              </li>
-            </ul>
-            <span>None</span>
-          </span>
-        <td>
-      </tr>
-
-      <tr>
-        <th>GitHub repo(s)
-          <br>(<a href='issueboard.html?gid=${identifier}'>issue board</a>)
-          <br>(<a href='https://www.w3.org/guide/github/w3c.json.html'>w3c.json doc</a>)
-          <br>(<a href='https://github.com/tobie/pr-preview'>prpreview doc</a>)
-          <br><a href="https://www.w3.org/PM/Groups/issueboard.html?gid=${identifier}">issue board</a>
-        </th>
-        <td>
-          <div data-if='repositories.*'>
-            <dl data-query='repositories'>
-              <dt><a href="https://github.com/${owner.login}/${name}/">${owner.login}/${name}</a>
-                (<span data-if='w3c'><span>${w3c.repo-type}</span><span class='warning'>No w3c.json</span></span>)</dt>
-              <dd>
-                <span data-if='homepageUrl'>
-                  <a href='${homepageUrl}'>
-                    <span data-if='description'>
-                      <span>${description}</span>
-                      <span>homepage</span>
-                    </span>
-                  </a>
-                  <span data-if='description'>
-                    <span>${description}</span>
-                    <span>${owner.login}/${name}</span>
-                  </span>
-                </span>
-                <span data-if='open_issues.*'>
-                  <span><br>
-                    (<a data-query='open_issues' data-filter='filterOpenIssues'
-                      href="https://github.com/${owner.login}/${name}/issues">${length} issues</a>,
-                    <a data-query='open_issues' data-filter='filterOpenPRs'
-                      href="https://github.com/${owner.login}/${name}/pulls">${length} PRs</a>)
-                  </span>
-                </span>
-                <br><a href="https://github.com/${owner.login}/${name}/settings">settings</a>,
-                <a href="https://github.com/${owner.login}/${name}/settings/collaboration">collaboration</a>,
-                <a href="https://github.com/${owner.login}/${name}/settings/hooks">hooks</a>
-                <br>default branch: <a
-                  href="https://github.com/${owner.login}/${name}/tree/${defaultBranch.name}">${defaultBranch.name}</a>
-                <span data-if='milestones.*'>
-                  <span><br>Milestones:
-                    <span data-query="milestones">
-                      <span>[<a href="${html_url}">${title}</a> <span data-query="due_on" data-filter="formatDate">${date}</span>],</span>
-                    </span>
-                  </span>
-                </span>
-                <br>Protections: <span data-if="branchProtectionRules.nodes.*">
-                  <span data-query="branchProtectionRules.nodes">${pattern},</span>
-                  <span><a class='warning' href='https://github.com/${owner.login}/${name}/settings/branches'>No branch
-                      protections</a></span>
-                </span>
-                <br>Tools:
-                <span data-if="w3c[repo-type=rec-track]">
-                  <span>
-                    <span data-if="prpreview">
-                      <span><a
-                        href='https://github.com/${owner.login}/${name}/blob/${defaultBranch.name}/.pr-preview.json'>prpreview
-                        ${prpreview.type}</a>,</span>
-                      <span><a class='warning' href='https://tobie.github.io/pr-preview/config.html'>No
-                        .pr-preview.json</a></span>
-                    </span>
-                    <span data-if="autoPublish">
-                      <span><a
-                        href='https://github.com/${owner.login}/${name}/blob/${defaultBranch.name}/.github/workflows/auto-publish.yml'>auto-publish</a>,</span>
-                      <span><a class='warning' href='https://w3c.github.io/spec-prod/#deploy-to-w3c-using-echidna'>No
-                        auto-publish.yml</a></span>
-                    </span>
-                    <span data-if="labels.*[name=i18n-tracker]">
-                      <span></span>
-                      <span><a class='warning'
-                          href='https://www.w3.org/guide/github/issue-metadata.html'>No i18n-tracker</a>,</span>
-                    </span>
-                    <span data-if="labels.*[name=i18n-needs-resolution]">
-                      <span></span>
-                      <span><a class='warning'
-                          href='https://www.w3.org/guide/github/issue-metadata.html'>No i18n-needs-resolution</a>,</span>
-                    </span>
-                  </span>
-                </span>
-              </dd>
-            </dl>
-            <p>No repositories found</p>
-          </div>
-        </td>
-      </tr>
-      <tr id="specs">
-        <th>Specification(s)</th>
-        <td>
-          <div style="border: 1px solid black;margin: 0;padding: 1ex;">
-          <h4><a href="https://www.w3.org/Guide/transitions">Transition requirements</a></h4>
-          <dl>
-            <dt>Pending transitions</dt>
-            <dd>
-          <div data-if="transitions.*">
-            <div>
-              <ul data-query="transitions">
-                <li><a href="${html_url}">${title}</a></li>
-              </ul>
-            </div>
-            <span>None</span>
-          </div>
-        </dd>
-        <dt>Past transitions</dt>
-        <dd>See <a href='${past-transitions}'>w3c/transitions</a></dd>
-        </dl>
-          </div>
-          <div data-if="active-specifications.*">
-            <dl data-query="active-specifications">
-              <dt><a href='${latest-version.shortlink}'>${title}</a></dt>
-              <dd>Status: ${latest-version.status}<br>Last update: ${latest-version.date}
-                <span data-query="version-history" data-filter="crdwarning">${msg}</span>
-                <br>Series: ${series.shortname} Version: <span>${series-version}</span>
-                <span data-if='milestones.*'>
-                  <span><br>Milestones:
-                    <span data-query='milestones' data-filter='milestones'>${}, </span>
-                  </span>
-                </span>
-                <span data-if='editor-draft'>
-                  <span><br><a href="${editor-draft}">Editor's draft</a></span>
-                </span>
-                <br><a href="https://www.w3.org/standards/history/${shortname}">history</a>, <a
-                  href="https://www.w3.org/TR/${series.shortname}/all/">all</a>, <a
-                  href="https://www.w3.org/Guide/transitions/nextstep.html?shortname=${shortname}">next steps</a></span>
-              </dd>
-            </dl>
-            <p>No specifications found</p>
-          </div>
-        </td>
-      </tr>
-      <tr id="issues">
-        <th>Horizontal Issue(s)</th>
-        <td>
-          <dl data-query="horizontal-issues">
-            <dt><a href="${html_url}">${repo}</a></dt>
-            <dd>
-              <div data-if="issues.*">
-                <ul data-query="issues">
-                  <li><a href="${html_url}">${title}</a></li>
                 </ul>
-                <p>None</p>
-              </div>
-            </dd>
-          </dl>
-        </td>
-      </tr>
-      <tr>
-        <th>Milestones
-          <br>(<a href="https://w3c.github.io/spec-releases/milestones/">Calculate</a>)</th>
-        </th>
-        <td>
-          <div data-if="specifications.*.milestones.*">
-            <dl data-query="specifications" data-filter='activeSpecs'>
-              <div data-if="milestones">
-                <div>
-                  <dt><a href='${latest-version.shortlink}'>${title}</a></dt>
-                  <dd>Milestones:
-                    <span data-query='milestones' data-filter='milestones'>${}, </span>
-
-                    <br><a href="https://www.w3.org/standards/history/${shortname}">history</a>, <a
-                      href="https://www.w3.org/TR/${series.shortname}/all/">all</a></span>
-                  </dd>
-                </div>
-              </div>
-            </dl>
-            <p>No milestones</p>
-          </div>
-          </span>
-        </td>
-      </tr>
-<!--
-      <tr>
-        <th><a href='${pp-status}'>IPP</a></th>
-        <td>
-          <span data-if="series-@@">
-            <span data-query="series">
-              <span><a href="https://www.w3.org/TR/${name}/all/">${name}</a></span>,
-            </span>
-            <span>@@TODO</span>
-          </span>
-        </td>
-      </tr> -->
-      <tr id='series'>
-        <th>Versioning</th>
-        <td>
-          <span data-if="active-series.*">
-            <dl data-query="active-series">
-              <dt><a href="https://www.w3.org/TR/${shortname}/all/">${title}</a></dt>
-              <dd>
-                Current at <a href="https://www.w3.org/TR/${shortname}/">https://www.w3.org/TR/${shortname}/</a> : ${current-specification.title}
-                (${current-specification.latest-version.date})
-                <br>Shortname: ${shortname}
-                <br>Alternatives:
-                <span data-query='specifications'><a href='${shortlink}'>
-                  <span data-if='series-version'><code>${series-version}</code><span>unknown</span></span>
-                    <span>(${latest-status})</span>
-                  </a>,</span>
-              </dd>
-            </dl>
-            <span>@@TODO</span>
-          </span>
-        </td>
-      </tr>
-      <tr id='compat'>
-        <th>Tests / Compatibility</th>
-        <td>
-          <span data-if="active-series.*">
-            <dl data-query="active-series">
-              <dt>${title}</dt>
-              <dd>
-                <span data-if='icons.*'>
-                  <span><br><a href='${wpt-fyi}'>WPT</a>:
-                    <span data-query='icons'><img src='${href}' alt='WPT ${product} badge'></span>
+              </dl>
+            </td>
+          </tr>
+          
+          <tr id="organizations">
+            <th>Participating organization(s)<br>
+              (<a href='${pp-status}'>IPP</a>)</th>
+              <td><span data-query="participations.*[individual=false]">
+                <a href="https://www.w3.org/organizations/${organization.id}">${title}</a><span
+                data-if="organization[is-member!=true]"><span> <span class='warning'>(not a member)</span></span></span>,
+              </span></td>
+            </tr>
+            
+            <tr id="individuals">
+              <th>Individual(s)<br>
+                (<a href='${default-homepage}/participants'>show</a>,
+                <a title='Participants who should rejoin within 45 days of a rechartering' href='https://www.w3.org/groups/${identifier}/participants/'>discrepancies</a>,
+                <a href='${onboarding}'>onboarding</a>)</th>
+                <td><span data-query="users">
+                  <span data-if="connected-accounts.*[service=github]">
+                    <a class="fab fa-github" href="${connected-accounts.*[service=github].href}"></a>
                   </span>
-                </span>
-                <span data-if='implementations.implementations.*'>
-                  <span><br>Browser status:
-                    <span data-query='implementations.implementations'>
-                      <a class='impls' href='${href}'>${source} | ${ua} <span class='impl-${status}'>${status}</span></a>,
+                  <a href="https://www.w3.org/users/${id}">${name}</a>,
+                </span></td>
+              </tr>
+              
+              <tr id="invited_experts">
+                <th>Invited Expert(s)<br>
+                  (<a href='${default-homepage}/invited-experts'>manage</a>)</th>
+                  <td>
+                    <p><span data-if="participations.*[invited-expert=true]"><span>Current: <span
+                      data-query="participations.*[invited-expert=true]">
+                      <span><a href="https://www.w3.org/users/${user.id}">${title}</a>
+                        <span data-if="user.affiliations.*[id!=36747]"><span>(<span
+                          data-query="user.affiliations.*[id!=36747]"><a
+                          href="https://www.w3.org/organizations/${id}">${name}</a></span>)</span></span>,
+                        </span>
+                      </span></span></p>
+                    </td>
+                  </tr>
+                  
+                  <tr id="meetings">
+                    <th><a href="#meetings">#</a> Calendar
+                      <br>(<a href="${default-homepage}/calendar">edit</a>,
+                      <a href="https://www.w3.org/events/meetings/new?group=${id}">add</a>)
+                      <br>(public information only)
+                      <br><a href="https://www.w3.org/PM/Groups/agenda.html?gid=${identifier}">agenda items</a>
+                    </th>
+                    <td>
+                      <span data-if="events.*">
+                        <ul data-query="events" data-filter='eventsfilter'>
+                          <li><span data-if='rrule'>
+                            <span>Recurring:
+                              <a href="${html_url}">${summary}</a>
+                              (${rrule.prettyRule})
+                            </span>
+                            <span>
+                              ${dtstartp}:
+                              <a href="${html_url}">${summary}</a> - ${status} - 
+                              <a href="${html_url}edit/">edit</a>
+                            </span>
+                          </span>
+                        </li>
+                      </ul>
+                      <span>None</span>
                     </span>
-                  </span>
-                </span>
-              </dd>
-            </dl>
-            <span>@@TODO</span>
-          </span>
-        </td>
-      </tr>
-
-    </table>
-
-    </div>
-
-  </section>
-
-
-<hr>
-<a href='https://github.com/w3c/gargantua/'>It's on GitHub</a>
-  <script type="module">
-    import { fetchGroup, fetchGroups } from './w3c.js';
-    import jsonrender, { subscribe } from './jsonrender.js';
-
-    // telemetry for performance monitoring
-    const GH_CACHE = "https://labs.w3.org/github-cache";
-    subscribe("done", () => {
-      const resources = [ {
-        name: window.location.href,
-        entryType: "measure",
-        startTime: 0,
-        duration: performance.now()
-       } ];
-      const traceId = (""+Math.random()).substring(2, 18); // for resource correlation
-      navigator.sendBeacon(`${GH_CACHE}/monitor/beacon`, JSON.stringify({ traceId, resources }));
-    });
-    const currentYear = (new Date().getFullYear());
-    function prettyFreq(freq) {
-      switch (freq) {
-        case 'weekly': return "weeks";
-        case 'monthly': return "months";
-        case 'yearly': return "years";
-        default: return freq;
-      }
-    }
-    const functions =
-    {
-      filterOpenIssues: function (issues) {
-        let openIssues = issues.filter(i => i.state === "open" && !i.pull_request);
-        return { length: openIssues.length };
-      },
-      filterOpenPRs: function (issues) {
-        let openPRs = issues.filter(i => i.state === "open" && i.pull_request);
-        return { length: openPRs.length };
-      },
-      activeSpecs: async function (specs) {
-        return (await Promise.all(specs.map(spec =>
-          spec["latest-status"].then(s => (s !== "Retired") ? spec : undefined)))).filter(spec => spec);
-      },
-      crdwarning: async function (versions) {
-        const CRD = "Candidate Recommendation Draft";
-        let ret =  { msg : "" };
-        let version;
-        let index = 0;
-        if (versions[0].status === CRD) {
-          do {
-            version = versions[index++];
-          } while (version.status === CRD && index < versions.length);
-          ret.date = version.date;
-          ret.status = version.status;
-          let dY = new Date(version.date).getFullYear();
-          if (dY <= (currentYear - 2)) {
-            ret.msg = "(Last snapshot: " + version.date + " PLEASE UPDATE)";
-          } else {
-            ret.msg = "(Last snapshot: " + version.date + ")";
-          }
-        }
-        return ret;
-      },
-      milestones: function (milestones) {
-        return Object.entries(milestones).map(s => s[0] + " " + s[1]);
-      },
-      mlConfig: function (confs) {
-        return Object.keys(confs).map(c => " " + c);
-      },
-      formatDate: function (dateStr) {
-        const date = new Date(dateStr);
-        return { date: date.toISOString().substring(0, 10) };
-      },
-      eventsfilter: function (events) {
-        const today = (new Date()).toISOString().substring(0, 10);
-        // we filter and augment the event list.
-        return events.filter(evt => {
-          const rrule = evt.rrule;
-          const dtstart = evt["dtstart"].substring(0, 10); 
-          if ((!rrule && dtstart >= today)
-              || (rrule && !rrule.until)) {
-            evt.dtstartp = dtstart;
-            if (rrule) {
-              console.error(evt);
-              rrule.prettyRule = "invalid until?";
-            }
-            return true;
-          } else if (rrule && rrule.until
-                  && rrule.until.substring(0, 10) >= today) {
-            let range = ", until " + rrule.until.substring(0, 10);
-            if (dtstart > today) {
-              range = ", from " + dtstart + range.substring(1);
-            }
-            if (rrule.interval < 2) {
-              rrule.prettyRule = rrule.freq + range;
-            } else {
-              rrule.prettyRule = "every " + rrule.interval
-                + " " + prettyFreq(rrule.freq) + range;
-            }
-            return true;
-          }
-          return false;
-        });
-      },
-    };
-
-    let gid = document.documentElement.getAttribute("data-gid");
-
-    (function () {
-      let ngid = (new URL(document.location)).searchParams.get("gid");
-      if (!ngid) {
-        const matches = document.location.toString().match(new RegExp("([0-9]+)", "g"));
-        if (matches.length > 0) {
-          const last = matches[matches.length - 1];
-          if (last.length > 4)
-            ngid = last;
-        }
-      }
-      if (ngid) gid = ngid;
-      fetchGroup(gid).then(group => {
-        let elts = document.querySelectorAll("*.group-data");
-        for (let element of elts) jsonrender({ group: group }, element, functions);
-      });
-    })();
-
-  </script>
-
-</body>
-
-</html>
+                    <td>
+                    </tr>
+                    
+                    <tr id="version_control">
+                      <th>Version control
+                        <br>(<a href='issueboard.html?gid=${identifier}'>issue board</a>)
+                        <br>(<a href='https://www.w3.org/guide/github/w3c.json.html'>w3c.json doc</a>)
+                        <br>(<a href='https://github.com/tobie/pr-preview'>prpreview doc</a>)
+                        <br><a href="https://www.w3.org/PM/Groups/issueboard.html?gid=${identifier}">issue board</a>
+                      </th>
+                      <td>
+                        <div data-if='repositories.*'>
+                          <dl data-query='repositories'>
+                            <dt><a href="https://github.com/${owner.login}/${name}/">${owner.login}/${name}</a>
+                              (<span data-if='w3c'><span>${w3c.repo-type}</span><span class='warning'>No w3c.json</span></span>)</dt>
+                              <dd>
+                                <span data-if='homepageUrl'>
+                                  <a href='${homepageUrl}'>
+                                    <span data-if='description'>
+                                      <span>${description}</span>
+                                      <span>homepage</span>
+                                    </span>
+                                  </a>
+                                  <span data-if='description'>
+                                    <span>${description}</span>
+                                    <span>${owner.login}/${name}</span>
+                                  </span>
+                                </span>
+                                <span data-if='open_issues.*'>
+                                  <span><br>
+                                    (<a data-query='open_issues' data-filter='filterOpenIssues'
+                                    href="https://github.com/${owner.login}/${name}/issues">${length} issues</a>,
+                                    <a data-query='open_issues' data-filter='filterOpenPRs'
+                                    href="https://github.com/${owner.login}/${name}/pulls">${length} PRs</a>)
+                                  </span>
+                                </span>
+                                <br><a href="https://github.com/${owner.login}/${name}/settings">settings</a>,
+                                <a href="https://github.com/${owner.login}/${name}/settings/collaboration">collaboration</a>,
+                                <a href="https://github.com/${owner.login}/${name}/settings/hooks">hooks</a>
+                                <br>default branch: <a
+                                href="https://github.com/${owner.login}/${name}/tree/${defaultBranch.name}">${defaultBranch.name}</a>
+                                <span data-if='milestones.*'>
+                                  <span><br>Milestones:
+                                    <span data-query="milestones">
+                                      <span>[<a href="${html_url}">${title}</a> <span data-query="due_on" data-filter="formatDate">${date}</span>],</span>
+                                    </span>
+                                  </span>
+                                </span>
+                                <br>Protections: <span data-if="branchProtectionRules.nodes.*">
+                                  <span data-query="branchProtectionRules.nodes">${pattern},</span>
+                                  <span><a class='warning' href='https://github.com/${owner.login}/${name}/settings/branches'>No branch
+                                    protections</a></span>
+                                  </span>
+                                  <br>Tools:
+                                  <span data-if="w3c[repo-type=rec-track]">
+                                    <span>
+                                      <span data-if="prpreview">
+                                        <span><a
+                                          href='https://github.com/${owner.login}/${name}/blob/${defaultBranch.name}/.pr-preview.json'>prpreview
+                                          ${prpreview.type}</a>,</span>
+                                          <span><a class='warning' href='https://tobie.github.io/pr-preview/config.html'>No
+                                            .pr-preview.json</a></span>
+                                          </span>
+                                          <span data-if="autoPublish">
+                                            <span><a
+                                              href='https://github.com/${owner.login}/${name}/blob/${defaultBranch.name}/.github/workflows/auto-publish.yml'>auto-publish</a>,</span>
+                                              <span><a class='warning' href='https://w3c.github.io/spec-prod/#deploy-to-w3c-using-echidna'>No
+                                                auto-publish.yml</a></span>
+                                              </span>
+                                              <span data-if="labels.*[name=i18n-tracker]">
+                                                <span></span>
+                                                <span><a class='warning'
+                                                  href='https://www.w3.org/guide/github/issue-metadata.html'>No i18n-tracker</a>,</span>
+                                                </span>
+                                                <span data-if="labels.*[name=i18n-needs-resolution]">
+                                                  <span></span>
+                                                  <span><a class='warning'
+                                                    href='https://www.w3.org/guide/github/issue-metadata.html'>No i18n-needs-resolution</a>,</span>
+                                                  </span>
+                                                </span>
+                                              </span>
+                                            </dd>
+                                          </dl>
+                                          <p>No repositories found</p>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                    <tr id="specs">
+                                      <th>Specification(s)</th>
+                                      <td>
+                                        <div style="border: 1px solid black;margin: 0;padding: 1ex;">
+                                          <h4><a href="https://www.w3.org/guide/transitions/">Transition requirements</a></h4>
+                                          <dl>
+                                            <dt>Pending transitions</dt>
+                                            <dd>
+                                              <div data-if="transitions.*">
+                                                <div>
+                                                  <ul data-query="transitions">
+                                                    <li><a href="${html_url}">${title}</a></li>
+                                                  </ul>
+                                                </div>
+                                                <span>None</span>
+                                              </div>
+                                            </dd>
+                                            <dt>Past transitions</dt>
+                                            <dd>See <a href='${past-transitions}'>w3c/transitions</a></dd>
+                                          </dl>
+                                        </div>
+                                        <div data-if="active-specifications.*">
+                                          <dl data-query="active-specifications">
+                                            <dt><a href='${latest-version.shortlink}'>${title}</a></dt>
+                                            <dd>Status: ${latest-version.status}<br>Last update: ${latest-version.date}
+                                              <span data-query="version-history" data-filter="crdwarning">${msg}</span>
+                                              <br>Series: ${series.shortname} Version: <span>${series-version}</span>
+                                              <span data-if='milestones.*'>
+                                                <span><br>Milestones:
+                                                  <span data-query='milestones' data-filter='milestones'>${}, </span>
+                                                </span>
+                                              </span>
+                                              <span data-if='editor-draft'>
+                                                <span><br><a href="${editor-draft}">Editor's draft</a></span>
+                                              </span>
+                                              <br><a href="https://www.w3.org/standards/history/${shortname}">history</a>, <a
+                                              href="https://www.w3.org/TR/${series.shortname}/all/">all</a>, <a
+                                              href="https://www.w3.org/guide/transitions/nextstep.html?shortname=${shortname}">next steps</a></span>
+                                            </dd>
+                                          </dl>
+                                          <p>No specifications found</p>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                    <tr id="issues">
+                                      <th>Horizontal Issue(s)</th>
+                                      <td>
+                                        <dl data-query="horizontal-issues">
+                                          <dt><a href="${html_url}">${repo}</a></dt>
+                                          <dd>
+                                            <div data-if="issues.*">
+                                              <ul data-query="issues">
+                                                <li><a href="${html_url}">${title}</a></li>
+                                              </ul>
+                                              <p>None</p>
+                                            </div>
+                                          </dd>
+                                        </dl>
+                                      </td>
+                                    </tr>
+                                    <tr id="milestones">
+                                      <th>Milestones
+                                        <br>(<a href="https://www.w3.org/guide/transitions/milestones.html">Calculate</a>)</th>
+                                      </th>
+                                      <td>
+                                        <div data-if="specifications.*.milestones.*">
+                                          <dl data-query="specifications" data-filter='activeSpecs'>
+                                            <div data-if="milestones">
+                                              <div>
+                                                <dt><a href='${latest-version.shortlink}'>${title}</a></dt>
+                                                <dd>Milestones:
+                                                  <span data-query='milestones' data-filter='milestones'>${}, </span>
+                                                  
+                                                  <br><a href="https://www.w3.org/standards/history/${shortname}">history</a>, <a
+                                                  href="https://www.w3.org/TR/${series.shortname}/all/">all</a></span>
+                                                </dd>
+                                              </div>
+                                            </div>
+                                          </dl>
+                                          <p>No milestones</p>
+                                        </div>
+                                      </span>
+                                    </td>
+                                  </tr>
+                                  <!--
+                                  <tr>
+                                    <th><a href='${pp-status}'>IPP</a></th>
+                                    <td>
+                                      <span data-if="series-@@">
+                                        <span data-query="series">
+                                          <span><a href="https://www.w3.org/TR/${name}/all/">${name}</a></span>,
+                                        </span>
+                                        <span>@@TODO</span>
+                                      </span>
+                                    </td>
+                                  </tr> -->
+                                  <tr id='series'>
+                                    <th>Versioning</th>
+                                    <td>
+                                      <span data-if="active-series.*">
+                                        <dl data-query="active-series">
+                                          <dt><a href="https://www.w3.org/TR/${shortname}/all/">${title}</a></dt>
+                                          <dd>
+                                            Current at <a href="https://www.w3.org/TR/${shortname}/">https://www.w3.org/TR/${shortname}/</a> : ${current-specification.title}
+                                            (${current-specification.latest-version.date})
+                                            <br>Shortname: ${shortname}
+                                            <br>Alternatives:
+                                            <span data-query='specifications'><a href='${shortlink}'>
+                                              <span data-if='series-version'><code>${series-version}</code><span>unknown</span></span>
+                                              <span>(${latest-status})</span>
+                                            </a>,</span>
+                                          </dd>
+                                        </dl>
+                                        <span>@@TODO</span>
+                                      </span>
+                                    </td>
+                                  </tr>
+                                  <tr id='compat'>
+                                    <th>Tests / Compatibility</th>
+                                    <td>
+                                      <span data-if="active-series.*">
+                                        <dl data-query="active-series">
+                                          <dt>${title}</dt>
+                                          <dd>
+                                            <span data-if='icons.*'>
+                                              <span><br><a href='${wpt-fyi}'>WPT</a>:
+                                                <span data-query='icons'><img width='16' height="16" src='${href}' alt='WPT ${product} badge'></span>
+                                              </span>
+                                            </span>
+                                            <span data-if='implementations.implementations.*'>
+                                              <span><br>Browser status:
+                                                <span data-query='implementations.implementations'>
+                                                  <a class='impls' href='${href}'>${source} | ${ua} <span class='impl-${status}'>${status}</span></a>,
+                                                </span>
+                                              </span>
+                                            </span>
+                                          </dd>
+                                        </dl>
+                                        <span>@@TODO</span>
+                                      </span>
+                                    </td>
+                                  </tr>
+                                  
+                                </table>
+                                
+                              </div>
+                              
+                            </section>
+                          </main>  
+                            
+                            <hr>
+                            <a href='https://github.com/w3c/gargantua/'>It's on GitHub</a>
+                            <script type="module">
+                              import { fetchGroup, fetchGroups } from './w3c.js';
+                              import jsonrender, { subscribe } from './jsonrender.js';
+                              
+                              // telemetry for performance monitoring
+                              const GH_CACHE = "https://labs.w3.org/github-cache";
+                              subscribe("done", () => {
+                                const resources = [ {
+                                  name: window.location.href,
+                                  entryType: "measure",
+                                  startTime: 0,
+                                  duration: performance.now()
+                                } ];
+                                const traceId = (""+Math.random()).substring(2, 18); // for resource correlation
+                                navigator.sendBeacon(`${GH_CACHE}/monitor/beacon`, JSON.stringify({ traceId, resources }));
+                              });
+                              const currentYear = (new Date().getFullYear());
+                              function prettyFreq(freq) {
+                                switch (freq) {
+                                  case 'weekly': return "weeks";
+                                  case 'monthly': return "months";
+                                  case 'yearly': return "years";
+                                  default: return freq;
+                                }
+                              }
+                              const functions =
+                              {
+                                filterOpenIssues: function (issues) {
+                                  let openIssues = issues.filter(i => i.state === "open" && !i.pull_request);
+                                  return { length: openIssues.length };
+                                },
+                                filterOpenPRs: function (issues) {
+                                  let openPRs = issues.filter(i => i.state === "open" && i.pull_request);
+                                  return { length: openPRs.length };
+                                },
+                                activeSpecs: async function (specs) {
+                                  return (await Promise.all(specs.map(spec =>
+                                  spec["latest-status"].then(s => (s !== "Retired") ? spec : undefined)))).filter(spec => spec);
+                                },
+                                crdwarning: async function (versions) {
+                                  const CRD = "Candidate Recommendation Draft";
+                                  let ret =  { msg : "" };
+                                  let version;
+                                  let index = 0;
+                                  if (versions[0].status === CRD) {
+                                    do {
+                                      version = versions[index++];
+                                    } while (version.status === CRD && index < versions.length);
+                                    ret.date = version.date;
+                                    ret.status = version.status;
+                                    let dY = new Date(version.date).getFullYear();
+                                    if (dY <= (currentYear - 2)) {
+                                      ret.msg = "(Last snapshot: " + version.date + " PLEASE UPDATE)";
+                                    } else {
+                                      ret.msg = "(Last snapshot: " + version.date + ")";
+                                    }
+                                  }
+                                  return ret;
+                                },
+                                milestones: function (milestones) {
+                                  return Object.entries(milestones).map(s => s[0] + " " + s[1]);
+                                },
+                                mlConfig: function (confs) {
+                                  return Object.keys(confs).map(c => " " + c);
+                                },
+                                formatDate: function (dateStr) {
+                                  const date = new Date(dateStr);
+                                  return { date: date.toISOString().substring(0, 10) };
+                                },
+                                eventsfilter: function (events) {
+                                  const today = (new Date()).toISOString().substring(0, 10);
+                                  // we filter and augment the event list.
+                                  return events.filter(evt => {
+                                    const rrule = evt.rrule;
+                                    const dtstart = evt["dtstart"].substring(0, 10); 
+                                    if ((!rrule && dtstart >= today)
+                                    || (rrule && !rrule.until)) {
+                                      evt.dtstartp = dtstart;
+                                      if (rrule) {
+                                        console.error(evt);
+                                        rrule.prettyRule = "invalid until?";
+                                      }
+                                      return true;
+                                    } else if (rrule && rrule.until
+                                    && rrule.until.substring(0, 10) >= today) {
+                                      let range = ", until " + rrule.until.substring(0, 10);
+                                      if (dtstart > today) {
+                                        range = ", from " + dtstart + range.substring(1);
+                                      }
+                                      if (rrule.interval < 2) {
+                                        rrule.prettyRule = rrule.freq + range;
+                                      } else {
+                                        rrule.prettyRule = "every " + rrule.interval
+                                        + " " + prettyFreq(rrule.freq) + range;
+                                      }
+                                      return true;
+                                    }
+                                    return false;
+                                  });
+                                },
+                              };
+                              
+                              let gid = document.documentElement.getAttribute("data-gid");
+                              
+                              (function () {
+                                let ngid = (new URL(document.location)).searchParams.get("gid");
+                                if (!ngid) {
+                                  const matches = document.location.toString().match(new RegExp("([0-9]+)", "g"));
+                                  if (matches.length > 0) {
+                                    const last = matches[matches.length - 1];
+                                    if (last.length > 4)
+                                    ngid = last;
+                                  }
+                                }
+                                if (ngid) gid = ngid;
+                                fetchGroup(gid).then(group => {
+                                  let elts = document.querySelectorAll("*.group-data");
+                                  for (let element of elts) jsonrender({ group: group }, element, functions);
+                                });
+                              })();
+                              
+                            </script>
+                            
+                          </body>
+                          
+                          </html>
+                          

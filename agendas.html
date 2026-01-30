@@ -8,45 +8,37 @@
   <meta name="author" content="W3C">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="//www.w3.org/favicon.ico">
+  <link rel="stylesheet" href="pages.css" media="all">
+  <script src="list-groups.js" type="module"></script>
 </head>
 
 <body>
-
-  <h1>Agendas Board for <span id='gtype'></span></h1>
-  <section class='groups'>
-    <ol id="grlist" data-query='groups'>
-      <li><a href='./agenda.html?gid=${identifier}'>${name}</a></li>
-    </ol>
-  </section>
-
-  <p>
-    Groups: <a href="?gtype=working">working</a>
-    - <a href="?gtype=interest">interest</a>
-    - <a href="?gtype=community">community</a>
-    - <a href="?gtype=business">business</a>
-  </p>
-<script type="module">
-    import { fetchGroups } from './w3c.js';
-    import jsonrender from './jsonrender.js';
-
-    fetchGroups().then(groups => {
-      let gtypeElt = document.getElementById("gtype");
-      let gtype = (new URL(document.location)).searchParams.get("gtype");
-      if (gtype && gtype!="all") {
-        gtype = gtype + " group";
-        groups = groups.filter(grp => grp.type === gtype);
-      } else {
-        gtype = "all group"
-      }
-      gtypeElt.textContent = gtype + "s";
-      let elts = document.querySelectorAll("*.groups");
-      for (let element of elts) {
-        jsonrender({ groups: groups }, element);
-      }
-      return groups;
-    }).catch(console.error);
-
-  </script>
+  <header id="header">
+    <aside>
+      <ul id="navbar">
+        <li><a href="issueboards.html">Issues</a></li>
+        <li><a href="agendas.html">Agendas</a></li>
+        <li><a href="chairboards.html">Boards</a></li>
+      </ul>
+    </aside>
+    <p>
+      <a href="https://www.w3.org/"><img alt="W3C" height="60" width="60" src="https://www.w3.org/assets/logos/w3c-2025/svg/w3c.svg"></a>
+    </p>
+  </header>
+  <main class="clear">  
+    <h1>Agendas Board for <span id='gtype'></span></h1>
+    <section class='groups'>
+      <ol id="grlist" data-query='groups'>
+        <li><a href='./agenda.html?gid=${identifier}'>${name}</a></li>
+      </ol>
+    </section>
+    
+    <p>
+      Groups: <a href="?gtype=working">working</a>
+      - <a href="?gtype=interest">interest</a>
+      - <a href="?gtype=community">community</a>
+    </p>
+  </main>
 </body>
 
 </html>
