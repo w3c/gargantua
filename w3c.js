@@ -119,7 +119,7 @@ function enhanceSpecification(group, spec) {
         data.icons = ["chrome", "firefox", "safari"].map(product => {
           return {
             product: product,
-            href: `https://wpt-badge.glitch.me/?product=${product}&prefix=/` + data.path
+            href: `https://wpt.fyi/static/${product}_64x64.png`
           };
         });
       }
@@ -142,7 +142,7 @@ async function ongroup(group) {
 
   group.identifier =  group._links.self.href.replace('https://api.w3.org/groups/','');
   group["short-type"] = group.identifier.match("^([a-z]+)")[1];
-  group["default-homepage"] = `https://www.w3.org/groups/${group.identifier}`;
+  group["default-homepage"] = `https://www.w3.org/groups/${group.identifier}/`;
 
   // Some additional useful links (fopr backward compat)
   group["details"] = `https://www.w3.org/admin/${group["short-type"]}/${groupId}/show`;
@@ -344,7 +344,7 @@ async function ongroup(group) {
           spec_series.icons = ["chrome", "edge", "firefox", "safari"].map(product => {
             return {
               product: product,
-              href: `https://wpt-badge.glitch.me/?product=${product}&prefix=/` + spec_series.shortname,
+              href: `https://wpt.fyi/static/${product}_64x64.png`,
             };
           });
           spec_series["wpt-fyi"] = "https://wpt.fyi/results/" + spec.shortname;
