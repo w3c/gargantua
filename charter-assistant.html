@@ -15,9 +15,9 @@
         in the W3C Groups database. You can use this list to find existing groups
         that you may want to draft a charter using the <a href="https://w3c.github.io/charter-drafts/charter-template.html">charter template</a>.
     </p>
-
+    
     <p id="load">Loading groups&hellip;</p>
-
+    
     <h2>Working Groups</h2>
     <ul id="wgs">
         <!-- Filled in by script -->
@@ -29,51 +29,34 @@
 </body>
 <script type="module">
     import configuration from './lib/config.js';
-    import hal from './lib/hal.js';
+    import { json } from './lib/fetch.js';
     
     const config = configuration();
-
+    
     const templateLink = 'charter-template.html';
     const debugParam = (config.debug)? '&debug=true' : '';
     async function populate() {
-        const wgs = [];
-        const igs = [];
-        for await (const group of hal(`${config.w3cAPI}/groups`, "groups")) {
-            const name = group.title;
-            const url = templateLink + `?group=${group.href.replace(`${config.w3cAPI}/groups/`, '')}${debugParam}`
-
-            if (name.endsWith("Working Group")) {            
-                wgs.push({
-                    name: name,
-                    html_url: url
-                });
-            } else if (name.endsWith("Interest Group")) {
-                igs.push({
-                    name: name,
-                    html_url: url
-                });
+        const groups = await json('https://w3c.github.io/groups/w3c-groups.json')
+        const elts = {
+            wg: document.getElementById("wgs"),
+            ig: document.getElementById("igs")
+        };
+        groups.sort((a, b) => a.name.localeCompare(b.name));
+        for (const group of groups) {
+            const name = group.name;
+            const url = templateLink + `?group=${group.identifier}${debugParam}`
+            
+            if (group["group-type"] === "wg" || group["group-type"] === "ig") {
+                const li = document.createElement("li");
+                const a = document.createElement("a");
+                a.href = url;
+                a.textContent = name;
+                li.appendChild(a);
+                elts[group["group-type"]].appendChild(li);
             }
+            
         }
-
-        wgs.sort((a, b) => a.name.localeCompare(b.name));
-        igs.sort((a, b) => a.name.localeCompare(b.name));
-
-        wgs.forEach(v => {
-            const li = document.createElement("li");
-            const a = document.createElement("a");
-            a.href = v.html_url;
-            a.textContent = v.name;
-            li.appendChild(a);
-            document.getElementById("wgs").appendChild(li);
-        });
-        igs.forEach(v => {
-            const li = document.createElement("li");
-            const a = document.createElement("a");
-            a.href = v.html_url;
-            a.textContent = v.name;
-            li.appendChild(a);
-            document.getElementById("igs").appendChild(li);
-        });
+        
         document.getElementById("load").remove();
     }
     populate();
