@@ -11,6 +11,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="//www.w3.org/favicon.ico">
   <style>
+    /* from W3C pages */
+    @font-face {
+      font-display: fallback;
+      font-family: "Noto Sans";
+      font-style: normal;
+      font-weight: 400;
+      src: url("https://www.w3.org/assets/website-2021/fonts/notosans/notosans-regular.woff2") format("woff2"), url("https://www.w3.org/assets/website-2021/fonts/notosans/notosans-regular.woff") format("woff");
+    }
+    body {
+      font-family: "Noto Sans", "Trebuchet MS", Geneva, sans-serif
+    }
+
     table {
       border-collapse: collapse
     }
@@ -51,21 +63,12 @@
     .impl-consideration {
       background-color: lightcoral;
     }
-    /* from datatracker */
-    @font-face{
-        font-family:Font Awesome\ 5 Brands;
-        font-style:normal;
-        font-weight:400;
-        font-display:auto;
-        src:
-          url(/2008/site/sf/build/fonts/fa-brands-400.067595ad.woff2) format("woff2"),
-          url(/2008/site/sf/build/fonts/fa-brands-400.b564da88.woff) format("woff")
-    }
+
     .fab{
       font-family:Font Awesome\ 5 Brands
     }
     .fa-github::before {
-      content: "\f09b";
+      content: "🪲";
     }
   </style>
 </head>
