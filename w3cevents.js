@@ -1,4 +1,4 @@
-import loadICS from "./ics.js";
+import ics from "./lib/ics.js";
 
 let EVENT_CACHE = [];
 function sortEvents(a, b) {
@@ -22,7 +22,7 @@ function sortEvents(a, b) {
 async function fetchEvents(group) {
   if (EVENT_CACHE[group.id]) return EVENT_CACHE[group.id];
 
-  return EVENT_CACHE[group.id] = loadICS(`${group["default-homepage"]}calendar/export/`)
+  return EVENT_CACHE[group.id] = ics(`${group["default-homepage"]}calendar/export/`)
     .then(calendar => calendar.events.sort(sortEvents))
     .catch(console.error);
 }
