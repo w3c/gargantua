@@ -38,16 +38,19 @@
     async function populate() {
         const wgs = [];
         const igs = [];
-        for await (const group of hal("groups", `${config.w3cAPI}/groups`, { embed: true })) {
-            if (group.type === "working group") {            
+        for await (const group of hal(`${config.w3cAPI}/groups`, "groups")) {
+            const name = group.title;
+            const url = templateLink + `?group=${group.href.replace(`${config.w3cAPI}/groups/`, '')}${debugParam}`
+
+            if (name.endsWith("Working Group")) {            
                 wgs.push({
-                    name: group.name,
-                    html_url: templateLink + `?group=wg/${group.shortname}${debugParam}`
+                    name: name,
+                    html_url: url
                 });
-            } else if (group.type === "interest group") {
+            } else if (name.endsWith("Interest Group")) {
                 igs.push({
-                    name: group.name,
-                    html_url: templateLink + `?group=ig/${group.shortname}${debugParam}`
+                    name: name,
+                    html_url: url
                 });
             }
         }
