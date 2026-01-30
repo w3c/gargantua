@@ -98,7 +98,9 @@ header img {
   border-left: 1em solid #AAB;
   text-decoration: none;
 }
-
-main.clear {
+.clear {
   clear: both;
+}
+.hidden {
+  visibility: hidden;
 }

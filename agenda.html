@@ -6,64 +6,8 @@
   <link rel=preconnect href=http://labs.w3.org>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="//www.w3.org/favicon.ico">
-  <script>
-const config = {
-  gid: document.documentElement.getAttribute("data-gid"),
-  search: "agenda",
-  cache: "https://labs.w3.org/github-cache",
-};
-for (const [key, value] of (new URL(window.location)).searchParams) {
-  config[key] = value;
-}
-async function fetchJSON(url) {
-      let res = await fetch(url);
-      if (res.status !== 200) throw new Error(`HTTP ${res.status} ${res.statusText}`);
-      return res.json();
-}
-async function getID(input) {
-    if (typeof input.match("[0-9]+")) {
-      const gid = Number.parseInt(input);
-      return fetch(`https://w3c.github.io/groups/identifiers.json`).then(res => res.json())
-        .then(mapping => {
-          const g = mapping.find(g => g.id === gid);
-          return (g)? g.identifier : input;
-        });
-    } else {
-      return input;
-    }
-  }
-
-const pgid = getID(config.gid);
-const issues = pgid.then(gid => fetch(`${config.cache}/extra/issues/${gid}?ttl=15&search=${config.search}&fields=html_url,title,comments,updated_at,assignee,labels,pull_request,milestone`).then(res => res.json()));
-const group = pgid.then(gid => fetchJSON(`https://w3c.github.io/groups/${gid}/group.json`));
-
-// telemetry for performance monitoring
-const traceId = (""+Math.random()).substring(2, 18); // for resource correlation
-const rtObserver = new PerformanceObserver(list => {
-  const resources = list.getEntries().filter(entry => entry.name.startsWith(config.cache + '/extra')
-                                                      || entry.name.startsWith("https://api.github.com/"));
-  if (resources.length > 0) {
-    navigator.sendBeacon(`${config.cache}/monitor/beacon`, JSON.stringify({ traceId, resources }));
-  }
-});
-rtObserver.observe({entryTypes: ["resource"]});
-  </script>
-  <script src='lib/moment.min.js'></script>
+  <link rel="stylesheet" href="pages.css" media="all">
   <style>
-    body {
-      position: relative;
-      font-family: 'Roboto Condensed',Helvetica,Arial,sans-serif;
-      font-weight: 300;
-      background-color: #fff;
-      box-sizing: border-box;
-      min-height: 100%;
-    }
-    body > section {
-      margin: auto;
-      max-width: 50em;
-      padding: 60px 16px 16px;
-      min-height: 100%;
-    }
     .app-bar {
       display: block;
       width: 100%;
@@ -72,14 +16,7 @@ rtObserver.observe({entryTypes: ["resource"]});
       overflow: hidden;
       padding: 1em;
     }
-
-    h2 {
-      margin: 0;
-      font-size: 2em;
-      font-weight: 300;
-      padding-top: .7em;
-      padding-bottom: 0;
-    }
+    
     .color--green {
       font-weight: bold; color: green;
     }
@@ -112,26 +49,31 @@ rtObserver.observe({entryTypes: ["resource"]});
       font-weight: 600;
     }
   </style>
+  <script src='lib/moment.min.js' defer></script>
 </head>
 
 <body>
-  <header class='app-bar'>
-    <h1 class='group-data'><a href='' id='group-name'>{group-name}</a> - Agenda items</h1>
+  <header id="header">
+    <aside>
+      <ul id="navbar">
+        <li><a id='group-issues' href='.'>Issues</a></li>
+        <li><a id='group-repositories' href='.'>Repositories</a></li>
+        <li><a id='group-board' href='.'>Board</a></li>
+      </ul>
+    </aside>
+    <p>
+      <a href="https://www.w3.org/"><img alt="W3C" height="60" width="60" src="https://www.w3.org/assets/logos/w3c-2025/svg/w3c.svg"></a>
+    </p>
   </header>
-  <div class='group-data'>
-    <div id='group-description'>{group-description}</div>
-    <p>See also:</p>
-    <ul>
-      <li>List of <a id='group-issues' href='.'>issues</a></li>
-      <li>List of <a id='group-repositories' href='.'>repositories</a></li>
-    </ul>
-  </div>
-  <section class='repository-data'>
+  <main>
+  <h1>Agenda items</h1>
+  <h2><a href='' id='group-name'>{group-name}</a></h2>
+  <section class='repository-data clear'>
     <div data-if='issues.*'>
       <section data-query='issues'>
         <h4>agenda+ <a href="${html_url}">${title}</a></h4>
         <div style="font-style: italic">
-
+          
           <span data-query='comments' data-filter='prettyComments'>
             <span class='${className}'>${text}</span>
           </span>
@@ -158,110 +100,134 @@ rtObserver.observe({entryTypes: ["resource"]});
       </section>
       <section><p><strong>no agenda item raised</strong></p></section>
     </section>
-
+    
     <section>
       <h4>text/plain version:</h4>
-    <div class='repository-data' data-if='issues.*'>
-    <pre data-query='issues'>
-agenda+ <a href="${html_url}">${title}</a>
-  ${html_url}
-</pre>
-      <pre>no agenda item raised</pre>
-    </div></section>
-    <section>
-      <h4>Markdown:</h4>
-    <div class='repository-data' data-if='issues.*'>
-    <pre data-query='issues'>
-1. [${title}](${html_url})
-</pre>
-      <pre>no agenda item raised</pre>
-    </div></section>
-  </div>
-
-    <section>
-      <h3>How does it work?</h3>
-      <p>This page searches for the string <code id='search'>agenda</code> in title/labels/milestones in all of the <a id='group-repositories-2' href=".">repositories owned by this group</a>. You
-      may change this term by using the URL parameter <code>search</code>.</p>
-    </section>
-
-  <script type="module">
-    import jsonrender from './jsonrender.js';
-
-
-
-    function dateFormat(time) {
-      return moment(time).fromNow()
-    }
-
-    function dateColor(arg_time) {
-      const time = new Date(Date.parse(arg_time)),
-          now = new Date();
-
-      if (((now-time)/1000)/(60*60*24) > 14) {
-         return "color--red"
-      } else {
-        return "color--green"
-      }
-    };
-    const functions =
-    {
-      filterRepositories: (repositories) => {
-        let trackedRepositories = repositories.filter(i => i.state === "open" && !i.pull_request);
-        return { trackedRepositories };
-      },
-      prettyComments: (comments) => {
-        if (comments > 0) {
-          return { className: 'color--green', text: comments + " comment" + ((comments>1)?"s":"") }
-        } else {
-          return { className: 'color--red', text: "no comment" }
-        }
-      },
-      prettyDate: (time) => {
-        return { className: dateColor(time), text: dateFormat(time) }
-      },
-      prettyLabels: (labels) => {
-        labels.forEach(label => {
-          label.name = label.name.replaceAll(' ', '\u00A0');
-        });
-        return labels;
-      },
-    };
-
-    (function () {
-      document.getElementById("search").textContent = config.search;
-
-      const repoElements  = document.querySelectorAll("*.repository-data");
-      const groupElements = document.querySelectorAll("*.group-data");
-      issues.then(issues => {
-        for (const element of repoElements) jsonrender({ issues: issues.flat() }, element, functions);
-      }).catch(err => {
-        for (const element of repoElements) element.textContent = err.message;
-      });
-      group.then(group => {
-        document.getElementById('group-name').textContent = group.name;
-        document.getElementById('group-name').href = group._links.homepage.href;
-        document.getElementById('group-description').innerHTML = group.description;
-        document.getElementById('group-issues').setAttribute('href', `./issueboard.html?gid=${config.gid}`);
-        document.getElementById('group-repositories').setAttribute('href', `https://www.w3.org/groups/${config.gid}/tools/#repositories`);
-        document.getElementById('group-repositories-2').setAttribute('href', `https://www.w3.org/groups/${config.gid}/tools/#repositories`);
-      }).catch(err => {
-        for (const element of groupElements) element.textContent = err.message;
-      });
-    })();
-
-// telemetry for performance monitoring
-const traceId = (""+Math.random()).substring(2, 18); // for resource correlation
-const rtObserver = new PerformanceObserver(list => {
-  const resources = list.getEntries().filter(entry => entry.name.startsWith(config.cache + '/extra')
-                                                      || entry.name.startsWith("https://api.github.com/"));
-  if (resources.length > 0) {
-    navigator.sendBeacon(`${config.cache}/monitor/beacon`, JSON.stringify({ traceId, resources }));
-  }
-});
-rtObserver.observe({entryTypes: ["resource"]});
-
-  </script>
-
-</body>
-
-</html>
+      <div class='repository-data' data-if='issues.*'>
+        <pre data-query='issues'>
+          agenda+ <a href="${html_url}">${title}</a>
+          ${html_url}
+        </pre>
+        <pre>no agenda item raised</pre>
+      </div></section>
+      <section>
+        <h4>Markdown:</h4>
+        <div class='repository-data' data-if='issues.*'>
+          <pre data-query='issues'>
+            1. [${title}](${html_url})
+          </pre>
+          <pre>no agenda item raised</pre>
+        </div></section>
+      </div>
+      </main>
+      <section>
+        <h3>How does it work?</h3>
+        <p>This page searches for the string <code id='search'>agenda</code> in title/labels/milestones in all of the <a id='group-repositories-2' href=".">repositories owned by this group</a>. You
+          may change this term by using the URL parameter <code>search</code>.</p>
+        </section>
+        
+        <script type="module">
+          import configuration from './lib/config.js';
+          import { json } from './lib/fetch.js';
+          import jsonrender from './jsonrender.js';
+          
+          const config = configuration({
+            gid: document.documentElement.getAttribute("data-gid"),
+            search: "agenda",
+          });
+          
+          async function getID(input) {
+            if (typeof input.match("[0-9]+")) {
+              const gid = Number.parseInt(input);
+              return fetch(`https://w3c.github.io/groups/identifiers.json`).then(res => res.json())
+              .then(mapping => {
+                const g = mapping.find(g => g.id === gid);
+                return (g)? g.identifier : input;
+              });
+            } else {
+              return input;
+            }
+          }
+          
+          const pgid = getID(config.gid);
+          const issues = pgid.then(gid => json(`${config.cache}/extra/issues/${gid}?ttl=15&search=${config.search}&fields=html_url,title,comments,updated_at,assignee,labels,pull_request,milestone`));
+          const group = pgid.then(gid => json(`https://w3c.github.io/groups/${gid}/group.json`));
+          
+          // telemetry for performance monitoring
+          const traceId = (""+Math.random()).substring(2, 18); // for resource correlation
+          const rtObserver = new PerformanceObserver(list => {
+            const resources = list.getEntries().filter(entry => entry.name.startsWith(config.cache + '/extra')
+            || entry.name.startsWith("https://api.github.com/"));
+            if (resources.length > 0) {
+              navigator.sendBeacon(`${config.cache}/monitor/beacon`, JSON.stringify({ traceId, resources }));
+            }
+          });
+          rtObserver.observe({entryTypes: ["resource"]});
+          
+          function dateFormat(time) {
+            return moment(time).fromNow()
+          }
+          
+          function dateColor(arg_time) {
+            const time = new Date(Date.parse(arg_time)),
+            now = new Date();
+            
+            if (((now-time)/1000)/(60*60*24) > 14) {
+              return "color--red"
+            } else {
+              return "color--green"
+            }
+          };
+          const functions =
+          {
+            filterRepositories: (repositories) => {
+              let trackedRepositories = repositories.filter(i => i.state === "open" && !i.pull_request);
+              return { trackedRepositories };
+            },
+            prettyComments: (comments) => {
+              if (comments > 0) {
+                return { className: 'color--green', text: comments + " comment" + ((comments>1)?"s":"") }
+              } else {
+                return { className: 'color--red', text: "no comment" }
+              }
+            },
+            prettyDate: (time) => {
+              return { className: dateColor(time), text: dateFormat(time) }
+            },
+            prettyLabels: (labels) => {
+              labels.forEach(label => {
+                label.name = label.name.replaceAll(' ', '\u00A0');
+              });
+              return labels;
+            },
+          };
+          
+          function init() {
+            document.getElementById("search").textContent = config.search;
+            
+            const repoElements  = document.querySelectorAll("*.repository-data");
+            const groupElements = document.querySelectorAll("*.group-data");
+            issues.then(issues => {
+              for (const element of repoElements) jsonrender({ issues: issues.flat() }, element, functions);
+            }).catch(err => {
+              for (const element of repoElements) element.textContent = err.message;
+            });
+            group.then(group => {
+              document.getElementById('group-name').textContent = group.name;
+              document.getElementById('group-name').href = group._links.homepage.href;
+              document.getElementById('group-issues').setAttribute('href', `./issueboard.html?gid=${config.gid}`);
+              document.getElementById('group-board').setAttribute('href', `./chairboard.html?gid=${config.gid}`);
+              document.getElementById('group-repositories').setAttribute('href', `https://www.w3.org/groups/${config.gid}/tools/#repositories`);
+              document.getElementById('group-repositories-2').setAttribute('href', `https://www.w3.org/groups/${config.gid}/tools/#repositories`);
+            }).catch(err => {
+              for (const element of groupElements) element.textContent = err.message;
+            });
+          }
+          window.addEventListener('load', init);
+          
+        </script>
+        
+      </body>
+      
+      </html>
+      
