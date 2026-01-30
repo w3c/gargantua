@@ -1,0 +1,104 @@
+/* from W3C pages */
+@font-face {
+  font-display: fallback;
+  font-family: "Noto Sans";
+  font-style: normal;
+  font-weight: 400;
+  src: url("https://www.w3.org/assets/website-2021/fonts/notosans/notosans-regular.woff2") format("woff2"), url("https://www.w3.org/assets/website-2021/fonts/notosans/notosans-regular.woff") format("woff");
+}
+body {
+  font-family: "Noto Sans", "Trebuchet MS", Geneva, sans-serif;
+  margin: 2em 1em 2em 4em;
+  padding: 0em 2em;
+  color: black;
+  background: white;
+  line-height: 1.2;
+}
+main {
+  max-width: 60em;
+  margin: 0 auto;
+}
+
+a:link, a:active {
+  color: #00e;
+  background: transparent;
+}
+table {
+  border-collapse: collapse
+}
+
+tr {
+  border-bottom: 1px solid black;
+  border-top: 1px solid black;
+}
+
+th {
+  border-right: 1px solid black;
+  vertical-align: top;
+}
+
+td {
+  padding: 1ex;
+}
+
+.warning {
+  color: black;
+  font-weight: bold;
+  background-color: yellow;
+  border-radius: 1.5ex;
+  padding: 0.1ex;
+}
+.impls, .impl-shipped, .impl-indevelopment, .impl-consideration {
+  padding: 0.1ex; border-radius: 0.2ex;
+}
+.impls {
+  color: white; background-color: dimgrey; font-size: 90%;
+}
+.impl-shipped {
+  font-weight: bold; background-color: green;
+}
+.impl-indevelopment {
+  background-color: rosybrown;
+}
+.impl-consideration {
+  background-color: lightcoral;
+}
+
+.fab{
+  font-family:Font Awesome\ 5 Brands
+}
+.fa-github::before {
+  content: "🪲";
+}
+
+header img {
+  float: left;
+  margin-right: 60px;
+  margin-bottom: 60px;
+}
+
+/** Navigation bar on the right side */
+#navbar {
+  padding: 0 1px 2em 1em;
+  margin: 0;
+  font: bold small sans-serif;
+  width: 13em;
+  float: right;
+}
+
+#navbar li {
+  list-style: none;
+  margin: 0;
+  border-top: 1px solid gray;
+  text-align: left;
+}
+#navbar li a {
+  display: block;
+  padding: 0.25em 0.5em 0.25em 0.75em;
+  border-left: 1em solid #AAB;
+  text-decoration: none;
+}
+
+main.clear {
+  clear: both;
+}
