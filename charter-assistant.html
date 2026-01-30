@@ -44,7 +44,7 @@
         groups.sort((a, b) => a.name.localeCompare(b.name));
         for (const group of groups) {
             const name = group.name;
-            const url = templateLink + `?group=${group.identifier}${debugParam}`
+            const url = templateLink + `?gid=${group.identifier}${debugParam}`
             
             if (group["group-type"] === "wg" || group["group-type"] === "ig") {
                 const li = document.createElement("li");
