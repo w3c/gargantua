@@ -445,9 +445,11 @@
                             <script type="module">
                               import { fetchGroup, fetchGroups } from './w3c.js';
                               import jsonrender, { subscribe } from './jsonrender.js';
-                              
+                              import { config as configuration, GITHUB_CACHE } from './lib/config.js';
+
+                              const config = configuration();
+
                               // telemetry for performance monitoring
-                              const GH_CACHE = "https://labs.w3.org/github-cache";
                               subscribe("done", () => {
                                 const resources = [ {
                                   name: window.location.href,
@@ -456,7 +458,7 @@
                                   duration: performance.now()
                                 } ];
                                 const traceId = (""+Math.random()).substring(2, 18); // for resource correlation
-                                navigator.sendBeacon(`${GH_CACHE}/monitor/beacon`, JSON.stringify({ traceId, resources }));
+                                navigator.sendBeacon(`${GITHUB_CACHE}/monitor/beacon`, JSON.stringify({ traceId, resources }));
                               });
                               const currentYear = (new Date().getFullYear());
                               function prettyFreq(freq) {
@@ -544,10 +546,10 @@
                                 },
                               };
                               
-                              let gid = document.documentElement.getAttribute("data-gid");
                               
-                              (function () {
-                                let ngid = (new URL(document.location)).searchParams.get("gid");
+                              function init() {
+                                let gid = document.documentElement.getAttribute("data-gid");
+                                let ngid = (config.gid) ? config.gid : gid;
                                 if (!ngid) {
                                   const matches = document.location.toString().match(new RegExp("([0-9]+)", "g"));
                                   if (matches.length > 0) {
@@ -558,10 +560,11 @@
                                 }
                                 if (ngid) gid = ngid;
                                 fetchGroup(gid).then(group => {
-                                  let elts = document.querySelectorAll("*.group-data");
+                                  const elts = document.querySelectorAll("*.group-data");
                                   for (let element of elts) jsonrender({ group: group }, element, functions);
                                 });
-                              })();
+                              }
+                              window.addEventListener("load", init);
                               
                             </script>
                             
