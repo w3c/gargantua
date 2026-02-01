@@ -21,7 +21,14 @@ A modular, object-oriented JavaScript library for creating semantic UI cards wit
 Simply import the classes into your ES Module project:
 
 ```javascript
-import CardContainer, { Card } from './path/to/CardLibrary.js';
+import CardContainer, { Card } from './path/to/lib.js';
+
+```
+
+Import the CSS into your HTML project:
+
+```html
+<link rel='stylesheet' href='./path/to/styles.css';
 
 ```
 
@@ -49,6 +56,7 @@ Define a global TTL (e.g., 30 minutes) for all cards in this section.
 ```javascript
 const dashboard = new CardContainer('app-root', {
   ttl: 30, // Default 30 minutes
+  heartbeat: 30, // Default refresh on screen
   namespace: 'my_dashboard_'
 });
 
@@ -64,11 +72,11 @@ const githubCard = dashboard.add({
   url: 'https://github.com/w3c/transitions/issues',
   cacheKey: 'w3c-issues',
   ttl: 5, // Override global TTL to 5 minutes
-  createValue: async () => {
-    const res = await fetch('https://api.github.com/repos/w3c/transitions/issues');
+  createValue: async (options) => {
+    const res = await fetch(options.url.replace('//github.com/', '//api.github.com/repos/'));
     return res.json();
   },
-  transformValue: (data) => {
+  transformValue: (data, options) => {
     return `<ul>${data.slice(0, 3).map(i => `<li>${i.title}</li>`).join('')}</ul>`;
   }
 });
