@@ -80,7 +80,7 @@ class Card {
             }
             
             // Update UI
-            data = this.options.transformValue(data);
+            data = this.options.transformValue(data, this.options);
             if (data instanceof HTMLElement) {
                 contentArea.replaceChildren(data);
             } else if (data) {
@@ -148,6 +148,7 @@ export default class CardContainer {
     remove(card) {
         if (this.registry.has(card.cacheKey)) {
             this.registry.delete(card.cacheKey);
+            localStorage.removeItem(card.cacheKey);
             this.cards = this.cards.filter(c => c !== card);
             card.element.remove();
         }
