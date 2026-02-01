@@ -27,4 +27,6 @@ export async function run(CardContainer) {
     } else {
         window.testLog(`FAILED: DOM leak detected. ${remainingElements} elements remain.`, 'fail');
     }
+    dashboard.destroy();
+
 }

@@ -40,4 +40,5 @@ export async function run(CardContainer) {
     } else {
         window.testLog("EDGE: API errors not correctly displayed.", "fail");
     }
+    dashboard.destroy();
 }

@@ -48,5 +48,5 @@ export async function run(CardContainer) {
 
     window.testLog("✅ Presentation cards loaded. Use the slider to warp time!", "pass");
 
-    return dashboard;
+    dashboard.destroy();
 }

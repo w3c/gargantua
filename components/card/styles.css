@@ -21,7 +21,7 @@
     --card-bg: #1e293b;
     --card-text: #f8fafc;
     --card-border: #334155;
-    --accent-color: #60a5fa;
+    --accent-color: #7bb4fa;
     --muted-text: #94a3b8;
     --error-red: #f87171;
     --success-green: #4ade80;
@@ -34,7 +34,7 @@
     --card-bg: #1e293b;
     --card-text: #f8fafc;
     --card-border: #334155;
-    --accent-color: #60a5fa;
+    --accent-color: #7bb4fa;
     --muted-text: #94a3b8;
     --error-red: #f87171;
     --success-green: #4ade80;
@@ -87,6 +87,7 @@
 .card-content {
   margin-bottom: 0.5rem;
   flex-grow: 1;
+  color: var(--card-text);
 }
 
 /* Buttons & Interactive Elements */

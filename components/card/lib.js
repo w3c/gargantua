@@ -4,10 +4,15 @@
 */
 
 class Card {
+    /**
+    * @param {CardContainer} parent - The orchestrating container.
+    * @param {Object} options - Configuration for the card instance.
+    */
     constructor(parent, options) {
         this.parent = parent;
         this.options = options;
         this.cacheKey = options.cacheKey;
+        this.fullKey = `${this.parent.config.namespace}${this.cacheKey}`;
         this.isLoading = false;
         
         // Setup DOM element
@@ -15,6 +20,7 @@ class Card {
         this._setupEvents();
     }
     
+    /** @private */
     _createMarkup() {
         const section = document.createElement('section');
         section.className = 'ui-card';
@@ -32,10 +38,15 @@ class Card {
         return section;
     }
     
+    /** @private */
     _setupEvents() {
         this.element.querySelector('.refresh-btn').onclick = () => this.refresh(true);
     }
     
+    /**
+    * Updates card content. Handles DOM Node returns from transformValue.
+    * @param {boolean} force - Skip TTL check.
+    */
     async refresh(force = false) {
         if (this.isLoading) return;
         this.isLoading = true;
@@ -44,124 +55,142 @@ class Card {
         const timeArea = this.element.querySelector('.timestamp');
         
         try {
-            // Check cache first if not forced
-            const fullKey = `${this.parent.config.namespace}${this.cacheKey}`;
-            const cached = localStorage.getItem(fullKey);
-            
-            let data;
+            const rawCache = localStorage.getItem(this.fullKey);
+            let data = null;
             let skipFetch = false;
+            let cachedEnvelope = null;
             
-            let envelope;
-            if (cached) {
+            // 1. Safe Cache Retrieval (Self-Healing)
+            if (rawCache) {
                 try {
-                    envelope = JSON.parse(cached);
-                    data = envelope.data;
-                } catch (e) {
-                    // Corrupted cache, ignore
-                    localStorage.removeItem(fullKey);
-                    cached = null;
+                    cachedEnvelope = JSON.parse(rawCache);
+                    const age = (Date.now() - cachedEnvelope.timestamp) / 1000 / 60;
+                    
+                    if (!force && age < this.parent.config.ttl) {
+                        data = cachedEnvelope.data;
+                        skipFetch = true;
+                    }
+                } catch (parseErr) {
+                    localStorage.removeItem(this.fullKey);
                 }
             }
             
-            if (!force && cached) {
-                const age = (Date.now() - envelope.timestamp) / 1000 / 60; // mins
-                if (age < this.parent.config.ttl) {
-                    data = envelope.data;
-                    skipFetch = true;
-                }
-            }
-            
+            // 2. Data Acquisition
             if (!skipFetch) {
-                data = await this.options.createValue(this.options);
-                localStorage.setItem(fullKey, JSON.stringify({
-                    timestamp: Date.now(),
-                    data: data
-                }));                
+                try {
+                    data = await this.options.createValue(this.options);
+                    if (data) {
+                        localStorage.setItem(this.fullKey, JSON.stringify({
+                            timestamp: Date.now(),
+                            data: data
+                        }));
+                    }
+                } catch (fetchError) {
+                    if (cachedEnvelope) {
+                        data = cachedEnvelope.data;
+                    } else {
+                        throw fetchError;
+                    }
+                }
             }
             
-            // Update UI
-            data = this.options.transformValue(data, this.options);
-            if (data instanceof HTMLElement) {
-                contentArea.replaceChildren(data);
-            } else if (data) {
-                contentArea.innerHTML = data;
+            // 3. Rendering Logic (Supports String or Element Node)
+            if (data) {
+                const view = this.options.transformValue(data, this.options);
+                
+                if (view instanceof Node) {
+                    contentArea.replaceChildren(view);
+                } else {
+                    contentArea.innerHTML = view;
+                }
             } else {
-                contentArea.innerHTML = '<span class="empty-state">(none)</span>';
+                contentArea.innerHTML = '<span class="empty-state">(no data)</span>';
             }
             timeArea.innerText = new Date().toLocaleTimeString();
             
-            // Trigger animation reset
-            contentArea.style.animation = 'none';
-            contentArea.offsetHeight; // trigger reflow
-            contentArea.style.animation = null;
-            
         } catch (err) {
-            contentArea.innerHTML = `<span class="error">Failed to sync: ${err.message}</span>`;
+            contentArea.innerHTML = `<span class="error">Error: ${err.message}</span>`;
         } finally {
             this.isLoading = false;
         }
     }
 }
 
+/**
+* Main Orchestrator Class
+*/
 export default class CardContainer {
+    /**
+    * @param {string} mountId - Target element ID.
+    * @param {Object} config - Global configuration.
+    * @param {number} [config.ttl=5] - Freshness in minutes.
+    * @param {number} [config.heartbeat=5] - Polling interval in minutes.
+    * @param {string} [config.namespace='card_app_'] - Storage prefix.
+    */
     constructor(mountId, config = {}) {
-        this.container = document.getElementById(mountId);
-        if (!this.container) throw new Error(`Mount point #${mountId} not found.`);
+        const container = document.getElementById(mountId);
+        if (!container) throw new Error(`Mount point #${mountId} not found.`);
         
+        this.container = container;
         this.config = {
             ttl: config.ttl || 5,
+            heartbeat: config.heartbeat || 5,
             namespace: config.namespace || 'card_app_',
-            heartbeat: config.hearbeat || 30,
             ...config
         };
-        
-        // The Registry: Essential for preventing collisions
+        this.config.heartbeat = Math.max(this.config.heartbeat, this.config.ttl);
         this.registry = new Map();
         this.cards = [];
-        
-        // Start Global Heartbeat (30s)
-        this.heartbeat = setInterval(() => this.checkStaleCards(), this.config.heartbeat * 1000);
-        
         this.container.classList.add('card-container');
+        
+        // Logic: max(heartbeat, ttl) ensures we don't pulse faster than data expires.
+        this.timer = setInterval(() => {
+            this.cards.forEach(card => card.refresh(false));
+        }, this.config.heartbeat * 60000); 
     }
     
+    /**
+    * Registers a new card. Atomic and synchronous.
+    * @param {Object} options - Configuration for the card instance.
+    * @returns {Card}
+    */
     add(options) {
-        // ATOMIC CHECK: Stop duplicates before they start
-        if (this.registry.has(options.cacheKey)) {
-            return this.registry.get(options.cacheKey);
-        }
+        if (!options.cacheKey) throw new Error("cacheKey is required.");
+        if (this.registry.has(options.cacheKey)) return this.registry.get(options.cacheKey);
         
         const card = new Card(this, options);
-        
-        // ATOMIC REGISTRATION: Synchronous tracking
         this.registry.set(options.cacheKey, card);
         this.cards.push(card);
-        
         this.container.appendChild(card.element);
         
-        // Start async lifecycle
         card.refresh();
-        
         return card;
     }
-    
+
     remove(card) {
         if (this.registry.has(card.cacheKey)) {
             this.registry.delete(card.cacheKey);
-            localStorage.removeItem(card.cacheKey);
+            localStorage.removeItem(card.fullKey);
             this.cards = this.cards.filter(c => c !== card);
             card.element.remove();
         }
     }
     
-    checkStaleCards() {
-        this.cards.forEach(card => card.refresh(false));
-    }
-    
+    /**
+    * Total teardown for clean memory.
+    * Cleans up the UI and wipes the associated localStorage entries.
+    */
     destroy() {
-        clearInterval(this.heartbeat);
-        this.cards.forEach(card => this.remove(card));
-        this.container.innerHTML = '';
+        if (this.timer) clearInterval(this.timer);
+        
+        // Wipe the cache for every card registered in this container
+        this.cards.forEach(card => {
+            localStorage.removeItem(card.fullKey);
+            card.element.remove();
+        });
+        
         this.registry.clear();
+        this.cards = [];
+        this.container.innerHTML = '';
     }
 }
