@@ -90,6 +90,23 @@
   color: var(--card-text);
 }
 
+/* The animation definition */
+@keyframes refreshEffect {
+  0% {
+    opacity: 0.5;
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* The class we will toggle via JS */
+.animate-refresh {
+  animation: refreshEffect 2s ease-out;
+}
+
 /* Buttons & Interactive Elements */
 .refresh-btn {
   background-color: var(--accent-color);

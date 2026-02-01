@@ -17,4 +17,6 @@ export async function run(CardContainer) {
     const hasP = !!card.element.querySelector('p.update-label');
 
     window.testLog("Logic: HTML Structure verified.", (hasH2 && hasP) ? 'pass' : 'fail');
+    dashboard.destroy();
+
 }

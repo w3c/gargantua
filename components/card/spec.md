@@ -1,64 +1,57 @@
-It’s been a pleasure building this with you. To wrap everything up, here is the full **Technical Specification** for this library. This prompt captures the architecture, the "Atomic" logic required to pass the performance tests, and the styling requirements we perfected.
+This final **Technical Specification** summarizes the refined architecture we've built. It includes the "Max Logic" for polling efficiency, DOM Node rendering capabilities, and the robust self-healing cache mechanism.
 
-You can use this to document the project or to recreate/port the library to another framework (like React or Vue) in the future.
+You can use this prompt to re-generate the library in the future or to brief another developer on how the system works.
 
 ---
 
-## Technical Specification: Card.js Micro-Library
+## Technical Specification: Card.js (v2.0)
 
 ### 1. Core Objective
 
-A lightweight, dependency-free JavaScript library for creating self-updating UI cards with built-in **LocalStorage caching**, **Atomic state management**, and **automated background synchronization**.
+A lightweight, dependency-free JavaScript library for building dashboards with self-updating cards. It prioritizes **efficiency** (via synchronized TTL/Heartbeat), **flexibility** (via DOM Node rendering), and **resilience** (via stale-while-revalidate and self-healing cache).
 
-### 2. Architecture Requirements
+### 2. Architecture & State Management
 
-* **CardContainer Class**: The orchestrator.
-* Must use a `Map` (Registry) to track `cacheKey` instances **synchronously** during the `add()` method to prevent race conditions during rapid batch initialization.
-* Must manage a global `setInterval` (Heartbeat) that polls all registered cards for staleness every 30 seconds.
-* Must provide a `destroy()` method to clear all timers, DOM elements, and registries for memory safety.
-
-
-* **Card Class**: The UI component.
-* Must handle its own internal `isLoading` state to prevent overlapping fetch requests.
-* Must render semantically using `section`, `h2`, and `button` tags.
+* **CardContainer (Orchestrator)**:
+* **Constructor Configuration**: Configures `ttl` (minutes), `heartbeat` (minutes), and `namespace` globally.
+* **Efficiency Logic**: Implements a centralized pulse using `Math.max(config.heartbeat, config.ttl)`. This ensures background polling never occurs more frequently than the data's fresh lifespan.
+* **Atomic Registry**: Uses a synchronous `Map` in the `add()` method to prevent duplicate card initialization during rapid batch execution.
 
 
-
-### 3. Data Lifecycle & Logic
-
-* **Atomic Addition**: The `add()` method must be synchronous. It should:
-1. Check the registry for existing keys.
-2. Register the card immediately.
-3. Inject into the DOM.
-4. Trigger an asynchronous `refresh()` without blocking the main loop.
+* **Card (UI Component)**:
+* Manages internal `isLoading` flags to prevent request overlapping.
+* Handles the visual state transitions (Initialising -> Data/Node -> Error).
 
 
-* **Caching Strategy**:
-* Store data in `localStorage` wrapped in an envelope: `{ timestamp: Date.now(), data: ... }`.
-* **TTL (Time-To-Live)**: Logic must check `(Now - Timestamp) > TTL` to decide whether to use cache or trigger `createValue()`.
+
+### 3. Data Lifecycle & Rendering
+
+* **Fetch Strategy**:
+* **Stale-While-Revalidate**: If `createValue` fails or returns no data, the library attempts to revert to the last known valid cache entry.
+* **Self-Healing Cache**: If `JSON.parse` fails on a retrieved cache string, the specific `localStorage` key is immediately removed to prevent persistent crashes.
 
 
-* **Transformation**: Data fetching (`createValue`) must be decoupled from data display (`transformValue`).
+* **Rendering (transformValue)**:
+* Supports **String** returns (via `innerHTML`).
+* Supports **DOM Node** returns (via `appendChild`). This allows cards to host complex elements like Canvases, Charts, or elements with pre-attached event listeners.
 
-### 4. UI & Accessibility (CSS)
 
-* **Design System**: Must use CSS Variables (`:root`) for all colors and spacing.
-* **High Contrast**: Maintain a contrast ratio of at least 4.5:1 for all text.
-* **Dark Mode**: Support a `[data-theme="dark"]` attribute selector on the `<html>` or `<body>` tag.
-* **Responsive Grid**: Use `grid-template-columns: repeat(auto-fill, minmax(320px, 1fr))` for the container.
 
-### 5. Testability Requirements
+### 4. Method Signatures
 
-* **Idempotency**: Every test suite must clear its specific `localStorage` namespace and DOM mount point before running.
-* **Polling Verification**: Performance tests for mass-initialization must use a polling/retry mechanism to account for the asynchronous nature of the JavaScript event loop.
-* **Isolation**: No global variables; all library instances must be self-contained.
+* **`createValue(options)`**: An async function that fetches raw data. It receives the card's `options` object for context-aware fetching (e.g., using a specific ID or URL provided in the options).
+* **`transformValue(data, options)`**: A synchronous function that prepares the UI. It receives both the fetched `data` and the card's `options`.
+
+### 5. Design & Accessibility
+
+* **Theme**: Optimized for high-contrast palettes (e.g., Black Cards `#000000` on Cream Background `#FFF6E0`).
+* **Typography**: Uses off-white text (`#F8F9FA`) on black cards to reduce visual vibration while maintaining AAA contrast ratios.
+* **Responsiveness**: Designed for an auto-filling CSS grid.
 
 ---
 
-### Final Project Inventory
+### File Manifest
 
-* **`lib.js`**: Atomic registry, lifecycle management, and cache logic.
-* **`styles.css`**: Accessible dark/light tokens and responsive card layouts.
-* **`runner.html`**: Lifecycle-aware test engine with "Time Warp" cache aging.
-* **`tests/test-helper.js`**: Environment isolation utility.
-* **`demo.html`**: Clean-room implementation example.
+1. **`lib.js`**: The core logic with the `Math.max` pulse and DOM Node support.
+2. **`card.css`**: The design tokens for the Cream/Black accessible theme.
+3. **`demo.html`**: A production-ready implementation example.

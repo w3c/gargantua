@@ -53,7 +53,7 @@ class Card {
         
         const contentArea = this.element.querySelector('.card-content');
         const timeArea = this.element.querySelector('.timestamp');
-        
+        this.element.classList.remove('animate-refresh');
         try {
             const rawCache = localStorage.getItem(this.fullKey);
             let data = null;
@@ -111,6 +111,7 @@ class Card {
         } catch (err) {
             contentArea.innerHTML = `<span class="error">Error: ${err.message}</span>`;
         } finally {
+            this.element.classList.add('animate-refresh');
             this.isLoading = false;
         }
     }
