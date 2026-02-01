@@ -1,0 +1,16 @@
+{
+  "name": "semantic-card-library",
+  "version": "1.0.0",
+  "description": "Object-oriented UI card library with persistent caching and auto-refresh.",
+  "type": "module",
+  "scripts": {
+    "start": "npx serve .",
+    "test": "echo \"Open runner.html in your browser to run tests.\" && exit 1"
+  },
+  "keywords": ["javascript", "esm", "ui-library", "caching"],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}

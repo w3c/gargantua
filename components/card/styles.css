@@ -1,0 +1,135 @@
+:root {
+  /* Brand specific colors */
+  --bg-color: #FFF6E0;    
+  --card-bg: #000000;     
+  --card-text: #F8F9FA;   
+
+  /* Adjusted for contrast against Cream and Black */
+  --card-border: #D8CCB0;  /* Muted tan to blend with cream bg */
+  --accent-color: #FBBF24; /* Warm Gold/Amber (pops on black, complements cream) */
+  --muted-text: #94A3B8;   /* Soft slate for secondary info on black */
+  
+  /* Functional colors (brightened for black bg) */
+  --error-red: #FB7185;    /* Soft red */
+  --success-green: #34D399; /* Mint green */
+}
+
+/* 2. Automatic Dark Mode (System Preference) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --card-text: #f8fafc;
+    --card-border: #334155;
+    --accent-color: #60a5fa;
+    --muted-text: #94a3b8;
+    --error-red: #f87171;
+    --success-green: #4ade80;
+  }
+}
+
+/* 3. Manual Override (Force Dark via JavaScript) */
+[data-theme="dark"] {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --card-text: #f8fafc;
+    --card-border: #334155;
+    --accent-color: #60a5fa;
+    --muted-text: #94a3b8;
+    --error-red: #f87171;
+    --success-green: #4ade80;
+}
+
+/* Base Body - Ensuring no background "leaks" */
+
+/* Card Container Grid */
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+  padding: 0 0;
+}
+
+/* The Card Itself */
+.ui-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 0.6em;
+  padding: 0.6em;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ui-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Typography Hierarchy */
+.ui-card .card-title {
+  margin: 0 0 8px 0;
+  color: var(--card-text);
+}
+
+.ui-card .card-title a {
+  color: var(--accent-color);
+  text-decoration: none;
+}
+
+.update-label {
+  color: var(--muted-text);
+  margin-bottom: 0.5rem;
+  font-size: 80%;
+}
+
+.card-content {
+  margin-bottom: 0.5rem;
+  flex-grow: 1;
+}
+
+/* Buttons & Interactive Elements */
+.refresh-btn {
+  background-color: var(--accent-color);
+  color: #000000 !important;
+  border: none;
+  float: right;
+  padding: 0.1rem 0.3rem 0 0.3rem;
+  border-radius: 6px;
+  font-size: 110%;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.refresh-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.refresh-btn:active {
+  transform: translateY(0);
+}
+
+.empty-state {
+  color: var(--muted-text);
+  font-style: italic;
+}
+
+.error {
+  color: var(--error-red);
+  background: rgba(220, 38, 38, 0.1);
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 80%;
+}
+
+/* Smooth Content Loading Animation */
+@keyframes cardIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.card-content {
+  animation: cardIn 0.3s ease-out;
+}

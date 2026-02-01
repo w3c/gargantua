@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card JS | Master Test Runner</title>
+    <link rel="stylesheet" href="styles.css">
+<style>
+    :root {
+        /* Dashboard specific colors */
+        --panel-bg: #ffffff;
+        --panel-shadow: rgba(0, 0, 0, 0.1);
+        --text-main: #2c3e50;
+        --text-muted: #5a6c7d;
+        --border-ui: #dee2e6;
+        --log-bg: #121212;
+    }
+
+    [data-theme="dark"] {
+        --panel-bg: #252525;
+        --panel-shadow: rgba(0, 0, 0, 0.5);
+        --text-main: #ecf0f1;
+        --text-muted: #bdc3c7;
+        --border-ui: #444444;
+        --log-bg: #000000;
+    }
+
+    body {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        background-color: var(--bg-color); /* From styles.css */
+        color: var(--text-main);
+        font-family: 'Inter', -apple-system, sans-serif;
+        line-height: 1.6;
+    }
+
+    .harness-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-ui);
+    }
+
+    .controls-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 24px;
+        margin-bottom: 30px;
+    }
+
+    .control-panel {
+        background: var(--panel-bg);
+        border: 1px solid var(--border-ui);
+        padding: 24px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px var(--panel-shadow);
+    }
+
+    /* System Log - High Contrast */
+    .test-log {
+        background: var(--log-bg);
+        color: #f8f9fa; /* Off-white for better readability on black */
+        padding: 16px;
+        border-radius: 8px;
+        font-family: 'Fira Code', 'Courier New', monospace;
+        font-size: 0.85rem;
+        height: 380px;
+        overflow-y: auto;
+        border: 1px solid var(--border-ui);
+    }
+
+    /* Status Indicators with WCAG compliant colors */
+    .pass { color: #2ecc71; font-weight: 700; margin: 4px 0; } /* Strong Green */
+    .fail { color: #ff5e5e; font-weight: 700; margin: 4px 0; } /* Vibrant Red */
+    .info { color: #5dade2; } 
+    .warn { color: #f39c12; font-weight: 600; }
+
+    .warp-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--accent-color);
+        display: block;
+        margin: 10px 0;
+    }
+
+    .warp-slider {
+        width: 100%;
+        height: 8px;
+        border-radius: 5px;
+        background: var(--border-ui);
+        outline: none;
+        accent-color: var(--accent-color);
+    }
+
+    button {
+        padding: 10px 20px;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid var(--border-ui);
+        background: var(--panel-bg);
+        color: var(--text-main);
+    }
+
+    button:hover {
+        filter: brightness(0.9);
+        transform: translateY(-1px);
+    }
+
+    #runAllBtn {
+        background: #007bff;
+        color: #ffffff;
+        border-color: #0056b3;
+    }
+
+    hr {
+        border: 0;
+        border-top: 1px solid var(--border-ui);
+        margin: 40px 0;
+    }
+</style></head>
+<body>
+
+    <header class="harness-header">
+        <h1>🧪 lib.js <small>v1.0 Test Suite</small></h1>
+        <div class="btn-group">
+            <button id="themeBtn">Toggle Theme</button>
+            <button id="runAllBtn" style="background: var(--accent-color); color: white;">Run All Tests</button>
+        </div>
+    </header>
+
+    <div class="controls-grid">
+        <section class="control-panel">
+            <h3>⏳ Cache Time Warp</h3>
+            <p>Offset: <span id="ageLabel" class="warp-value">0</span> minutes</p>
+            <input type="range" id="timeSlider" min="0" max="120" value="0" class="warp-slider">
+            <p><small>Ages local storage entries to trigger TTL auto-refresh.</small></p>
+        </section>
+
+        <section class="control-panel">
+            <h3>🖥️ System Log</h3>
+            <div id="testConsole" class="test-log">System Ready. Waiting for command...</div>
+        </section>
+    </div>
+
+    <hr>
+
+    <div id="app-root"></div>
+
+    <script type="module">
+        import CardContainer from './lib.js';
+        import { testSuites } from './test-manifest.js';
+
+        const consoleEl = document.getElementById('testConsole');
+        const ageLabel = document.getElementById('ageLabel');
+        const slider = document.getElementById('timeSlider');
+        const appRoot = document.getElementById('app-root');
+        
+        let currentDashboard = null; // Reference for cleanup
+
+        // 1. Global Logging Utility
+        window.testLog = (msg, status = 'info') => {
+            const time = new Date().toLocaleTimeString([], { hour12: false, fractionalSecondDigits: 2 });
+            const entry = document.createElement('div');
+            entry.className = status;
+            entry.innerHTML = `[${time}] ${msg}`;
+            consoleEl.appendChild(entry);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        };
+
+        // 2. Time Warp Engine
+        slider.addEventListener('input', (e) => {
+            const mins = e.target.value;
+            ageLabel.innerText = mins;
+            
+            let count = 0;
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.includes('_test_') || key.includes('card_app_')) {
+                    try {
+                        const envelope = JSON.parse(localStorage.getItem(key));
+                        if (envelope.timestamp) {
+                            envelope.timestamp = Date.now() - (mins * 60000);
+                            localStorage.setItem(key, JSON.stringify(envelope));
+                            count++;
+                        }
+                    } catch(e) {}
+                }
+            }
+            if (count > 0) window.testLog(`Warped ${count} cache entries back ${mins}m.`, 'warn');
+        });
+
+        // 3. Lifecycle-Aware Runner
+        const runAllTests = async () => {
+            // Full Reset
+            if (currentDashboard) {
+                currentDashboard.destroy();
+                currentDashboard = null;
+            }
+            
+            appRoot.innerHTML = '';
+            consoleEl.innerHTML = '';
+            window.testLog("🚀 Initializing Master Test Protocol...");
+
+            for (const path of testSuites) {
+                try {
+                    // Ensure memory is clean before each suite
+                    if (currentDashboard) currentDashboard.destroy();
+                    
+                    const suiteName = path.split('/').pop().toUpperCase();
+                    window.testLog(`📂 Loading Suite: ${suiteName}...`);
+                    
+                    const module = await import(`${path}?t=${Date.now()}`); // Cache busting
+                    
+                    // Run the suite and capture the instance
+                    currentDashboard = await module.run(CardContainer);
+                    
+                } catch (err) {
+                    window.testLog(`❌ SUITE CRASH [${path}]: ${err.message}`, 'fail');
+                    console.error(err);
+                }
+            }
+            window.testLog("🏁 All operations complete.", "info");
+        };
+
+        document.getElementById('runAllBtn').onclick = runAllTests;
+
+        // 4. Theme Toggle
+        document.getElementById('themeBtn').onclick = () => {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        };
+    </script>
+</body>
+</html>

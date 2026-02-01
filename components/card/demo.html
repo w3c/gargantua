@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card JS | Simple Demo</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .demo-header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="demo-header">
+        <h1>Live Dashboard</h1>
+        <p>Simple implementation of the <code>lib.js</code> library.</p>
+    </header>
+
+    <div id="dashboard"></div>
+
+    <script type="module">
+        import CardContainer from './lib.js';
+
+        // 1. Initialize the container
+        // TTL is set to 1 minute for this demo
+        const dashboard = new CardContainer('dashboard', { 
+            ttl: 1, 
+            namespace: 'live_demo_' 
+        });
+
+        // 2. Add a single card
+        dashboard.add({
+            title: 'Bitcoin (BTC)',
+            url: 'https://www.coingecko.com',
+            cacheKey: 'btc-price',
+            
+            // Logic to fetch/generate data
+            createValue: async () => {
+                // Simulating an API call
+                const price = 42000 + (Math.random() * 1000);
+                return {
+                    price: price.toLocaleString(undefined, { minimumFractionDigits: 2 }),
+                    trend: Math.random() > 0.5 ? '📈' : '📉'
+                };
+            },
+
+            // Logic to display data
+            transformValue: (data) => {
+                return `
+                    <div style="font-size: 1.5rem; font-weight: bold;">
+                        $${data.price} ${data.trend}
+                    </div>
+                    <small style="color: var(--muted-text)">Market status: Open</small>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
