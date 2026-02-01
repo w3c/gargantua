@@ -18,48 +18,35 @@
     </style>
 </head>
 <body>
-
+    
     <header class="demo-header">
         <h1>Live Dashboard</h1>
         <p>Simple implementation of the <code>lib.js</code> library.</p>
     </header>
-
+    
     <div id="dashboard"></div>
-
+    
     <script type="module">
         import CardContainer from './lib.js';
-
+        
         // 1. Initialize the container
         // TTL is set to 1 minute for this demo
         const dashboard = new CardContainer('dashboard', { 
             ttl: 1, 
             namespace: 'live_demo_' 
         });
-
-        // 2. Add a single card
+        
         dashboard.add({
-            title: 'Bitcoin (BTC)',
-            url: 'https://www.coingecko.com',
-            cacheKey: 'btc-price',
-            
-            // Logic to fetch/generate data
-            createValue: async () => {
-                // Simulating an API call
-                const price = 42000 + (Math.random() * 1000);
-                return {
-                    price: price.toLocaleString(undefined, { minimumFractionDigits: 2 }),
-                    trend: Math.random() > 0.5 ? '📈' : '📉'
-                };
+            title: 'W3C Transitions Issues',
+            url: 'https://github.com/w3c/transitions/issues',
+            cacheKey: 'w3c-issues',
+            ttl: 5, // Override global TTL to 5 minutes
+            createValue: async (options) => {
+                const res = await fetch(options.url.replace('//github.com/', '//api.github.com/repos/'));
+                return res.json();
             },
-
-            // Logic to display data
-            transformValue: (data) => {
-                return `
-                    <div style="font-size: 1.5rem; font-weight: bold;">
-                        $${data.price} ${data.trend}
-                    </div>
-                    <small style="color: var(--muted-text)">Market status: Open</small>
-                `;
+            transformValue: (data, options) => {
+                return `<ul>${data.slice(0, 3).map(i => `<li>${i.title}</li>`).join('')}</ul>`;
             }
         });
     </script>
