@@ -85,116 +85,116 @@ class Card {
                         data: data
                     };
                     localStorage.setItem(this.fullKey, JSON.stringify(cachedEnvelope));
-                    } catch (fetchError) {
-                        if (cachedEnvelope) {
-                            data = cachedEnvelope.data;
-                        } else {
-                            throw fetchError;
-                        }
-                    }
-                }
-                
-                // 3. Rendering Logic (Supports String or Element Node)
-                if (data) {
-                    const view = this.options.transformValue(data, this.options);
-                    
-                    if (view instanceof Node) {
-                        contentArea.replaceChildren(view);
+                } catch (fetchError) {
+                    if (cachedEnvelope) {
+                        data = cachedEnvelope.data;
                     } else {
-                        contentArea.innerHTML = view;
+                        throw fetchError;
                     }
-                } else {
-                    contentArea.innerHTML = '<span class="empty-state">(no data)</span>';
                 }
-                if (cachedEnvelope && cachedEnvelope.timestamp) {
-                    timeArea.innerText = new Date(cachedEnvelope.timestamp).toLocaleTimeString();
-                } else {
-                    timeArea.innerText = new Date().toLocaleTimeString();
-                }
-            } catch (err) {
-                contentArea.innerHTML = `<span class="error">Error: ${err.message}</span>`;
-            } finally {
-                this.element.classList.add('animate-refresh');
-                this.isLoading = false;
             }
+            
+            // 3. Rendering Logic (Supports String or Element Node)
+            if (data) {
+                const view = this.options.transformValue(data, this.options);
+                
+                if (view instanceof Node) {
+                    contentArea.replaceChildren(view);
+                } else {
+                    contentArea.innerHTML = view;
+                }
+            } else {
+                contentArea.innerHTML = '<span class="empty-state">(no data)</span>';
+            }
+            if (cachedEnvelope && cachedEnvelope.timestamp) {
+                timeArea.innerText = new Date(cachedEnvelope.timestamp).toLocaleTimeString();
+            } else {
+                timeArea.innerText = new Date().toLocaleTimeString();
+            }
+        } catch (err) {
+            contentArea.innerHTML = `<span class="error">Error: ${err.message}</span>`;
+        } finally {
+            this.element.classList.add('animate-refresh');
+            this.isLoading = false;
+        }
+    }
+}
+
+/**
+* Main Orchestrator Class
+*/
+export default class CardContainer {
+    /**
+    * @param {string} mountId - Target element ID.
+    * @param {Object} config - Global configuration.
+    * @param {number} [config.ttl=5] - Freshness in minutes.
+    * @param {number} [config.heartbeat=5] - Polling interval in minutes.
+    * @param {string} [config.namespace='card_app_'] - Storage prefix.
+    */
+    constructor(mountId, config = {}) {
+        const container = document.getElementById(mountId);
+        if (!container) throw new Error(`Mount point #${mountId} not found.`);
+        
+        this.container = container;
+        this.config = {
+            ttl: config.ttl || 5,
+            heartbeat: config.heartbeat || 5,
+            namespace: config.namespace || 'card_app_',
+            ...config
+        };
+        this.config.heartbeat = Math.max(this.config.heartbeat, this.config.ttl);
+        this.registry = new Map();
+        this.cards = [];
+        this.container.classList.add('card-container');
+        
+        // Logic: max(heartbeat, ttl) ensures we don't pulse faster than data expires.
+        this.timer = setInterval(() => {
+            this.cards.forEach(card => card.refresh(false));
+        }, this.config.heartbeat * 60000); 
+    }
+    
+    /**
+    * Registers a new card. Atomic and synchronous.
+    * @param {Object} options - Configuration for the card instance.
+    * @returns {Card}
+    */
+    add(options) {
+        if (!options.cacheKey) throw new Error("cacheKey is required.");
+        if (this.registry.has(options.cacheKey)) return this.registry.get(options.cacheKey);
+        
+        const card = new Card(this, options);
+        this.registry.set(options.cacheKey, card);
+        this.cards.push(card);
+        this.container.appendChild(card.element);
+        
+        card.refresh();
+        return card;
+    }
+    
+    remove(card) {
+        if (this.registry.has(card.cacheKey)) {
+            this.registry.delete(card.cacheKey);
+            localStorage.removeItem(card.fullKey);
+            this.cards = this.cards.filter(c => c !== card);
+            card.element.remove();
         }
     }
     
     /**
-    * Main Orchestrator Class
+    * Total teardown for clean memory.
+    * Cleans up the UI and wipes the associated localStorage entries.
     */
-    export default class CardContainer {
-        /**
-        * @param {string} mountId - Target element ID.
-        * @param {Object} config - Global configuration.
-        * @param {number} [config.ttl=5] - Freshness in minutes.
-        * @param {number} [config.heartbeat=5] - Polling interval in minutes.
-        * @param {string} [config.namespace='card_app_'] - Storage prefix.
-        */
-        constructor(mountId, config = {}) {
-            const container = document.getElementById(mountId);
-            if (!container) throw new Error(`Mount point #${mountId} not found.`);
-            
-            this.container = container;
-            this.config = {
-                ttl: config.ttl || 5,
-                heartbeat: config.heartbeat || 5,
-                namespace: config.namespace || 'card_app_',
-                ...config
-            };
-            this.config.heartbeat = Math.max(this.config.heartbeat, this.config.ttl);
-            this.registry = new Map();
-            this.cards = [];
-            this.container.classList.add('card-container');
-            
-            // Logic: max(heartbeat, ttl) ensures we don't pulse faster than data expires.
-            this.timer = setInterval(() => {
-                this.cards.forEach(card => card.refresh(false));
-            }, this.config.heartbeat * 60000); 
-        }
+    destroy() {
+        if (this.timer) clearInterval(this.timer);
         
-        /**
-        * Registers a new card. Atomic and synchronous.
-        * @param {Object} options - Configuration for the card instance.
-        * @returns {Card}
-        */
-        add(options) {
-            if (!options.cacheKey) throw new Error("cacheKey is required.");
-            if (this.registry.has(options.cacheKey)) return this.registry.get(options.cacheKey);
-            
-            const card = new Card(this, options);
-            this.registry.set(options.cacheKey, card);
-            this.cards.push(card);
-            this.container.appendChild(card.element);
-            
-            card.refresh();
-            return card;
-        }
+        // Wipe the cache for every card registered in this container
+        this.cards.forEach(card => {
+            localStorage.removeItem(card.fullKey);
+            card.element.remove();
+        });
         
-        remove(card) {
-            if (this.registry.has(card.cacheKey)) {
-                this.registry.delete(card.cacheKey);
-                localStorage.removeItem(card.fullKey);
-                this.cards = this.cards.filter(c => c !== card);
-                card.element.remove();
-            }
-        }
-        
-        /**
-        * Total teardown for clean memory.
-        * Cleans up the UI and wipes the associated localStorage entries.
-        */
-        destroy() {
-            if (this.timer) clearInterval(this.timer);
-            
-            // Wipe the cache for every card registered in this container
-            this.cards.forEach(card => {
-                localStorage.removeItem(card.fullKey);
-                card.element.remove();
-            });
-            
-            this.registry.clear();
-            this.cards = [];
-            this.container.innerHTML = '';
-        }
+        this.registry.clear();
+        this.cards = [];
+        this.container.innerHTML = '';
     }
+}
