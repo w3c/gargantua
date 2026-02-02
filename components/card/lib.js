@@ -80,9 +80,11 @@ class Card {
             if (!skipFetch) {
                 try {
                     data = await this.options.createValue(this.options);
-                    localStorage.setItem(this.fullKey, JSON.stringify({
+                    cachedEnvelope = {
                         timestamp: new Date().toISOString(),
-                        data: data}));
+                        data: data
+                    };
+                    localStorage.setItem(this.fullKey, JSON.stringify(cachedEnvelope));
                     } catch (fetchError) {
                         if (cachedEnvelope) {
                             data = cachedEnvelope.data;
@@ -104,8 +106,11 @@ class Card {
                 } else {
                     contentArea.innerHTML = '<span class="empty-state">(no data)</span>';
                 }
-                timeArea.innerText = new Date().toLocaleTimeString();
-                
+                if (cachedEnvelope && cachedEnvelope.timestamp) {
+                    timeArea.innerText = new Date(cachedEnvelope.timestamp).toLocaleTimeString();
+                } else {
+                    timeArea.innerText = new Date().toLocaleTimeString();
+                }
             } catch (err) {
                 contentArea.innerHTML = `<span class="error">Error: ${err.message}</span>`;
             } finally {
