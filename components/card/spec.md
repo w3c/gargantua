@@ -13,7 +13,7 @@ A lightweight, dependency-free JavaScript library for building dashboards with s
 ### 2. Architecture & State Management
 
 * **CardContainer (Orchestrator)**:
-* **Constructor Configuration**: Configures `ttl` (minutes), `heartbeat` (minutes), and `namespace` globally.
+* **Constructor Configuration**: Configures `ttl` (minutes), `heartbeat` (minutes), `storage` (Storage-like) and `namespace` globally.
 * **Efficiency Logic**: Implements a centralized pulse using `Math.max(config.heartbeat, config.ttl)`. This ensures background polling never occurs more frequently than the data's fresh lifespan.
 * **Atomic Registry**: Uses a synchronous `Map` in the `add()` method to prevent duplicate card initialization during rapid batch execution.
 
@@ -27,13 +27,14 @@ A lightweight, dependency-free JavaScript library for building dashboards with s
 ### 3. Data Lifecycle & Rendering
 
 * **Fetch Strategy**:
-* **Stale-While-Revalidate**: If `createValue` fails or returns no data, the library attempts to revert to the last known valid cache entry.
-* **Self-Healing Cache**: If `JSON.parse` fails on a retrieved cache string, the specific `localStorage` key is immediately removed to prevent persistent crashes.
+* **Stale-While-Revalidate**: If `createValue` fails, the library attempts to revert to the last known valid cache entry.
+* **Self-Healing Cache**: If `JSON.parse` fails on a retrieved cache string, the specific `storage` key is immediately removed to prevent persistent crashes.
 
 
 * **Rendering (transformValue)**:
 * Supports **String** returns (via `innerHTML`).
 * Supports **DOM Node** returns (via `appendChild`). This allows cards to host complex elements like Canvases, Charts, or elements with pre-attached event listeners.
+* Supports **undefined or null** returns an empty data.
 
 
 

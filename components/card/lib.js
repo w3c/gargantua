@@ -56,7 +56,7 @@ class Card {
         const timeArea = this.element.querySelector('.timestamp');
         this.element.classList.remove('animate-refresh');
         try {
-            const rawCache = localStorage.getItem(this.fullKey);
+            const rawCache = this.parent.storage.getItem(this.fullKey);
             let data = null;
             let skipFetch = false;
             let cachedEnvelope = null;
@@ -68,12 +68,12 @@ class Card {
                     
                     const age = (Date.now() - (new Date(cachedEnvelope.timestamp)).getTime()) / 1000 / 60;
                     
-                    if (!force && age < this.parent.config.ttl) {
+                    if (!force && age < this.options.ttl) {
                         data = cachedEnvelope.data;
                         skipFetch = true;
                     }
                 } catch (parseErr) {
-                    localStorage.removeItem(this.fullKey);
+                    this.parent.storage.removeItem(this.fullKey);
                 }
             }
             
@@ -85,7 +85,7 @@ class Card {
                         timestamp: new Date().toISOString(),
                         data: data
                     };
-                    localStorage.setItem(this.fullKey, JSON.stringify(cachedEnvelope));
+                    this.parent.storage.setItem(this.fullKey, JSON.stringify(cachedEnvelope));
                 } catch (fetchError) {
                     if (cachedEnvelope) {
                         data = cachedEnvelope.data;
@@ -130,6 +130,7 @@ export default class CardContainer {
     * @param {Object} config - Global configuration.
     * @param {number} [config.ttl=5] - Freshness in minutes.
     * @param {number} [config.heartbeat=5] - Polling interval in minutes.
+    * @param {Object} [config.storage=window.localStorage] - Storage-like mechanism. (getItem, setItem, removeItem)
     * @param {string} [config.namespace='card_app_'] - Storage prefix.
     */
     constructor(mountId, config = {}) {
@@ -141,6 +142,7 @@ export default class CardContainer {
             ttl: config.ttl || 5,
             heartbeat: config.heartbeat || 5,
             namespace: config.namespace || 'card_app_',
+            storage: config.storage || window.localStorage,
             ...config
         };
         this.config.heartbeat = Math.max(this.config.heartbeat, this.config.ttl);
@@ -175,7 +177,7 @@ export default class CardContainer {
     remove(card) {
         if (this.registry.has(card.cacheKey)) {
             this.registry.delete(card.cacheKey);
-            localStorage.removeItem(card.fullKey);
+            this.config.storage.removeItem(card.fullKey);
             this.cards = this.cards.filter(c => c !== card);
             card.element.remove();
         }
@@ -183,14 +185,14 @@ export default class CardContainer {
     
     /**
     * Total teardown for clean memory.
-    * Cleans up the UI and wipes the associated localStorage entries.
+    * Cleans up the UI and wipes the associated storage entries.
     */
     destroy() {
         if (this.timer) clearInterval(this.timer);
         
         // Wipe the cache for every card registered in this container
         this.cards.forEach(card => {
-            localStorage.removeItem(card.fullKey);
+            this.config.storage.removeItem(card.fullKey);
             card.element.remove();
         });
         
