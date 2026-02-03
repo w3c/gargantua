@@ -13,6 +13,7 @@ class Card {
         this.options = options;
         this.cacheKey = options.cacheKey;
         this.fullKey = `${this.parent.config.namespace}${this.cacheKey}`;
+        this.options.ttl = (options.ttl) ? Math.min(options.ttl, this.parent.config.ttl) : this.parent.config.ttl;
         this.isLoading = false;
         
         // Setup DOM element
