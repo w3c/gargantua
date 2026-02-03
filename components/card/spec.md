@@ -34,8 +34,6 @@ A lightweight, dependency-free JavaScript library for building dashboards with s
 * **Rendering (transformValue)**:
 * Supports **String** returns (via `innerHTML`).
 * Supports **DOM Node** returns (via `appendChild`). This allows cards to host complex elements like Canvases, Charts, or elements with pre-attached event listeners.
-* Supports **undefined or null** returns an empty data.
-
 
 
 ### 4. Method Signatures

@@ -90,16 +90,12 @@ class Card {
             }
             
             // 3. Rendering Logic (Supports String or Element Node)
-            if (data) {
-                const view = this.options.transformValue(data, this.options);
+            const view = this.options.transformValue(data, this.options);
                 
-                if (view instanceof Node) {
-                    contentArea.replaceChildren(view);
-                } else {
-                    contentArea.innerHTML = view;
-                }
+            if (view instanceof Node) {
+                contentArea.replaceChildren(view);
             } else {
-                contentArea.innerHTML = '<span class="empty-state">(no data)</span>';
+                contentArea.innerHTML = view;
             }
             if (cachedEnvelope && cachedEnvelope.timestamp) {
                 timeArea.innerText = new Date(cachedEnvelope.timestamp).toLocaleTimeString();
