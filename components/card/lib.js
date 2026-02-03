@@ -24,13 +24,12 @@ class Card {
     /** @private */
     _createMarkup() {
         const section = document.createElement('section');
+        const title = this.options.url ? `<a href="${this.options.url}">${this.options.title}</a>` : this.options.title;
         section.className = 'ui-card';
         section.innerHTML = `
-            <h2 class="card-title"><button class="refresh-btn">↻</button>
-                ${this.options.url ? `<a href="${this.options.url}">${this.options.title}</a>` : this.options.title}
-            </h2>
-            <p class="update-label">Last updated: <span class="timestamp">Never</span></p>
-            <div class="card-content"><span class="empty-state">Initialising...</span></div>`;
+            <div class="card-header"><button class="refresh-btn">↻</button><h2 class="card-title">${title}</h2></div>
+            <div class="card-content"><span class="empty-state">Initialising...</span></div>
+            <p class="update-label">Last updated: <span class="timestamp">Never</span></p>`;
         return section;
     }
     
