@@ -26,16 +26,11 @@ class Card {
         const section = document.createElement('section');
         section.className = 'ui-card';
         section.innerHTML = `
-            <h2 class="card-title">
-                <button class="refresh-btn">↻</button>
-                ${this.options.url ? `<a href="${this.options.url}" target="_blank">${this.options.title}</a>` : this.options.title}
+            <h2 class="card-title"><button class="refresh-btn">↻</button>
+                ${this.options.url ? `<a href="${this.options.url}">${this.options.title}</a>` : this.options.title}
             </h2>
             <p class="update-label">Last updated: <span class="timestamp">Never</span></p>
-            <div class="card-content">
-                <span class="empty-state">Initialising...</span>
-            </div>
-           
-        `;
+            <div class="card-content"><span class="empty-state">Initialising...</span></div>`;
         return section;
     }
     
@@ -56,7 +51,7 @@ class Card {
         const timeArea = this.element.querySelector('.timestamp');
         this.element.classList.remove('animate-refresh');
         try {
-            const rawCache = this.parent.storage.getItem(this.fullKey);
+            const rawCache = this.parent.config.storage.getItem(this.fullKey);
             let data = null;
             let skipFetch = false;
             let cachedEnvelope = null;
@@ -73,7 +68,7 @@ class Card {
                         skipFetch = true;
                     }
                 } catch (parseErr) {
-                    this.parent.storage.removeItem(this.fullKey);
+                    this.parent.config.storage.removeItem(this.fullKey);
                 }
             }
             
@@ -85,7 +80,7 @@ class Card {
                         timestamp: new Date().toISOString(),
                         data: data
                     };
-                    this.parent.storage.setItem(this.fullKey, JSON.stringify(cachedEnvelope));
+                    this.parent.config.storage.setItem(this.fullKey, JSON.stringify(cachedEnvelope));
                 } catch (fetchError) {
                     if (cachedEnvelope) {
                         data = cachedEnvelope.data;
@@ -145,12 +140,12 @@ export default class CardContainer {
             storage: config.storage || window.localStorage,
             ...config
         };
+        // Logic: max(heartbeat, ttl) ensures we don't pulse faster than data expires.
         this.config.heartbeat = Math.max(this.config.heartbeat, this.config.ttl);
         this.registry = new Map();
         this.cards = [];
         this.container.classList.add('card-container');
         
-        // Logic: max(heartbeat, ttl) ensures we don't pulse faster than data expires.
         this.timer = setInterval(() => {
             this.cards.forEach(card => card.refresh(false));
         }, this.config.heartbeat * 60000); 
