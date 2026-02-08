@@ -49,7 +49,6 @@
       font-weight: 600;
     }
   </style>
-  <script src='lib/moment.min.js' defer></script>
 </head>
 
 <body>
@@ -130,6 +129,7 @@
           import configuration from './lib/config.js';
           import { json } from './lib/fetch.js';
           import jsonrender from './jsonrender.js';
+          import { fromNow } from './lib/date.js';
           
           const config = configuration({
             gid: document.documentElement.getAttribute("data-gid"),
@@ -165,7 +165,7 @@
           rtObserver.observe({entryTypes: ["resource"]});
           
           function dateFormat(time) {
-            return moment(time).fromNow()
+            return fromNow(new Date(time));
           }
           
           function dateColor(arg_time) {

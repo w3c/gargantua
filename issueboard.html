@@ -10,7 +10,6 @@
   <meta name="author" content="W3C">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="//www.w3.org/favicon.ico">
-  <script src='lib/moment.min.js'></script>
   <link rel="stylesheet" href="pages.css" media="all">
   <style>
     .color--green {
@@ -110,6 +109,7 @@
         import configuration from './lib/config.js';
         import { json } from './lib/fetch.js';
         import jsonrender from './jsonrender.js';
+        import { fromNow } from './lib/date.js';
         
         async function fetchGroup(id) {
           return json(`https://w3c.github.io/groups/${id}/group.json`);
@@ -131,7 +131,7 @@
         });
         
         function dateFormat(time) {
-          return moment(time).fromNow()
+          return fromNow(time)
         }
         
         function dateColor(arg_time) {
@@ -158,7 +158,7 @@
             }
           },
           prettyDate: (time) => {
-            return { className: dateColor(time), text: dateFormat(time) }
+            return { className: dateColor(time), text: dateFormat(new Date(time)) }
           },
           prettyLabels: (labels) => {
             labels.forEach(label => {
